@@ -1,0 +1,17 @@
+https://reactnavigation.org/docs/getting-started
+https://react-hook-form.com/
+https://docs.expo.dev/versions/latest/sdk/imagepicker/
+https://github.com/oblador/react-native-vector-icons
+https://reactnavigation.org/docs/upgrading-from-5.x/#bottom-tab-navigator
+https://docs.expo.dev/versions/latest/sdk/reanimated/
+https://github.com/meliorence/react-native-snap-carousel
+
+<!-- Console Error
+ViewPropTypes will be removed from React Native,
+along with all other PropTypes. We recommend that you migrate away from PropTypes and switch to a type system like TypeScript. If you need to continue using ViewPropTypes, migrate to the 'deprecated-react-native-prop-types' package. 
+
+Solution:
+npm install deprecated-react-native-prop-types
+
+
+-->

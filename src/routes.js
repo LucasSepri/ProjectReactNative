@@ -13,7 +13,7 @@ const Tab = createBottomTabNavigator();
 
 export function Routes() {
   return (
-    <Tab.Navigator
+    <Tab.Navigator 
       screenOptions={{
         // headerShown: false,
         tabBarHideOnKeyboard: false,
@@ -29,7 +29,7 @@ export function Routes() {
       tabBar={(props) => <CustomTabBar {...props} />}
     >
       <Tab.Screen
-        name="Home"
+        name="Cardapio"
         component={Home}
         options={{ tabBarIcon: "restaurant" }}
       />
@@ -56,3 +56,4 @@ export function Routes() {
     </Tab.Navigator>
   );
 }
+
