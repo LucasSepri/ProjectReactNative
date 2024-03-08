@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 
 
-export default function Clientes({ navigation }) {
+export default function Configuracoes({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Clientes</Text>
+            <Text>Configuracoes</Text>
         </View>
     );
 }

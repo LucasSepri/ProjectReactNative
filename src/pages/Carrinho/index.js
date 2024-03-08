@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 
 
-export default function Tarefas({ navigation }) {
+export default function Carrinho({ navigation }) {
     return (
         <View style={styles.container}>
-            <Text>Tarefas</Text>
+            <Text>Carrinho</Text>
         </View>
     );
 }
