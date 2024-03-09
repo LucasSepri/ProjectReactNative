@@ -3,12 +3,18 @@ import { View, TextInput, Button, TouchableOpacity, Text, StyleSheet } from 'rea
 import { useForm, Controller } from 'react-hook-form';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-const LoginForm = () => {
+const LoginForm = ({ navigation }) => {
   const { control, handleSubmit, setError, formState: { errors } } = useForm();
 
   const onSubmit = (data) => {
+    navigation.navigate('Cardapio');
     // Lógica de autenticação aqui
     console.log(data);
+  };
+
+  const goToCadastro = () => {
+    // Navigate to the Cadastro screen when "Não tem conta? Registre-se" is pressed
+    navigation.navigate('Cadastro');
   };
 
   return (
@@ -56,7 +62,7 @@ const LoginForm = () => {
 
       <Button title="Entrar" onPress={handleSubmit(onSubmit)} />
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={goToCadastro}>
         <Text style={styles.link}>Não tem conta? Registre-se</Text>
       </TouchableOpacity>
     </View>

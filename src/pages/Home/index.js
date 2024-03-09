@@ -1,223 +1,332 @@
-import React, { useState, useRef } from "react";
-import { StyleSheet, Text, View, ScrollView, Dimensions, ImageBackground, TextInput, TouchableOpacity, Image } from "react-native";
-import Carousel from "react-native-snap-carousel";
-import ViewPropTypes from 'deprecated-react-native-prop-types';
+import React, { useState } from 'react';
+import {
+    Dimensions,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native';
+import {
+    FlatList,
+    ScrollView,
+    TextInput,
+    TouchableHighlight,
+    TouchableOpacity,
+} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Carousel from 'react-native-snap-carousel';
 
-import Icon from 'react-native-vector-icons/Ionicons';
+import COLORS from '../../consts/colors';
+import categories from '../../consts/categories';
+import foods from '../../consts/foods';
+import promoData from '../../consts/promoData';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width } = Dimensions.get('screen');
+const cardWidth = width / 2 - 20;
 
 export default function Home({ navigation }) {
-    const carouselRef = useRef(null);
+    const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(0);
 
-
-    const [lista, setLista] = useState([
-        {
-            title: "O Justiceiro",
-            text: "Após o assassinato de sua família, Frank Castle está traumatizado e sendo caçado. No submundo do crime, ele se tornará aquele conhecido como O Justiceiro",
-            release: 2018,
-            img: 'https://sujeitoprogramador.com/wp-content/uploads/2020/05/background.jpg'
-        },
-        {
-            title: "Bad Boys for life",
-            text: "Terceiro episódio das histórias dos policiais Burnett (Martin Lawrence) e Lowrey (Will Smith), que devem encontrar e prender os mais perigosos traficantes de drogas da cidade.",
-            release: 2020,
-            img: 'https://sujeitoprogramador.com/wp-content/uploads/2020/05/badboy.jpg'
-        },
-        {
-            title: "Viúva Negra",
-            text: "Em Viúva Negra, após seu nascimento, Natasha Romanoff (Scarlett Johansson) é dada à KGB, que a prepara para se tornar sua agente definitiva.",
-            release: 2020,
-            img: 'https://sujeitoprogramador.com/wp-content/uploads/2020/05/blackwidow.jpg'
-        },
-        {
-            title: "Top Gun: MAVERICK",
-            text: "Em Top Gun: Maverick, depois de mais de 30 anos de serviço como um dos principais aviadores da Marinha, o piloto à moda antiga Maverick (Tom Cruise) enfrenta drones e prova que o fator humano ainda é fundamental no mundo contemporâneo das guerras tecnológicas.",
-            release: 2020,
-            img: 'https://sujeitoprogramador.com/wp-content/uploads/2020/05/topgun.jpeg'
-        },
-        {
-            title: "BloodShot",
-            text: "Bloodshot é um ex-soldado com poderes especiais: o de regeneração e a capacidade de se metamorfosear. ",
-            release: 2020,
-            img: 'https://sujeitoprogramador.com/wp-content/uploads/2020/05/blood.jpg'
-        },
-        {
-            title: "Free Guy",
-            text: "Um caixa de banco preso a uma entediante rotina tem sua vida virada de cabeça para baixo quando ele descobre que é personagem em um brutalmente realista vídeo game de mundo aberto.",
-            release: 2020,
-            img: 'https://sujeitoprogramador.com/wp-content/uploads/2020/05/freeguy.jpg'
-        },
-    ]);
-
-    const [background, setBeckground] = useState(lista[0].img);
-
-    const [activeIndex, setActiveIndex] = useState(0);
-
-    const _renderItem = ({ item, index }) => {
+    const ListCategories = () => {
         return (
-            <View>
-                <TouchableOpacity>
-                    <Image
-                        source={{ uri: item.img }}
-                        style={styles.carouselImg}
-                    />
-                    <Text style={styles.carouselText}>{item.title}</Text>
-                    <Icon
-                        name="play-circle-outline"
-                        size={30}
-                        color="#FFF"
-                        style={styles.carouselIcon}
-                    />
-                </TouchableOpacity>
-            </View>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.categoriesListContainer}>
+                {categories.map((category, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        activeOpacity={0.8}
+                        onPress={() => setSelectedCategoryIndex(index)}>
+                        <View
+                            style={{
+                                backgroundColor:
+                                    selectedCategoryIndex == index
+                                        ? COLORS.primary
+                                        : COLORS.secondary,
+                                ...styles.categoryBtn,
+                            }}>
+                            <View style={styles.categoryBtnImgCon}>
+                                <Image
+                                    source={category.image}
+                                    style={{ height: 35, width: 35, resizeMode: 'cover' }}
+                                />
+                            </View>
+                            <Text
+                                style={{
+                                    fontSize: 15,
+                                    fontWeight: 'bold',
+                                    marginLeft: 10,
+                                    color:
+                                        selectedCategoryIndex == index
+                                            ? COLORS.white
+                                            : COLORS.primary,
+                                }}>
+                                {category.name}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         );
     };
+    const Card = ({ food }) => {
+        const [isFavorite, setIsFavorite] = useState(false);
 
+        const toggleFavorite = () => {
+            setIsFavorite(!isFavorite);
+        };
+        return (
+            <TouchableHighlight
+                underlayColor={COLORS.white}
+                activeOpacity={0.9}
+                onPress={() => navigation.navigate('DetailsScreen', food)}
+                style={styles.card}>
+                <View>
+                    <View style={styles.cardImageContainer}>
+                        <Image source={food.image} style={styles.cardImage} />
+                    </View>
+                    <View style={styles.cardContent}>
+                        <Text style={styles.cardTitle}>{food.name}</Text>
+                        <Text style={styles.cardIngredients}>{food.ingredients}</Text>
+                        <View style={styles.cardFooter}>
+                            <Text style={styles.cardPrice}>R${food.price}</Text>
+                            <TouchableOpacity
+                                style={[styles.addToCartBtn, { backgroundColor: isFavorite ? COLORS.primary : COLORS.primary }]}
+                                onPress={toggleFavorite}
+                            >
+                                <Icon name={isFavorite ? "favorite" : "favorite-border"} size={20} color={COLORS.white} />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </TouchableHighlight>
+        );
+    };
+    const promoData = [
+        {
+            id: 1,
+            title: 'Promoção 1',
+            image: require('../../../assets/img/fundo3.jpg'),
+        },
+        {
+            id: 2,
+            title: 'Promoção 2',
+            image: require('../../../assets/img/fundo3.jpg'),
+        },
+        {
+            id: 3,
+            title: 'Promoção 3',
+            image: require('../../../assets/img/fundo3.jpg'),
+        },
+    ];
+    const PromoCarousel = () => {
+        const renderPromoItem = ({ item }) => (
+            <View style={styles.carouselItem}>
+                <Image source={item.image} style={styles.carouselImage} />
+                <Text style={styles.carouselTitle}>{item.title}</Text>
+            </View>
+        );
+
+        return (
+            <Carousel
+                data={promoData}
+                renderItem={renderPromoItem}
+                sliderWidth={width}
+                itemWidth={300}
+                autoplay
+                loop
+
+            />
+        );
+    };
     return (
-        <ScrollView style={styles.container}>
-            <View style={{ flex: 1, height: screenHeight }}>
-                <View style={{ ...StyleSheet.absoluteFill, backgroundColor: '#000' }}>
-                    <ImageBackground
-                        source={{ uri: background }}
-                        style={styles.imgBg}
-                        blurRadius={8}
-                    >
-                        <View style={styles.viewSearch}>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Procurando algo?"
-                            />
-                            <TouchableOpacity style={styles.icon}>
-                                <Icon name="search" size={25} color="#000" />
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text
-                            style={{ color: '#FFF', fontSize: 25, marginLeft: 10, marginVertical: 10 }}
-                        >
-                            Acabou de Chegar
+        <ScrollView showsHorizontalScrollIndicator={false}>
+            <View style={styles.header}>
+                <View >
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ fontSize: 28 }}>Olá,</Text>
+                        <Text style={{ fontSize: 28, fontWeight: 'bold', marginLeft: 10 }}>
+                            Lucas
                         </Text>
+                    </View>
+                    <Text style={{ marginTop: 5, fontSize: 22, color: COLORS.grey }}>
+                        O que gostaria de pedir hoje?
+                    </Text>
+                </View>
+                <TouchableHighlight
+                    underlayColor={COLORS.white}
+                    activeOpacity={0.9}
+                    onPress={() => navigation.navigate('Login')}>
+                    <Image
+                        source={require('../../../assets/catergories/person.png')} target
+                        style={{ height: 50, width: 50, borderRadius: 25 }}
+                    />
+                </TouchableHighlight>
+            </View>
 
-                        <View style={styles.slideView}>
-                            <Carousel
-                                style={styles.carousel}
-                                ref={carouselRef}
-                                data={lista}
-                                renderItem={_renderItem}
-                                sliderWidth={screenWidth}
-                                itemWidth={200}
-                                inactiveSlideOpacity={0.5}
-                                onSnapToItem={(index) => {
-                                    setBeckground(lista[index].img);
-                                    setActiveIndex(index);
-                                }}
-                            />
-                        </View>
 
-                        <View style={styles.moreInfo}>
-                            <View style={{ marginTop: 10 }}>
-                                <Text style={styles.movieTitle}>{lista[activeIndex].title}</Text>
-                                <Text style={styles.movieDesc}>{lista[activeIndex].text}</Text>
-                            </View>
-                            <TouchableOpacity style={{ marginRight: 15, marginTop: 10 }}>
-                                <Icon name="albums-outline" color="#131313" size={30} />
-                            </TouchableOpacity>
-                        </View>
-                    </ImageBackground>
+            <View>
+                <Text style={{ textAlign: 'center', fontSize: 20, fontWeight: 'bold' }}>Promoções do Dia</Text>
+                <PromoCarousel />
+            </View>
+            <View
+                style={{
+                    marginTop: 40,
+                    flexDirection: 'row',
+                    paddingHorizontal: 20,
+                }}>
+                <View style={styles.inputContainer}>
+                    <Icon name="search" size={28} />
+                    <TextInput
+                        style={{ flex: 1, fontSize: 18 }}
+                        placeholder="Busque aqui"
+                    />
+                </View>
+                <View style={styles.sortBtn}>
+                    <Icon name="tune" size={28} color={COLORS.white} />
                 </View>
             </View>
+            <View>
+                <ListCategories />
+            </View>
+            <FlatList
+                showsVerticalScrollIndicator={false}
+                numColumns={2}
+                data={foods}
+                contentContainerStyle={{ alignItems: 'center' }}
+                renderItem={({ item }) => <Card food={item} />}
+            />
         </ScrollView>
     );
-}
+};
+
+
 
 const styles = StyleSheet.create({
-    container: {
-        // marginTop: 40,
-        flex: 1,
-    },
-    imgBg: {
-        flex: 1,
-        width: null,
-        height: null,
-        opacity: 1,
-        justifyContent: 'flex-start',
-        backgroundColor: '#000',
-    },
-    viewSearch: {
-        marginTop: 20,
-        backgroundColor: '#FFF',
-        elevation: 10,
-        borderRadius: 5,
-        marginVertical: 10,
-        width: '95%',
+    header: {
+        paddingBottom: 20,
+        paddingTop: 20,
         flexDirection: 'row',
-        alignSelf: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        // backgroundColor: COLORS.primary,
     },
-    input: {
-        width: '85%',
-        padding: 10,
-        paddingLeft: 20,
-        fontSize: 17,
+    //CARROSSEL
+    carouselItem: {
+        marginTop: 20,
+        borderRadius: 8,
+        overflow: 'hidden',
     },
-    icon: {
-        position: 'absolute',
-        right: 20,
-        top: 10,
-    },
-    slideView: {
+    carouselImage: {
         width: '100%',
-        height: 350,
+        height: 150,
+        resizeMode: 'cover',
+    },
+    carouselTitle: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 10,
+        backgroundColor: COLORS.primary,
+        color: 'white',
+    },
+    // PESQUISA
+
+    inputContainer: {
+        flex: 1,
+        height: 50,
+        borderRadius: 10,
+        flexDirection: 'row',
+        backgroundColor: COLORS.light,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    sortBtn: {
+        width: 50,
+        height: 50,
+        marginLeft: 10,
+        backgroundColor: COLORS.primary,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-
     },
-    carousel: {
-        flex: 1,
-        overflow: 'visible',
+    //CATEGORIAS
+    categoriesListContainer: {
+        paddingVertical: 30,
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
-    carouselImg: {
-        alignSelf: 'center',
-        width: 200,
-        height: 300,
-        borderRadius: 12,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-
-    carouselText: {
-        padding: 15,
-        color: '#FFF',
-        bottom: 0,
-        left: 2,
-        fontWeight: 'bold',
-    },
-
-    carouselIcon: {
-        position: 'absolute',
-        top: 15,
-        right: 15,
-    },
-    moreInfo: {
-        backgroundColor: "#FFF",
-        width: screenWidth,
-        height: screenHeight,
-        borderTopRightRadius: 20,
-        borderTopLeftRadius: 20,
+    categoryBtn: {
+        height: 45,
+        width: 120,
+        marginRight: 7,
+        borderRadius: 30,
+        alignItems: 'center',
+        paddingHorizontal: 5,
         flexDirection: 'row',
-        justifyContent: 'space-around',
     },
-    movieTitle: {
-        paddingLeft: 15,
-        fontSize: 22,
+    categoryBtnImgCon: {
+        height: 35,
+        width: 35,
+        backgroundColor: COLORS.white,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    //CARDS
+    card: {
+        width: cardWidth,
+        marginHorizontal: 5,
+        marginBottom: 10,
+        // marginTop: 50,
+        borderRadius: 15,
+        elevation: 13,
+        backgroundColor: COLORS.white,
+        paddingBottom: 30,
+        alignItems: 'center',  // Centraliza horizontalmente
+    },
+    cardImageContainer: {
+        alignItems: 'center',
+        marginVertical: 30,
+    },
+    cardImage: {
+        height: 120,
+        width: 120,
+    },
+    cardContent: {
+        marginHorizontal: 20,
+        alignItems: 'center',  // Centraliza horizontalmente
+    },
+    cardTitle: {
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#131313',
-        marginBottom: 5,
     },
-    movieDesc: {
-        paddingLeft: 15,
-        color: '#131313',
+    cardIngredients: {
         fontSize: 14,
+        color: COLORS.grey,
+        marginTop: 2,
+    },
+    cardFooter: {
+        marginTop: 10,
+        marginHorizontal: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',  // Centraliza horizontalmente
+    },
+    cardPrice: {
+        fontSize: 18,
         fontWeight: 'bold',
-
-    }
+    },
+    addToCartBtn: {
+        marginLeft: 10,
+        height: 40,
+        width: 40,
+        borderRadius: 100,
+        backgroundColor: COLORS.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
+
