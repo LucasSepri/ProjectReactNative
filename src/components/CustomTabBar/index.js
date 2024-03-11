@@ -32,6 +32,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
 
                     return (
                         <TouchableOpacity
+                            key={route.key}  // Add a unique key prop here
                             accessibilityRole="button"
                             accessibilityState={isFocused ? { selected: true } : {}}
                             accessibilityLabel={options.tabBarAccessibilityLabel}

@@ -17,6 +17,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Carousel from 'react-native-snap-carousel';
 
+
+
 import COLORS from '../../consts/colors';
 import categories from '../../consts/categories';
 import foods from '../../consts/foods';
@@ -25,7 +27,7 @@ import promoData from '../../consts/promoData';
 const { width } = Dimensions.get('screen');
 const cardWidth = width / 2 - 20;
 
-export default function Home({ navigation }) {
+export default function Favoritos({ navigation }) {
     const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(0);
 
     const ListCategories = () => {
@@ -137,12 +139,11 @@ export default function Home({ navigation }) {
                 itemWidth={300}
                 autoplay
                 loop
-
             />
         );
     };
     return (
-        <ScrollView showsHorizontalScrollIndicator={false}>
+        <ScrollView showsHorizontalScrollIndicator={false} style={{ flex: 1 }}>
             <View style={styles.header}>
                 <View >
                     <View style={{ flexDirection: 'row' }}>

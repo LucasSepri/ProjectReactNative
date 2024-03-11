@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 
-const RegistrationForm = () => {
+const RegistrationForm = ({navigation}) => {
   const { control, handleSubmit, setError, formState: { errors } } = useForm();
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -28,6 +28,11 @@ const RegistrationForm = () => {
     } catch (error) {
       console.error('Erro ao escolher a imagem:', error);
     }
+  };
+
+  const goToLogin = () => {
+    // Navigate to the Login screen when "Já tem cadastro? Faça login" is pressed
+    navigation.navigate('Login');
   };
 
   return (
@@ -141,7 +146,7 @@ const RegistrationForm = () => {
 
       <Button title="Cadastrar" onPress={handleSubmit(onSubmit)} />
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={goToLogin}>
         <Text style={styles.link}>Já tem cadastro? Faça login</Text>
       </TouchableOpacity>
     </View>

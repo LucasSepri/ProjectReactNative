@@ -7,7 +7,7 @@ const LoginForm = ({ navigation }) => {
   const { control, handleSubmit, setError, formState: { errors } } = useForm();
 
   const onSubmit = (data) => {
-    navigation.navigate('Cardapio');
+    navigation.navigate('Home');
     // Lógica de autenticação aqui
     console.log(data);
   };

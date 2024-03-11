@@ -26,3 +26,7 @@ Os links fornecidos a seguir referem-se a documentações e bibliotecas relacion
 
 9. **Expo Safe Area Context (https://docs.expo.dev/versions/latest/sdk/safe-area-context/):**
    - Parte da documentação Expo, o Safe Area Context oferece uma maneira de garantir que o conteúdo do aplicativo esteja sempre visível dentro das áreas seguras em dispositivos móveis, considerando variações de tamanho de tela e recortes.
+
+   npm install @react-navigation/drawer
+
+https://github.com/Jacse/react-native-app-intro-slider
