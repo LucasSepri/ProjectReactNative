@@ -1,12 +1,11 @@
 {
   "expo": {
-    "name": "ProjectReactNative",
-    "slug": "ProjectReactNative",
+    "name": "project",
+    "slug": "project",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-image-picker"],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
