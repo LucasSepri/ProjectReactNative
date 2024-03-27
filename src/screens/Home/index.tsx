@@ -10,8 +10,7 @@ import {
   Modal,
   Dimensions,
   FlatList,
-  TouchableHighlight,
-
+  TouchableHighlight
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Carousel from 'react-native-snap-carousel';
@@ -20,11 +19,9 @@ import Carousel from 'react-native-snap-carousel';
 import styles from './style';
 import COLORS from '../../styles/COLORS';
 
-
 // impotes de Dados
 import promoData from '../../context/promoData';
 import foodsData from '../../context/foodsData';
-
 
 const { width } = Dimensions.get('screen');
 const cardWidth = width / 2 - 20;
@@ -37,13 +34,16 @@ export default function Home() {
     Linking.openURL(`tel:${phoneNumber}`);
   };
 
+  const openWhatsAppWeb = () => {
+    const url = 'https://web.whatsapp.com/';
+    Linking.openURL(url);
+  };
+
   const showOpeningHours = () => {
     setModalVisible(true);
   };
 
-
-
-  //Modal Horarios 
+  // Modal Horarios 
   const ModalExibir = () => {
     return (
       <Modal
@@ -52,8 +52,7 @@ export default function Home() {
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(false);
-        }
-        }
+        }}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -74,14 +73,15 @@ export default function Home() {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal >
+      </Modal>
     );
   };
+
   // Carrocel 
   const PromoCarousel = () => {
     const renderPromoItem = ({ item }) => (
       <View style={styles.carouselItem}>
-        <Image source={item.image} style={styles.carouselImage} />
+        <Image source={require('../../assets/pizza.jpg')} style={styles.carouselImage} />
         <Text style={styles.carouselTitle}>{item.title}</Text>
       </View>
     );
@@ -96,10 +96,6 @@ export default function Home() {
       />
     );
   };
-
-
-
-
   const Card = ({ foodsData }) => {
     const [isFavorite, setIsFavorite] = useState(false);
 
@@ -110,7 +106,9 @@ export default function Home() {
       <TouchableHighlight
         underlayColor={COLORS.white}
         activeOpacity={0.9}
-        style={styles.card}>
+        style={styles.card}
+      >
+        
         <View>
           <View style={styles.cardImageContainer}>
             <Image source={foodsData.image} style={styles.cardImage} />
@@ -133,16 +131,15 @@ export default function Home() {
     );
   };
 
-
-  // Rederizar pagina
+  // Renderizar página
   return (
     <ScrollView>
-
-      {/*-------------------- Header -----------------------*/}
+      {/* Header */}
       <ImageBackground
-        source={require('../../assets/background.jpg')}
+        source={require('../../assets/banner.jpg')}
         style={styles.header}
-        resizeMode="cover">
+        resizeMode="cover"
+      >
         {/* Logo da pizzaria */}
         <View style={styles.logoContainer}>
           <Image
@@ -151,11 +148,12 @@ export default function Home() {
           />
         </View>
 
-        {/* Botão Telefone */}
+       {/* Botões de Contato */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonWhatsApp} onPress={handlePhoneNumberPress}>
+          {/* Botão WhatsApp Web */}
+          <TouchableOpacity style={[styles.button, { marginRight: 10 }]} onPress={openWhatsAppWeb}>
             <Icon name="logo-whatsapp" size={20} color="#fff" />
-            <Text style={styles.buttonText}>Telefone</Text>
+            <Text style={styles.buttonText}>WhatsApp</Text>
           </TouchableOpacity>
 
           {/* Botão Horários de Funcionamento */}
@@ -164,16 +162,16 @@ export default function Home() {
             <Text style={styles.buttonText}>Horários de Funcionamento</Text>
           </TouchableOpacity>
         </View>
-
+          
+        {/* Endereço */}
         <Text style={styles.addressText}>Endereço: Rua das Pizzas, 123</Text>
       </ImageBackground>
 
-      {/*-------------------- Main -----------------------*/}
+      {/* Main */}
       <View style={styles.ContainerCarousel}>
         <Text style={styles.textoTituloPromocoes}>PROMOÇÕES</Text>
         <PromoCarousel />
       </View>
-
 
       {/* Produtos */}
       <FlatList
@@ -184,10 +182,7 @@ export default function Home() {
         renderItem={({ item }) => <Card foodsData={item} />}
       />
 
-
-
-
-      {/* Modal referente ao Horarios de Funcionamento */}
+      {/* Modal referente aos Horários de Funcionamento */}
       <ModalExibir />
     </ScrollView>
   );
