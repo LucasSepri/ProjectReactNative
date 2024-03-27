@@ -10,13 +10,9 @@ import {
   Modal,
   Dimensions,
   FlatList,
-<<<<<<< HEAD
   TextInput,
   Button
 
-=======
-  TouchableHighlight
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Carousel from 'react-native-snap-carousel';
@@ -25,53 +21,32 @@ import Carousel from 'react-native-snap-carousel';
 import styles from './style';
 import COLORS from '../../styles/COLORS';
 
-<<<<<<< HEAD
 
 // impotes de Dados
 import promoData from '../../context/promoData';
 import foodsData from '../../context/foods';
 import categories from '../../context/categories';
 
-=======
-// impotes de Dados
-import promoData from '../../context/promoData';
-import foodsData from '../../context/foodsData';
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 
 const { width } = Dimensions.get('screen');
 const cardWidth = width / 2 - 20;
 
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
-<<<<<<< HEAD
   const [modalPeididoVisible, setModalPeididoVisible] = useState(false);
-=======
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 
   const handlePhoneNumberPress = () => {
     const phoneNumber = '123456789'; // Coloque o número de telefone desejado aqui
     Linking.openURL(`tel:${phoneNumber}`);
   };
 
-<<<<<<< HEAD
-=======
-  const openWhatsAppWeb = () => {
-    const url = 'https://web.whatsapp.com/';
-    Linking.openURL(url);
-  };
-
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
   const showOpeningHours = () => {
     setModalVisible(true);
   };
 
-<<<<<<< HEAD
 
 
   //Modal Horarios 
-=======
-  // Modal Horarios 
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
   const ModalExibir = () => {
     return (
       <Modal
@@ -80,12 +55,8 @@ export default function Home() {
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(false);
-<<<<<<< HEAD
         }
         }
-=======
-        }}
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -106,25 +77,14 @@ export default function Home() {
             </TouchableOpacity>
           </View>
         </View>
-<<<<<<< HEAD
       </Modal >
     );
   };
-=======
-      </Modal>
-    );
-  };
-
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
   // Carrocel 
   const PromoCarousel = () => {
     const renderPromoItem = ({ item }) => (
       <View style={styles.carouselItem}>
-<<<<<<< HEAD
         <Image source={item.image} style={styles.carouselImage} />
-=======
-        <Image source={require('../../assets/pizza.jpg')} style={styles.carouselImage} />
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
         <Text style={styles.carouselTitle}>{item.title}</Text>
       </View>
     );
@@ -139,7 +99,6 @@ export default function Home() {
       />
     );
   };
-<<<<<<< HEAD
 
 
   // Categorias
@@ -216,15 +175,12 @@ export default function Home() {
   const closeAdicionaisModal = () => { setModalPeididoVisible(false) };
 
 
-=======
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
   const Card = ({ foodsData }) => {
     const [isFavorite, setIsFavorite] = useState(false);
 
     const toggleFavorite = () => {
       setIsFavorite(!isFavorite);
     };
-<<<<<<< HEAD
 
     return (
       <View style={styles.card}>
@@ -271,46 +227,6 @@ export default function Home() {
         source={require('../../assets/background.jpg')}
         style={styles.header}
         resizeMode="cover">
-=======
-    return (
-      <TouchableHighlight
-        underlayColor={COLORS.white}
-        activeOpacity={0.9}
-        style={styles.card}
-      >
-        
-        <View>
-          <View style={styles.cardImageContainer}>
-            <Image source={foodsData.image} style={styles.cardImage} />
-          </View>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>{foodsData.name}</Text>
-            <Text style={styles.cardIngredients}>{foodsData.ingredients}</Text>
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardPrice}>R${foodsData.price}</Text>
-              <TouchableOpacity
-                style={[styles.addToCartBtn, { backgroundColor: isFavorite ? COLORS.primary : COLORS.primary }]}
-                onPress={toggleFavorite}
-              >
-                <Icon name={isFavorite ? "heart" : "heart-outline"} size={20} color={COLORS.white} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </TouchableHighlight>
-    );
-  };
-
-  // Renderizar página
-  return (
-    <ScrollView>
-      {/* Header */}
-      <ImageBackground
-        source={require('../../assets/banner.jpg')}
-        style={styles.header}
-        resizeMode="cover"
-      >
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
         {/* Logo da pizzaria */}
         <View style={styles.logoContainer}>
           <Image
@@ -319,20 +235,11 @@ export default function Home() {
           />
         </View>
 
-<<<<<<< HEAD
         {/* Botão Telefone */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonWhatsApp} onPress={handlePhoneNumberPress}>
             <Icon name="logo-whatsapp" size={20} color="#fff" />
             <Text style={styles.buttonText}>Telefone</Text>
-=======
-       {/* Botões de Contato */}
-        <View style={styles.buttonContainer}>
-          {/* Botão WhatsApp Web */}
-          <TouchableOpacity style={[styles.button, { marginRight: 10 }]} onPress={openWhatsAppWeb}>
-            <Icon name="logo-whatsapp" size={20} color="#fff" />
-            <Text style={styles.buttonText}>WhatsApp</Text>
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
           </TouchableOpacity>
 
           {/* Botão Horários de Funcionamento */}
@@ -341,26 +248,16 @@ export default function Home() {
             <Text style={styles.buttonText}>Horários de Funcionamento</Text>
           </TouchableOpacity>
         </View>
-<<<<<<< HEAD
 
         <Text style={styles.addressText}>Endereço: Rua das Pizzas, 123</Text>
       </ImageBackground>
 
       {/*-------------------- Main -----------------------*/}
-=======
-          
-        {/* Endereço */}
-        <Text style={styles.addressText}>Endereço: Rua das Pizzas, 123</Text>
-      </ImageBackground>
-
-      {/* Main */}
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
       <View style={styles.ContainerCarousel}>
         <Text style={styles.textoTituloPromocoes}>PROMOÇÕES</Text>
         <PromoCarousel />
       </View>
 
-<<<<<<< HEAD
       {/* Barra de Pesquisa */}
       <View
         style={{
@@ -387,8 +284,6 @@ export default function Home() {
       </View>
 
 
-=======
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
       {/* Produtos */}
       <FlatList
         showsVerticalScrollIndicator={false}
@@ -398,7 +293,6 @@ export default function Home() {
         renderItem={({ item }) => <Card foodsData={item} />}
       />
 
-<<<<<<< HEAD
 
 
       {/* Modal de Seleção de Adicionais */}
@@ -406,14 +300,8 @@ export default function Home() {
 
 
       {/* Modal referente ao Horarios de Funcionamento */}
-=======
-      {/* Modal referente aos Horários de Funcionamento */}
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
       <ModalExibir />
     </ScrollView>
   );
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8

@@ -1,11 +1,4 @@
 {
-<<<<<<< HEAD
   "compilerOptions": {},
   "extends": "expo/tsconfig.base"
-=======
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true
-  }
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 }

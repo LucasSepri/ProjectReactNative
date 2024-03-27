@@ -8,11 +8,7 @@ const cardWidth = width / 2 - 20;
 
 const styles = StyleSheet.create({
 
-<<<<<<< HEAD
     /*************  HEADER SCREEN  ***************a*/
-=======
-    /*************  HEADER SCREEN  ****************/
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
     // Header
     header: {
         flex: 1,
@@ -134,7 +130,6 @@ const styles = StyleSheet.create({
         color: 'white',
     },
 
-<<<<<<< HEAD
 
 
 
@@ -185,8 +180,6 @@ const styles = StyleSheet.create({
     },
 
 
-=======
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
     //CARDS
     card: {
         width: cardWidth,
@@ -204,15 +197,10 @@ const styles = StyleSheet.create({
         marginVertical: 30,
     },
     cardImage: {
-<<<<<<< HEAD
         width: 150,
         height: 150,
         borderRadius: 8,
         marginBottom: 8,
-=======
-        height: 120,
-        width: 120,
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
     },
     cardContent: {
         marginHorizontal: 20,
@@ -238,7 +226,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-<<<<<<< HEAD
 
     favoritoButtonContainer: {
         backgroundColor: COLORS.primary,
@@ -294,18 +281,4 @@ const styles = StyleSheet.create({
 
 
 
-=======
-    addToCartBtn: {
-        marginLeft: 10,
-        height: 40,
-        width: 40,
-        borderRadius: 100,
-        backgroundColor: COLORS.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-});
-
->>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 export default styles;
