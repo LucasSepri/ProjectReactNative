@@ -8,7 +8,11 @@ const cardWidth = width / 2 - 20;
 
 const styles = StyleSheet.create({
 
+<<<<<<< HEAD
+    /*************  HEADER SCREEN  ***************a*/
+=======
     /*************  HEADER SCREEN  ****************/
+>>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
     // Header
     header: {
         flex: 1,
@@ -130,6 +134,59 @@ const styles = StyleSheet.create({
         color: 'white',
     },
 
+<<<<<<< HEAD
+
+
+
+    // PESQUISA
+
+    inputContainer: {
+        flex: 1,
+        height: 50,
+        borderRadius: 10,
+        flexDirection: 'row',
+        backgroundColor: COLORS.white,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    sortBtn: {
+        width: 50,
+        height: 50,
+        marginLeft: 10,
+        backgroundColor: COLORS.primary,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+
+    //CATEGORIAS
+    categoriesListContainer: {
+        paddingVertical: 30,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    categoryBtn: {
+        height: 45,
+        width: 120,
+        marginRight: 7,
+        borderRadius: 30,
+        alignItems: 'center',
+        paddingHorizontal: 5,
+        flexDirection: 'row',
+    },
+    categoryBtnImgCon: {
+        height: 35,
+        width: 35,
+        backgroundColor: COLORS.white,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+
+=======
+>>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
     //CARDS
     card: {
         width: cardWidth,
@@ -147,8 +204,15 @@ const styles = StyleSheet.create({
         marginVertical: 30,
     },
     cardImage: {
+<<<<<<< HEAD
+        width: 150,
+        height: 150,
+        borderRadius: 8,
+        marginBottom: 8,
+=======
         height: 120,
         width: 120,
+>>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
     },
     cardContent: {
         marginHorizontal: 20,
@@ -174,6 +238,63 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
+<<<<<<< HEAD
+
+    favoritoButtonContainer: {
+        backgroundColor: COLORS.primary,
+        borderRadius: 24, // ou o valor que preferir
+        padding: 8,
+    },
+    favoritoButton: {
+        position: 'absolute',
+        top: 5,
+        left: 5,
+        zIndex: 1,
+    },
+    bottomContainer: {
+        flex: 1,
+        justifyContent: 'center',  // Centraliza verticalmente
+        alignItems: 'center',      // Centraliza horizontalmente
+    },
+    adicionarButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 8,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        elevation: 3,
+    },
+    adicionarIcon: {
+        marginRight: 8,
+    },
+    adicionarButtonText: {
+        color: 'blue',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+
+
+
+
+    // Estilos para o Modal
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalTitulo: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        color: 'white',
+    },
+});
+
+
+
+=======
     addToCartBtn: {
         marginLeft: 10,
         height: 40,
@@ -186,4 +307,5 @@ const styles = StyleSheet.create({
 
 });
 
+>>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 export default styles;

@@ -1,4 +1,39 @@
 const COLORS = {
+<<<<<<< HEAD
+  primary: '#FF6C44',
+  secondary: '#FFD633',
+  white: '#FFFFFF',
+  black: '#000000',
+
+  
+  dark: '#1d1d2e',
+  dark2: '#101026',
+  lightGrey: '#F0F0F0',
+  
+  grey: '#9A9A9A',
+  darkGrey: '#4A4A4A',
+  red: '#FF0000',
+  green: '#39bd05',
+  blue: '#0000FF',
+  yellow: '#FFFF00',
+  orange: '#FFA500',
+  purple: '#800080',
+  pink: '#FFC0CB',
+  brown: '#A52A2A',
+  cyan: '#00FFFF',
+  lime: '#00FF00',
+  teal: '#008080',
+  indigo: '#4B0082',
+  violet: '#8A2BE2',
+  navy: '#000080',
+  maroon: '#800000',
+  olive: '#808000',
+  magenta: '#FF00FF',
+  gold: '#FFD700',
+  silver: '#C0C0C0',
+  bronze: '#CD7F32',
+  transparent: 'transparent',
+=======
     primary: '#FF6C44',
     secondary: '#FFD633',
     white: '#FFFFFF',
@@ -32,6 +67,7 @@ const COLORS = {
     silver: '#C0C0C0',
     bronze: '#CD7F32',
     transparent: 'transparent',
+>>>>>>> d1a297fc9f8517b4c00f95c014f4289073d843c8
 };
 
 export default COLORS;
