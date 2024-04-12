@@ -13,6 +13,7 @@ export default function StackRoutes() {
         screenOptions={{
             headerShown:false,        
         }}
+        // initialRouteName="Home"
         >
             <Stack.Screen
                  name="Slider"
@@ -31,6 +32,7 @@ export default function StackRoutes() {
                  name="Home"
                  component={TabRouter}
             />
+            
         </Stack.Navigator>
     );
 }

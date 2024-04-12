@@ -1,10 +1,8 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import COLORS from '../../styles/COLORS';
 
-
 const { width } = Dimensions.get('screen');
 const cardWidth = width / 2 - 20;
-
 
 const styles = StyleSheet.create({
 
@@ -25,14 +23,20 @@ const styles = StyleSheet.create({
         width: 200,
         borderRadius: 100,
     },
-    addressText: {
-        color: '#fff',
-        fontSize: 18,
-        marginBottom: 10,
+    addressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
         backgroundColor: COLORS.dark,
-        padding: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
     },
+    addressText: {
+        color: '#fff',
+        fontSize: 16,
+        marginLeft: 10,
+    },
+
     buttonContainer: {
         flexDirection: 'row',
         marginBottom: 10,
@@ -42,16 +46,16 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 10,
         paddingHorizontal: 30,
-        backgroundColor: COLORS.green, // Cor do botão do WhatsApp
+        backgroundColor: COLORS.green,
         borderRadius: 5,
-        marginRight: 10, // Espaçamento entre os botões (opcional)
+        marginRight: 10,
     },
     button: {
         alignItems: 'center',
         flexDirection: 'row',
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: COLORS.dark, // Cor do botão Horário
+        backgroundColor: COLORS.dark,
         borderRadius: 5,
     },
     buttonText: {
@@ -59,7 +63,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
     },
-
 
     // Estilos para o modal Horarios
     centeredView: {
@@ -99,98 +102,62 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
 
-
     /*************  MAIN SCREEN  ****************/
 
-    //CARROSSEL
-    ContainerCarousel: {
+    // Categorias
+    categoriesListContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
         paddingVertical: 20,
     },
-    textoTituloPromocoes: {
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: 'bold'
-    },
-    carouselItem: {
-        marginTop: 20,
-        borderRadius: 8,
-        overflow: 'hidden',
-    },
-    carouselImage: {
-        width: '100%',
-        height: 150,
-        resizeMode: 'cover',
-    },
-    carouselTitle: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        padding: 10,
-        backgroundColor: COLORS.primary,
-        color: 'white',
-    },
 
-
-
-
-    // PESQUISA
-
-    inputContainer: {
-        flex: 1,
-        height: 50,
-        borderRadius: 10,
-        flexDirection: 'row',
-        backgroundColor: COLORS.white,
+    categoryContainer: {
         alignItems: 'center',
-        paddingHorizontal: 20,
+        paddingVertical: 10,
     },
-    sortBtn: {
-        width: 50,
-        height: 50,
+    categoryButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.secondary,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 20,
+        marginHorizontal: 5,
+    },
+    selectedCategoryButton: {
+        backgroundColor: COLORS.primary,
+    },
+    categoryButtonText: {
+        color: '#FFF',
         marginLeft: 10,
-        backgroundColor: COLORS.primary,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-
-    //CATEGORIAS
-    categoriesListContainer: {
-        paddingVertical: 30,
-        alignItems: 'center',
-        paddingHorizontal: 20,
-    },
-    categoryBtn: {
-        height: 45,
-        width: 120,
-        marginRight: 7,
-        borderRadius: 30,
-        alignItems: 'center',
-        paddingHorizontal: 5,
-        flexDirection: 'row',
-    },
-    categoryBtnImgCon: {
-        height: 35,
-        width: 35,
-        backgroundColor: COLORS.white,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 
 
     //CARDS
+    containerProdutos: {
+        width: '95%',
+        marginHorizontal: 10,
+        borderRadius: 15,
+        alignItems: 'center',
+        marginBottom: 100,
+        // borderColor: COLORS.primary,
+        // borderWidth: 1,
+    },
+    TextContainerProdutos: {
+        width: '100%',
+        textAlign: 'center',
+        fontSize: 34,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
     card: {
+        backgroundColor: COLORS.white,
+        elevation: 13,
         width: cardWidth,
         marginHorizontal: 5,
         marginBottom: 10,
-        // marginTop: 50,
         borderRadius: 15,
-        elevation: 13,
-        backgroundColor: COLORS.white,
         paddingBottom: 30,
-        alignItems: 'center',  // Centraliza horizontalmente
     },
     cardImageContainer: {
         alignItems: 'center',
@@ -204,7 +171,7 @@ const styles = StyleSheet.create({
     },
     cardContent: {
         marginHorizontal: 20,
-        alignItems: 'center',  // Centraliza horizontalmente
+        alignItems: 'center',
     },
     cardTitle: {
         fontSize: 18,
@@ -220,16 +187,15 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',  // Centraliza horizontalmente
+        alignItems: 'center',
     },
     cardPrice: {
         fontSize: 18,
         fontWeight: 'bold',
     },
-
     favoritoButtonContainer: {
         backgroundColor: COLORS.primary,
-        borderRadius: 24, // ou o valor que preferir
+        borderRadius: 24,
         padding: 8,
     },
     favoritoButton: {
@@ -240,8 +206,8 @@ const styles = StyleSheet.create({
     },
     bottomContainer: {
         flex: 1,
-        justifyContent: 'center',  // Centraliza verticalmente
-        alignItems: 'center',      // Centraliza horizontalmente
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     adicionarButton: {
         flexDirection: 'row',
@@ -264,21 +230,8 @@ const styles = StyleSheet.create({
 
 
 
-    // Estilos para o Modal
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalTitulo: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        color: 'white',
-    },
+
+
 });
-
-
 
 export default styles;

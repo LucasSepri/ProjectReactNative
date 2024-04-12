@@ -8,172 +8,106 @@ import {
   TouchableOpacity,
   Linking,
   Modal,
-  Dimensions,
   FlatList,
-  TextInput,
-  Button
-
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Carousel from 'react-native-snap-carousel';
 
-// Importe de Estilos
+// Componentes
+import PromoCarousel from '../../components/Carousel/index';
+import BotaoFechar from '../../components/BotaoFechar/index';
+import BotaoAdicionar from '../../components/BotaoAdicionar/index';
+// Estilo
 import styles from './style';
 import COLORS from '../../styles/COLORS';
-
-
-// impotes de Dados
-import promoData from '../../context/promoData';
-import foodsData from '../../context/foods';
-import categories from '../../context/categories';
-
-
-const { width } = Dimensions.get('screen');
-const cardWidth = width / 2 - 20;
+// Context
+import foods from '../../context/foods';
 
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalPeididoVisible, setModalPeididoVisible] = useState(false);
 
-  const handlePhoneNumberPress = () => {
-    const phoneNumber = '123456789'; // Coloque o número de telefone desejado aqui
-    Linking.openURL(`tel:${phoneNumber}`);
+  const openWhatsApp = async () => {
+    const phoneNumber = '123456789'; // Número de telefone da pizzaria
+    const url = `whatsapp://send?phone=${phoneNumber}`;
+
+    // Verifica se o WhatsApp está disponível no dispositivo
+    const canOpen = await Linking.canOpenURL(url);
+
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      // Se o WhatsApp não estiver disponível, abre a Play Store para baixar
+      const storeUrl = Platform.select({
+        ios: 'https://apps.apple.com/br/app/whatsapp-messenger/id310633997',
+        android: 'https://play.google.com/store/apps/details?id=com.whatsapp',
+      });
+
+      Linking.openURL(storeUrl);
+    }
   };
 
   const showOpeningHours = () => {
     setModalVisible(true);
   };
 
-
-
-  //Modal Horarios 
   const ModalExibir = () => {
     return (
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
-        }
-        }
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Horário de Funcionamento:</Text>
-            <Text>Segunda: 21:00 - 23:30</Text>
-            <Text>Terça: 21:00 - 23:30</Text>
-            <Text>Quarta: 21:00 - 23:30</Text>
-            <Text>Quinta: 21:00 - 23:30</Text>
-            <Text>Sexta: 21:00 - 23:30</Text>
-            <Text>Sábado: 21:00 - 23:30</Text>
-            <TouchableOpacity
-              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-              }}
-            >
-              <Text style={styles.textStyle}>Fechar</Text>
-            </TouchableOpacity>
+            <Text>Segunda a Sábado: 21:00 - 23:30</Text>
+
+            <BotaoFechar setModalVisible={setModalVisible} modalVisible={modalVisible} />
           </View>
         </View>
-      </Modal >
-    );
-  };
-  // Carrocel 
-  const PromoCarousel = () => {
-    const renderPromoItem = ({ item }) => (
-      <View style={styles.carouselItem}>
-        <Image source={item.image} style={styles.carouselImage} />
-        <Text style={styles.carouselTitle}>{item.title}</Text>
-      </View>
-    );
-    return (
-      <Carousel
-        data={promoData}
-        renderItem={renderPromoItem}
-        sliderWidth={width}
-        itemWidth={300}
-        autoplay
-        loop
-      />
+      </Modal>
     );
   };
 
+  const openGoogleMaps = () => {
+    const address = 'Rua das Pizzas, 123'; // Endereço da pizzaria
+    const url = Platform.select({
+      ios: `maps://app?daddr=${address}`,
+      android: `geo:0,0?q=${address}`,
+    });
 
-  // Categorias
-  const [selectedCategoryIndex, setSelectedCategoryIndex] = React.useState(0);
-  const ListCategories = () => {
-    return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesListContainer}>
-        {categories.map((category, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={0.8}
-            onPress={() => setSelectedCategoryIndex(index)}>
-            <View
-              style={{
-                backgroundColor:
-                  selectedCategoryIndex == index
-                    ? COLORS.primary
-                    : COLORS.secondary,
-                ...styles.categoryBtn,
-              }}>
-              <View style={styles.categoryBtnImgCon}>
-                <Image
-                  source={category.image}
-                  style={{ height: 35, width: 35, resizeMode: 'cover' }}
-                />
-              </View>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: 'bold',
-                  marginLeft: 10,
-                  color:
-                    selectedCategoryIndex == index
-                      ? COLORS.white
-                      : COLORS.primary,
-                }}>
-                {category.name}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    );
+    Linking.openURL(url).catch(() => {
+      // Caso ocorra um erro ao abrir o Google Maps, abrir a loja de aplicativos
+      const storeUrl = Platform.select({
+        ios: 'https://apps.apple.com/br/app/google-maps-transito-e-restaurante/id585027354',
+        android: 'https://play.google.com/store/apps/details?id=com.google.android.apps.maps',
+      });
+      Linking.openURL(storeUrl);
+    });
   };
 
 
+  const [selectedCategory, setSelectedCategory] = useState('Todos');
 
-  //Modal Horarios 
-  const ModalPeidido = () => {
-    return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalPeididoVisible}
-        onRequestClose={() => {
-          setModalPeididoVisible(false);
-        }
-        }
-      >
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitulo}>Selecione os Adicionais</Text>
-          <Button title="Fechar" onPress={closeAdicionaisModal} />
-        </View>
-      </Modal >
-    );
+  const filterFoodsByCategory = (category) => {
+    setSelectedCategory(category);
   };
 
-  const openAdicionaisModal = () => {
-    setModalPeididoVisible(true);
-  };
-  const closeAdicionaisModal = () => { setModalPeididoVisible(false) };
+  const renderCategoryButton = (category) => (
+    <TouchableOpacity
+      style={[
+        styles.categoryButton,
+        selectedCategory === category ? styles.selectedCategoryButton : null,
+      ]}
+      onPress={() => filterFoodsByCategory(category)}
+    >
+      <Icon name="pizza" size={20} color="#FFF" />
+      <Text style={styles.categoryButtonText}>{category}</Text>
+    </TouchableOpacity>
+  );
 
+  const uniqueCategories = ['Todos', ...new Set(foods.map((food) => food.category))];
 
   const Card = ({ foodsData }) => {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -184,16 +118,11 @@ export default function Home() {
 
     return (
       <View style={styles.card}>
-
-        <TouchableOpacity
-          style={[styles.favoritoButton]}
-          onPress={toggleFavorite}
-        >
+        <TouchableOpacity style={styles.favoritoButton} onPress={toggleFavorite}>
           <View style={styles.favoritoButtonContainer}>
-            <Icon name={isFavorite ? "heart" : "heart-outline"} size={20} color={COLORS.white} />
+            <Icon name={isFavorite ? 'heart' : 'heart-outline'} size={20} color={COLORS.white} />
           </View>
-
-        </TouchableOpacity >
+        </TouchableOpacity>
 
         <View style={styles.cardImageContainer}>
           <Image source={foodsData.image} style={styles.cardImage} />
@@ -207,101 +136,92 @@ export default function Home() {
           </View>
         </View>
 
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.adicionarButton} onPress={openAdicionaisModal}>
-            <Icon name="add-circle-outline" size={32} color="blue" style={styles.adicionarIcon} />
-            <Text style={styles.adicionarButtonText}>Adicionar</Text>
-          </TouchableOpacity>
-        </View>
-      </View >
+        <BotaoAdicionar />
+      </View>
     );
   };
 
-
-  // Rederizar pagina
   return (
-    <ScrollView>
-
-      {/*-------------------- Header -----------------------*/}
-      <ImageBackground
-        source={require('../../assets/background.jpg')}
-        style={styles.header}
-        resizeMode="cover">
-        {/* Logo da pizzaria */}
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/logo.png')}
-            style={styles.logo}
-          />
-        </View>
-
-        {/* Botão Telefone */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonWhatsApp} onPress={handlePhoneNumberPress}>
-            <Icon name="logo-whatsapp" size={20} color="#fff" />
-            <Text style={styles.buttonText}>Telefone</Text>
-          </TouchableOpacity>
-
-          {/* Botão Horários de Funcionamento */}
-          <TouchableOpacity style={styles.button} onPress={showOpeningHours}>
-            <Icon name="time" size={20} color="#fff" />
-            <Text style={styles.buttonText}>Horários de Funcionamento</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.addressText}>Endereço: Rua das Pizzas, 123</Text>
-      </ImageBackground>
-
-      {/*-------------------- Main -----------------------*/}
-      <View style={styles.ContainerCarousel}>
-        <Text style={styles.textoTituloPromocoes}>PROMOÇÕES</Text>
-        <PromoCarousel />
-      </View>
-
-      {/* Barra de Pesquisa */}
-      <View
-        style={{
-          marginTop: 40,
-          flexDirection: 'row',
-          paddingHorizontal: 20,
-        }}>
-        <View style={styles.inputContainer}>
-          <Icon name="search" size={28} />
-          <TextInput
-            style={{ flex: 1, fontSize: 18 }}
-            placeholder="Busque aqui"
-          />
-        </View>
-        <View style={styles.sortBtn}>
-          <Icon name="search" size={28} color={COLORS.white} />
-        </View>
-      </View>
-
-
-      {/* Categorias */}
-      <View>
-        <ListCategories />
-      </View>
-
-
-      {/* Produtos */}
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        numColumns={2}
-        data={foodsData}
-        contentContainerStyle={{ alignItems: 'center' }}
-        renderItem={({ item }) => <Card foodsData={item} />}
-      />
-
-
-
-      {/* Modal de Seleção de Adicionais */}
-      <ModalPeidido />
-
-
-      {/* Modal referente ao Horarios de Funcionamento */}
-      <ModalExibir />
-    </ScrollView>
+    <FlatList
+      showsVerticalScrollIndicator={true}
+      data={[
+        { key: 'header', type: 'header' },
+        { key: 'promo', type: 'promo' },
+        { key: 'categories', type: 'categories' },
+        { key: 'products', type: 'products', data: foods },
+        { key: 'modalExibir', type: 'modalExibir' },
+      ]}
+      renderItem={({ item }) => {
+        switch (item.type) {
+          case 'header':
+            return (
+              <ImageBackground
+                source={require('../../assets/background.jpg')}
+                style={styles.header}
+                resizeMode="cover"
+              >
+                <View style={styles.logoContainer}>
+                  <Image
+                    source={require('../../assets/logo.png')}
+                    style={styles.logo}
+                  />
+                </View>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.buttonWhatsApp} onPress={openWhatsApp}>
+                    <Icon name="logo-whatsapp" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Telefone</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={showOpeningHours}>
+                    <Icon name="time" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Horários</Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity style={styles.addressContainer} onPress={openGoogleMaps}>
+                  <Icon name="map" size={20} color="#fff" />
+                  <Text style={styles.addressText}>Endereço: Rua das Pizzas, 123</Text>
+                </TouchableOpacity>
+              </ImageBackground>
+            );
+          case 'promo':
+            return <PromoCarousel />;
+          case 'categories':
+            return (
+              <View>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.categoriesListContainer}
+                >
+                  {uniqueCategories.map((category, index) => (
+                    <View key={index}>{renderCategoryButton(category)}</View>
+                  ))}
+                </ScrollView>
+              </View>
+            );
+          case 'products':
+            return (
+              <View style={styles.containerProdutos}>
+                <Text style={styles.TextContainerProdutos}>Cardápio</Text>
+                <FlatList
+                  showsVerticalScrollIndicator={false}
+                  numColumns={2}
+                  data={
+                    selectedCategory === 'Todos'
+                      ? item.data
+                      : item.data.filter((food) => food.category === selectedCategory)
+                  }
+                  renderItem={({ item }) => <Card foodsData={item} />}
+                  contentContainerStyle={{ alignItems: 'center' }}
+                />
+              </View>
+            );
+          case 'modalExibir':
+            return <ModalExibir />;
+          default:
+            return null;
+        }
+      }}
+      keyExtractor={(item) => item.key}
+    />
   );
 }
-
