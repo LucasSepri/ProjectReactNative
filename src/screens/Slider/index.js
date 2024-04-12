@@ -1,35 +1,36 @@
 import React from 'react';
 import { StyleSheet, View, Image, Text, TouchableOpacity } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
+import  COLORS  from '../../styles/COLORS';
 
 const slides = [
   {
     key: 1,
-    title: 'Delicious Cheese Pizza',
-    text: 'Explore the richness of our classic cheese pizza, made with the finest ingredients.',
+    title: 'Pizza de Queijo Deliciosa',
+    text: 'Explore a riqueza da nossa clássica pizza de queijo, feita com os melhores ingredientes.',
     image: require('../../assets/catergories/meatPizza.png'),
-    backgroundColor: '#ffcc00',
+    backgroundColor: ['#ffcc00', '#ff9900'],
   },
   {
     key: 2,
-    title: 'Fast Delivery',
-    text: 'Get your favorite pizza delivered hot and fresh to your doorstep in no time.',
+    title: 'Entrega Rápida',
+    text: 'Receba sua pizza favorita entregue quente e fresca na sua porta em pouco tempo.',
     image: require('../../assets/catergories/sushiMakizushi.png'),
-    backgroundColor: '#ff9900',
+    backgroundColor: ['#ff9900', '#ff6600'],
   },
   {
     key: 3,
-    title: 'Special Offers',
-    text: 'Don\'t miss out on exclusive deals and discounts. Order now and save!',
+    title: 'Ofertas Especiais',
+    text: 'Não perca ofertas exclusivas e descontos. Peça agora e economize!',
     image: require('../../assets/catergories/cheesePizza.png'),
-    backgroundColor: '#ff6600',
+    backgroundColor: [COLORS.primary, '#ffcc00'],
   },
 ];
 
 export default function Slider({ navigation }) {
   const renderSlides = ({ item, index }) => {
     return (
-      <View style={styles.slideContainer}>
+      <View style={[styles.slideContainer, { backgroundColor: item.backgroundColor[0] }]}>
         <Image
           source={item.image}
           style={styles.slideImage}
@@ -60,7 +61,10 @@ export default function Slider({ navigation }) {
         renderItem={renderSlides}
         data={slides}
         activeDotStyle={styles.activeDot}
+        dotStyle={styles.dot}
         onDone={() => { navigation.navigate('Home') }}
+        doneLabel="Concluído"
+        nextLabel="Próximo"
       />
     </View>
   );
@@ -73,38 +77,47 @@ const styles = StyleSheet.create({
   slideContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white', // Change this to your background color
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+    paddingBottom: 60,
+    // borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   slideImage: {
-    resizeMode: 'cover',
-    height: 400,
-    width: 400,
-    marginBottom: 20,
+    resizeMode: 'contain',
+    height: 300,
+    width: '80%',
   },
   textContainer: {
     alignItems: 'center',
-    marginBottom: 20,
   },
   title: {
-    fontSize: 23,
+    fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
+    color: '#fff',
   },
   description: {
     fontSize: 18,
     textAlign: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 20,
+    color: '#fff',
   },
   buttonContainer: {
     alignItems: 'center',
   },
   signUpButton: {
     backgroundColor: '#ee8238',
-    padding: 15,
-    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 30,
     marginBottom: 10,
   },
   buttonText: {
@@ -112,15 +125,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  skipLink: {
-    marginBottom: 20,
-  },
+  skipLink: {},
   linkText: {
-    color: '#007BFF', // Change this to your preferred link color
+    color: '#fff',
     fontSize: 16,
   },
   activeDot: {
-    backgroundColor: '#ffcc00',
+    backgroundColor: '#fff',
     width: 30,
+  },
+  dot: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    width: 20,
   },
 });

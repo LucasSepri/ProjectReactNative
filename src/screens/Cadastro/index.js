@@ -8,10 +8,6 @@ const RegistrationForm = ({navigation}) => {
   const { control, handleSubmit, setError, formState: { errors } } = useForm();
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const onSubmit = (data) => {
-    // Lógica de registro aqui
-    console.log(data);
-  };
 
   const pickImage = async () => {
     try {
@@ -144,7 +140,7 @@ const RegistrationForm = ({navigation}) => {
       />
       {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
 
-      <Button title="Cadastrar" onPress={handleSubmit(onSubmit)} />
+      <Button title="Cadastrar" onPress={goToLogin} />
 
       <TouchableOpacity onPress={goToLogin}>
         <Text style={styles.link}>Já tem cadastro? Faça login</Text>
