@@ -4,15 +4,15 @@ import {COLORS} from '../../styles/COLORS';
 const styles = StyleSheet.create({
     //CARROSSEL
     ContainerCarousel: {
-        paddingVertical: 10,
+        marginVertical: 10,
     },
     textoTituloPromocoes: {
         textAlign: 'center',
         fontSize: 22,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     carouselItem: {
-        marginTop: 20,
         borderRadius: 8,
         overflow: 'hidden',
     },

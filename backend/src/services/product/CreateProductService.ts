@@ -16,7 +16,7 @@ class CreateProductService {
           name: name,
           price: price,
           description: description,
-          banner: banner,
+          banner: banner.split(process.env.FTP === 'true' ? "/" : "\\" ).pop(),
           category_id: category_id,
       }
   });

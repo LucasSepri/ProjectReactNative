@@ -10,6 +10,7 @@ class DetailUserService {
                 id: true,
                 name: true,
                 email: true,
+                profileImage: true
             }
 
         });

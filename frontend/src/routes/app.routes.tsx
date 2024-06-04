@@ -2,17 +2,20 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 
-import Dashboard from "../screens/Dashboard";
 import Order from "../screens/Order";
 import FinishOrder from "../screens/FinishOrder";
 import Perfil from "../screens/Perfil";
 import SignIn from "../screens/SignIn";
 import Qrcode from "../screens/Qrcode";
 import SignUp from "../screens/SignUp";
+import Home from "../screens/Home";
+
+import TabRouter from "./tab.routes";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
-    Dashboard: undefined;
+    TabRouter: undefined;
+    Home: undefined;
     Perfil: undefined;
     Order: {
         number: number | string;
@@ -34,8 +37,8 @@ function AppRoutes() {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Dashboard"
-                component={Dashboard}
+                name="TabRouter"
+                component={TabRouter}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

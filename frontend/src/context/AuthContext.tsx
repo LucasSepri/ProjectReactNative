@@ -1,7 +1,5 @@
-import React, { useState, createContext, ReactNode, useEffect } from 'react';
-
+import React, { useState, ReactNode, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { api } from "../services/api";
 
 type AuthContextData = {
@@ -18,6 +16,8 @@ type UserProps = {
     name: string;
     email: string;
     token: string;
+    isAdmin: boolean;
+    profileImage: string; // Adicionar a propriedade profileImage
 }
 
 type AuthProviderProps = {
@@ -29,7 +29,6 @@ type SignInProps = {
     password: string;
 }
 
-
 export const AuthContext = React.createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -37,7 +36,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: '',
         name: '',
         email: '',
-        token: ''
+        token: '',
+        isAdmin: null,
+        profileImage: '', // Inicializar a propriedade profileImage
     });
 
     const [loadingAuth, setLoadingAuth] = useState(false);
@@ -47,11 +48,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     useEffect(() => {
         async function getUser() {
-            //Pegar os dados do usuário no storage
+            // Pegar os dados do usuário no storage
             const userInfo = await AsyncStorage.getItem('@token');
             let hasUser: UserProps = JSON.parse(userInfo || '{}');
 
-            //Verificar se recebemos as informações
+            // Verificar se recebemos as informações
             if (Object.keys(hasUser).length > 0) {
                 api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
                 setUser(hasUser);
@@ -71,12 +72,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 password
             });
 
-            //console.log(response.data);
-
-            const { id, name, token } = response.data;
+            const { id, name, token, isAdmin, profileImage } = response.data;
 
             const data = {
-                ...response.data,
+                id,
+                name,
+                email,
+                token,
+                isAdmin,
+                profileImage, // Incluir a URL da imagem de perfil
             }
 
             await AsyncStorage.setItem('@token', JSON.stringify(data));
@@ -87,7 +91,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 id,
                 name,
                 email,
-                token
+                token,
+                isAdmin,
+                profileImage, // Incluir a URL da imagem de perfil
             });
 
             setLoadingAuth(false);
@@ -105,11 +111,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     id: '',
                     name: '',
                     email: '',
-                    token: ''
+                    token: '',
+                    isAdmin: null,
+                    profileImage: '', // Limpar a URL da imagem de perfil
                 });
-            })
+            });
     }
-
 
     return (
         <AuthContext.Provider

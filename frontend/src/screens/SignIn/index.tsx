@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
     View,
     Text,
@@ -17,7 +17,7 @@ import { COLORS } from '../../styles/COLORS';
 
 export default function SignIn() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
-    const { signIn, loadingAuth } = useContext(AuthContext);
+    const { signIn, loadingAuth, user,isAuthenticated } = useContext(AuthContext);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,14 +25,22 @@ export default function SignIn() {
     async function handleLogin() {
         if (email === '' || password === '') {
             return;
+        } else {
+            await signIn({ email, password });
         }
-        await signIn({ email, password });
-        
-        navigation.navigate('Dashboard');
     }
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            if (user.isAdmin == false) {
+                navigation.navigate('Home');
+            } 
+        }
+    }, [isAuthenticated, user, navigation]);
+
+    
     function navigateToSignUp() {
-        navigation.navigate('SignUp'); // Substitua 'SignUp' pelo nome correto da rota de cadastro
+        navigation.navigate('SignUp'); // Navega para a tela de SignUp
     }
 
     return (
@@ -48,6 +56,7 @@ export default function SignIn() {
                     style={styles.input}
                     placeholderTextColor={'#F0F0F0'}
                     value={email}
+                    autoCapitalize='none'
                     onChangeText={setEmail}
                 />
                 <TextInput
@@ -56,6 +65,7 @@ export default function SignIn() {
                     placeholderTextColor={'#F0F0F0'}
                     secureTextEntry={true}
                     value={password}
+                    autoCapitalize='none'
                     onChangeText={setPassword}
                 />
 
