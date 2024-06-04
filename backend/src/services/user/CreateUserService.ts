@@ -5,16 +5,17 @@ interface UserRequest {
     name: string;
     email: string;
     password: string;
+    profileImage?: string;
 }
 
 class CreateUserService {
-    async execute({ name, email, password }: UserRequest) {
+    async execute({ name, email, password, profileImage }: UserRequest) {
 
-        //Verificar se ele enviou um email
+        // Verificar se ele enviou um email
         if (!email) {
             throw new Error("Email Incorreto");
         }
-        //Verificar se esse email já está cadastrado na plataforma
+        // Verificar se esse email já está cadastrado na plataforma
         const userAlreadyExists = await prismaClient.user.findFirst({
             where: {
                 email: email,
@@ -31,12 +32,15 @@ class CreateUserService {
             data: {
                 name: name,
                 email: email,
-                password: passwordHash
+                password: passwordHash,
+                // profileImage: profileImage.split(process.env.FTP === 'true' ? "\\" : "/").pop() || null 
+                profileImage: profileImage.split(process.env.FTP === 'true' ? "/" : "\\" ).pop() || null 
             },
             select: {
                 id: true,
                 name: true,
                 email: true,
+                profileImage: true,
             }
         });
 

@@ -1,18 +1,21 @@
-import { StatusBar } from "react-native";
+import { SafeAreaView, StatusBar } from "react-native";
 
 
 import { NavigationContainer } from "@react-navigation/native";
 import Routes from "./src/routes";
 
 import { AuthProvider } from "./src/context/AuthContext";
+import { COLORS } from "./src/styles/COLORS";
 
 export default function App() {
     return (
-        <NavigationContainer>
-            <StatusBar barStyle="light-content" backgroundColor="#1d1d2e"/>
-            <AuthProvider>
-                <Routes />
-            </AuthProvider>
-        </NavigationContainer>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.black }}>
+            <NavigationContainer>
+                <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
+                <AuthProvider>
+                    <Routes />
+                </AuthProvider>
+            </NavigationContainer>
+        </SafeAreaView>
     );
 }

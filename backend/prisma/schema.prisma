@@ -14,18 +14,21 @@ datasource db {
 }
 
 //criar uma migration: yarn prisma migrate dev 
-model User{
-  id        String      @id @default(uuid())
-  name      String
-  email     String   
-  password  String
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  isAdmin    Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  profileImage String? // Campo para armazenar a URL da imagem de perfil
 
   @@map("users")
 }
 
-model Category{
+
+model Category {
   id        String      @id @default(uuid())
   name      String
   created_at DateTime? @default(now())
@@ -35,7 +38,7 @@ model Category{
   products Product[]
 } 
 
-model Product{
+model Product {
   id          String      @id @default(uuid())
   name        String
   price       String
@@ -51,12 +54,13 @@ model Product{
   items Item[]
 }
 
-model Order{
+model Order {
   id          String      @id @default(uuid())
-  table       Int
+  table       Int? // Campo opcional para a mesa
+  address     String? // Novo campo opcional para o endereço
   status      Boolean @default(false)
   draft       Boolean @default(true)
-  name        String?// ? = opcional
+  name        String? // ? = opcional
 
   created_at  DateTime? @default(now())
   updated_at  DateTime? @default(now())
@@ -65,7 +69,7 @@ model Order{
   items Item[]
 }
 
-model Item{
+model Item {
   id          String      @id @default(uuid())
   amount      Int
 

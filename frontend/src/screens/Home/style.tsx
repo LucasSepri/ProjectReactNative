@@ -1,0 +1,236 @@
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../styles/COLORS';
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.white,
+    },
+
+    headerImagemDeFundo: {
+        flex: 1,
+    },
+    // Login/Informações do usuário
+    perfil: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    botaoPerfil: {
+        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    perfilFoto: {
+        width: 40,
+        height: 40,
+        borderRadius: 25,
+    },
+    textoNomePerfil: {
+        color: COLORS.white,
+        fontSize: 18,
+        marginLeft: 10,
+    },
+
+    botaoIcone: {
+        padding: 10,
+        borderRadius: 10,
+    },
+    icone: {
+        color: COLORS.white,
+        fontSize: 32,
+    },
+    // Header app
+    logoContainer: {
+        alignItems: 'center',
+        paddingBottom: 10,
+    },
+    logo: {
+        height: 200,
+        width: 200,
+        borderRadius: 100,
+    },
+    buttonContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        marginBottom: 10,
+    },
+    buttonWhatsApp: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 30,
+        backgroundColor: COLORS.green,
+        borderRadius: 5,
+        marginRight: 10,
+    },
+    buttonHorario: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: COLORS.primary,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: '#fff',
+        marginLeft: 5
+    },
+    addressContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+        borderRadius: 5,
+    },
+    buttonAddressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        backgroundColor: COLORS.dark,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    addressText: {
+        color: '#fff',
+        fontSize: 16,
+        marginLeft: 10,
+    },
+
+
+    /*************  MAIN SCREEN  ****************/
+    // Container produtos
+    tituloContainerProdutos: {
+        textAlign: 'center',
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginTop: 20,
+    },
+
+    // Categorias
+    categoriasContainer: {
+        paddingVertical: 5,
+    },
+    categoriesListContainer: {
+        paddingVertical: 8,
+        paddingHorizontal: 10,
+    },
+
+    categoryButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.secondary,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 20,
+        marginHorizontal: 5,
+    },
+    selectedCategoryButton: {
+        backgroundColor: COLORS.primary,
+    },
+    categoryButtonText: {
+        color: COLORS.white,
+        fontWeight: 'bold',
+        marginLeft: 10,
+    },
+    iconeCategorias: {
+        color: COLORS.white,
+        fontSize: 20,
+    },
+
+    // Produtos
+    foodListContainer:{
+        padding: 10,
+        marginBottom: 80,
+    },
+    foodItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 16,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+    imageContainer: {
+        marginRight: 16,
+    },
+    image: {
+        width: 120,
+        height: 120,
+        borderRadius: 12,
+        backgroundColor: COLORS.dark,
+        resizeMode: 'cover',
+    },
+    infoContainer: {
+        flex: 1,
+    },
+    name: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    description: {
+        fontSize: 16,
+        marginBottom: 8,
+        opacity: 0.8,
+    },
+    ingredients: {
+        fontSize: 14,
+        marginBottom: 8,
+        opacity: 0.6,
+    },
+    price: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'right',
+    },
+
+    loadingContainer: {
+        height: 150,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
+
+export default styles;

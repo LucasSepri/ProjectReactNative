@@ -3,12 +3,12 @@ import {
     View,
     Text,
     TouchableOpacity,
-    StyleSheet,
     TextInput,
     Modal,
     FlatList,
 
 } from "react-native";
+import { styles } from "./style";
 
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 
@@ -92,7 +92,7 @@ export default function Order() {
                     order_id: route.params?.order_id,
                 }
             });
-            navigation.navigate('Dashboard');
+            navigation.navigate('Home');
         } catch (err) {
             console.log(err);
         }
@@ -238,73 +238,3 @@ export default function Order() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#1d1d2e",
-        paddingVertical: '5%',
-        paddingEnd: '4%',
-        paddingStart: '4%',
-    },
-    header: {
-        flexDirection: "row",
-        marginBottom: 12,
-        alignItems: "center",
-        marginTop: 24,
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: "bold",
-        color: "#FFF",
-        marginRight: 14,
-    },
-    input: {
-        backgroundColor: "#101026",
-        borderRadius: 4,
-        width: '100%',
-        height: 40,
-        marginBottom: 12,
-        justifyContent: 'center',
-        paddingHorizontal: 8,
-        color: "#FFF",
-        fontSize: 22,
-    },
-    qtdContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-    qtdText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#FFF",
-        marginBottom: 13,
-    },
-    actions: {
-        flexDirection: "row",
-        width: "100%",
-        justifyContent: "space-between",
-    },
-    buttonAdd: {
-        width: '20%',
-        backgroundColor: "#3fd1ff",
-        borderRadius: 4,
-        height: 40,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    buttonText: {
-        color: "#101026",
-        fontSize: 18,
-        fontWeight: "bold",
-    },
-    button: {
-        backgroundColor: "#3fffa3",
-        borderRadius: 4,
-        height: 40,
-        width: '75%',
-        alignItems: "center",
-        justifyContent: "center",
-    },
-
-});

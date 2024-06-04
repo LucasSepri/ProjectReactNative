@@ -6,8 +6,11 @@ import {
     TextInput,
     TouchableOpacity,
     ActivityIndicator,
-    Alert
+    Alert,
+    Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
@@ -22,6 +25,27 @@ export default function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const pickImageAsync = async () => {
+        let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            alert('É necessário conceder permissão para acessar a galeria de imagens.');
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            quality: 1,
+        });
+
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri);
+        } else {
+            alert('Você não selecionou nenhuma imagem.');
+        }
+    };
 
     async function handleSignUp() {
         if (name === '' || email === '' || password === '') {
@@ -30,11 +54,38 @@ export default function SignUp() {
         }
         setLoading(true);
 
+        let formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+
+        if (selectedImage) {
+            const fileInfo = await FileSystem.getInfoAsync(selectedImage);
+            const fileUri = fileInfo.uri;
+            const fileType = 'image/jpeg'; // Ajuste conforme o tipo da imagem
+            const fileName = fileUri.split('/').pop();
+
+            const response = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+            const blob = new Blob([response], { type: fileType });
+
+            formData.append('profileImage', JSON.parse(JSON.stringify({
+                uri: fileUri,
+                name: fileName,
+                type: fileType,
+                blob: blob,
+            })));
+        }
+
         try {
-            const response = await api.post('/users', { name, email, password });
+            const response = await api.post('/users', formData, {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                }
+            });
             await signIn({ email, password });
             Alert.alert("Sucesso", "Conta criada e você está logado!");
-            navigation.navigate('Dashboard');
+            navigation.navigate('Home');
         } catch (error) {
             Alert.alert("Erro", "Erro ao criar conta. Por favor, tente novamente mais tarde.");
         } finally {
@@ -46,11 +97,20 @@ export default function SignUp() {
         <View style={styles.container}>
             <Text style={styles.title}>Cadastro</Text>
 
+            <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
+                {selectedImage ? (
+                    <Image source={{ uri: selectedImage }} style={styles.image} />
+                ) : (
+                    <Text style={styles.uploadText}>Upload sua foto</Text>
+                )}
+            </TouchableOpacity>
+
             <TextInput
                 placeholder='Nome Completo'
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
+
                 placeholderTextColor={'#F0F0F0'}
             />
             <TextInput
@@ -58,6 +118,7 @@ export default function SignUp() {
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
+                autoCapitalize='none'
                 placeholderTextColor={'#F0F0F0'}
             />
             <TextInput
@@ -66,6 +127,7 @@ export default function SignUp() {
                 placeholderTextColor={'#F0F0F0'}
                 secureTextEntry={true}
                 value={password}
+                autoCapitalize='none'
                 onChangeText={setPassword}
             />
 
@@ -94,6 +156,26 @@ const styles = StyleSheet.create({
         color: '#FFF',
         marginBottom: 20,
     },
+    imagePicker: {
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderStyle: 'dashed',
+        borderRadius: 5,
+        width: 150,
+        height: 150,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    uploadText: {
+        color: 'gray',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+        borderRadius: 5,
+    },
     input: {
         width: '100%',
         height: 50,
@@ -106,7 +188,7 @@ const styles = StyleSheet.create({
     button: {
         width: '100%',
         height: 50,
-        backgroundColor: COLORS.primary, 
+        backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 4,

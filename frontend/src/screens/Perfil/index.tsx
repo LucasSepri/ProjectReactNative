@@ -1,54 +1,77 @@
-import React, { useContext } from "react";
-import {
-    View,
-    Text,
-    ImageBackground, 
-    Image, 
-    TouchableOpacity, 
-    ScrollView, 
-    Button
-} from "react-native";
-
+import React, { useContext, useEffect } from "react";
+import { View, Text, ImageBackground, Image, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackParamList } from '../../routes/app.routes';
+import { api } from "../../services/api";
+import { styles } from "./style";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Perfil() {
-    const { user, signOut } = useContext(AuthContext);
+    const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
+    const { user, signOut, isAuthenticated } = useContext(AuthContext);
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigation.navigate('Home');
+        }
+    }, [isAuthenticated, navigation]);
+
+    async function handleDeleteAccount() {
+        try {
+            await api.delete('/me/excluir', {
+                data: {
+                    userId: user.id
+                }
+            });
+            signOut(); // Limpar os dados de autenticação do usuário
+            // Navegar para a tela de login ou para a página inicial
+        } catch (error) {
+            console.error('Erro ao excluir conta:', error);
+        }
+    }
+
+    const handleDeleteUser = (userId) => {
+        Alert.alert(
+            "Confirmar exclusão",
+            "Você tem certeza que quer excluir sua conta?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel"
+                },
+                { text: "Sim", onPress: () => handleDeleteAccount() }
+            ]
+        );
+    };
+
 
     return (
-        <ScrollView style={{ flex: 1 }}>
-            <ImageBackground
-                source={require('../../assets/background.jpg')}
-                style={{ width: '100%', height: 200, alignItems: 'center', justifyContent: 'center' }}
-                resizeMode="cover"
-            >
+
+        <View style={styles.container}>
+            <View style={styles.profileContainer}>
                 <Image
-                    source={require('../../assets/logo.png')}
-                    style={{ width: 100, height: 100, borderRadius: 50 }}
+                    source={{ uri: `${api.defaults.baseURL}/files/${user.profileImage}` }}
+                    style={styles.profileImage}
                 />
-                <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold', color: '#fff' }}>{user.name}</Text>
-                <Text style={{ fontSize: 16, color: '#fff' }}>{user.email}</Text>
-            </ImageBackground>
-
-            <View style={{ padding: 20 }}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Informações do Perfil</Text>
-                <View style={{ marginBottom: 10 }}>
-                    <Text style={{ fontSize: 16 }}>Nome: {user.name}</Text>
-                </View>
-                <View style={{ marginBottom: 10 }}>
-                    <Text style={{ fontSize: 16 }}>E-mail: {user.email}</Text>
-                </View>
-                <View style={{ marginBottom: 10 }}>
-                    <Text style={{ fontSize: 16 }}>ID: {user.id}</Text>
-                </View>
-                {/* Adicione outras informações do perfil aqui, se necessário */}
+                <Text style={styles.name}>{user.name}</Text>
+                <Text style={styles.email}>{user.email}</Text>
             </View>
-
-            <TouchableOpacity
-                style={{ backgroundColor: 'red', padding: 10, alignItems: 'center', justifyContent: 'center', margin: 20 }}
-                onPress={signOut}
-            >
-                <Text style={{ color: '#fff', fontSize: 16 }}>Sair da Conta</Text>
-            </TouchableOpacity>
-        </ScrollView>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={[styles.button, styles.editButton]}>
+                    <Ionicons name="pencil" size={24} color="white" />
+                    <Text style={[styles.buttonText, styles.editText]}>Editar Perfil</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={handleDeleteUser}>
+                    <Ionicons name="trash" size={24} color="white" />
+                    <Text style={[styles.buttonText, styles.dangerText]}>Excluir Conta</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={signOut} >
+                    <Ionicons name="log-out" size={24} color="white" />
+                    <Text style={[styles.buttonText, styles.logoutText]}>Sair</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
     );
 }

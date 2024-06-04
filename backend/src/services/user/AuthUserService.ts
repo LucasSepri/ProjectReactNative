@@ -45,7 +45,9 @@ class AuthUserService {
             id: user.id,
             name: user.name,
             email: user.email,
-            token: token
+            profileImage: user.profileImage,
+            isAdmin: user.isAdmin,
+            token: token,
         }
     }
 }
