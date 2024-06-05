@@ -1,46 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { api } from '../../services/api';
 
 const PedidoScreen = () => {
-  const [pedidos, setPedidos] = useState([
-    {
-      id: 1,
-      data: '12/04/2024 14:22',
-      descricao: 'Pizza de Pepperoni, 2 Coca-Cola 2 litros, Salada de Alface',
-      precoTotal: 45.99,
-      status: 'Entregue'
-    },
-    {
-      id: 2,
-      data: '11/04/2024 19:15',
-      descricao: 'Hambúrguer, Batata Frita, Milkshake de Chocolate',
-      precoTotal: 32.50,
-      status: 'Em andamento'
-    },
-    {
-      id: 3,
-      data: '10/04/2024 12:30',
-      descricao: 'Sushi Combo, Tempurá, Missoshiro',
-      precoTotal: 55.80,
-      status: 'Cancelado'
-    },
-    {
-      id: 4,
-      data: '09/04/2024 20:00',
-      descricao: 'Frango Assado, Arroz, Feijão, Farofa',
-      precoTotal: 38.75,
-      status: 'Entregue'
-    },
-    {
-      id: 5,
-      data: '08/04/2024 18:45',
-      descricao: 'Massa Carbonara, Vinho Tinto, Tiramisù',
-      precoTotal: 49.90,
-      status: 'Entregue'
-    },
-    // Adicione mais pedidos conforme necessário
-  ]);
+  const [pedidos, setPedidos] = useState([]);
+
+  useEffect(() => {
+    const fetchPedidos = async () => {
+      try {
+        const response = await api.get('/orders');
+        setPedidos(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar os pedidos:', error);
+      }
+    };
+
+    fetchPedidos();
+  }, []);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -55,10 +32,15 @@ const PedidoScreen = () => {
     }
   };
 
+  const formatDescricao = (items) => {
+    if (!items || items.length === 0) return ''; // Verifica se existe items e se não está vazio
+    return items.map(item => `(${item.amount}) ${item.product.name} `).join(', ');
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.pedidoContainer}>
-      <Text style={styles.data}>Pedido em {item.data}</Text>
-      <Text style={styles.descricao}>Descrição: {item.descricao}</Text>
+      <Text style={styles.data}>Pedido em {item.created_at}</Text>
+      <Text style={styles.descricao}>Descrição: {formatDescricao(item.items)}</Text>
       <Text style={styles.precoTotal}>Total: R$ {item.precoTotal.toFixed(2)}</Text>
       <View style={styles.statusContainer}>
         <Text>Status: </Text>

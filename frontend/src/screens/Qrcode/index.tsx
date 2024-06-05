@@ -1,27 +1,22 @@
 import React, { useState } from 'react';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { Button, View, Text, ActivityIndicator } from 'react-native';
+import { Button, View, Text, ActivityIndicator, Alert } from 'react-native';
 import { COLORS } from '../../styles/COLORS';
-import { styles } from './style'; // Parece que você está importando estilos de outro arquivo. Certifique-se de que os estilos estão corretos.
-
-
-//hook
+import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
-
-//tipagem
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
+import { useTable } from '../../context/TableContext';
+import { set } from 'react-hook-form';
 
-import { api } from '../../services/api';
+type NavigationProp = NativeStackNavigationProp<StackParamList, 'Qrcode'>;
 
-export default function App() {
-  const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
+export default function Qrcode() {
+  const navigation = useNavigation<NavigationProp>();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
-
-
-
+  const { setTableNumber } = useTable();
 
   if (!permission) {
     return <View />;
@@ -36,25 +31,39 @@ export default function App() {
     );
   }
 
-  // Função para lidar com o sucesso na leitura do QR code
-  async function handleBarCodeScanned({ data }) {
+  async function handleBarCodeScanned({ data }: { data: string }) {
     setScanned(true);
     setLoading(true);
-    const number = data;
+    // Verifica se o QR code contém '&&' seguido de números
+    if (data.startsWith("&&") && !isNaN(Number(data.slice(2)))) {
+      const number = data.slice(2); // Remove os caracteres '&&'
+      setTableNumber(number);
+      try {
+        navigation.goBack();
+        setLoading(false);
+      } catch (error) {
+        tryAgain();
+      }
 
-    try {
-      const response = await api.post('/order', { table: Number(number) });
+    } else {
+      Alert.alert(
+        "Código inválido",
+        "O código lido não é válido. Tente novamente.",
+        [
+          {
+            text: "OK", onPress: () => tryAgain(),
+            style: "cancel"
+          },
+        ]
+      );
 
-      navigation.navigate('Order', { number: number, order_id: response.data.id });
-      
-    } catch (error) {
-      console.error('Erro ao abrir a mesa:', error);
-    } finally {
-      setLoading(false);
-      setTimeout(() => setScanned(false), 5000);
     }
+  }
 
-  };
+  function tryAgain() {
+    setScanned(false);
+    setLoading(false);
+  }
 
 
   return (
@@ -64,15 +73,14 @@ export default function App() {
           <ActivityIndicator size={50} color={COLORS.primary} />
         </View>
       ) : (
-      <CameraView
-        style={styles.camera}
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned} // Se já foi escaneado, não chama a função de novo
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
-        }}
-      />
+        <CameraView
+          style={styles.camera}
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
+          }}
+        />
       )}
-
     </View>
   );
 }

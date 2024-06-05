@@ -1,3 +1,4 @@
+import { red } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 
 export const COLORS = {
     white: "#fff",
@@ -6,5 +7,8 @@ export const COLORS = {
     green: '#00cc00',
     dark: '#1d1d2e',
     black: '#000',
-
+    red: '#ff0000',
+    lightGrey: '#d3d3d3',
+    grey: '#808080',
+    background: '#f9f9f9',
 };

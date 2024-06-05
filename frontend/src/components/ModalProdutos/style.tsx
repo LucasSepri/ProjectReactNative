@@ -1,7 +1,7 @@
 // components/modalStyle.ts
 
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS'; 
+import { COLORS } from '../../styles/COLORS';
 
 const styles = StyleSheet.create({
     //Modal Produto
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         top: 10,
         left: 10,
         zIndex: 1,
-       },
+    },
     imageContainerModal: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
     },
     modalIngredients: {
         fontSize: 18,
-        marginBottom: 8,
     },
     modalPrice: {
         fontSize: 20,
@@ -58,8 +57,41 @@ const styles = StyleSheet.create({
     },
     modalDescription: {
         fontSize: 20,
+        // marginBottom: 2,
+    },
+    quantityContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-evenly',
+        marginVertical: 10,
+    },
+    quantityButton: {
+        padding: 10,
+        backgroundColor: "#f0f0f0",
+        borderRadius: 10,
+    },
+    quantityText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        paddingHorizontal: 20,
+    },
+    addToCartButton: {
+        backgroundColor: COLORS.primary,
+        padding: 15,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    addToCartButtonText: {
+        color: COLORS.white,
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    totalText: {
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 8,
+        textAlign: 'center',
     },
 
 });

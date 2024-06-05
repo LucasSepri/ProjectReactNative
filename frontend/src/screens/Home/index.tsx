@@ -9,19 +9,16 @@ import {
     ActivityIndicator,
     Modal,
 } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
-import { AuthContext } from '../../context/AuthContext'; // Importe o contexto de autenticação
-
+import { AuthContext } from '../../context/AuthContext';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Carousel from '../../components/Carousel';
 import ModalProduto from '../../components/ModalProdutos'
 import styles from './style';
 import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
-
+import { useTable } from '../../context/TableContext';
 
 export type CategoryProps = {
     id: string;
@@ -36,19 +33,20 @@ type ProductProps = {
     name: string;
 }
 
+type NavigationProp = NativeStackNavigationProp<StackParamList, 'Home'>;
 
 export default function Home() {
-    const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
-    const { isAuthenticated, user } = useContext(AuthContext); // Use o contexto de autenticação
+    const navigation = useNavigation<NavigationProp>();
+    const { isAuthenticated, user } = useContext(AuthContext);
+    const { tableNumber, clearTable } = useTable();
 
-    const [category, setCategory] = useState<CategoryProps[] | []>([]);
+    const [category, setCategory] = useState<CategoryProps[]>([]);
     const [categorySelected, setCategorySelected] = useState<CategoryProps>();
 
     const categoryIcons = {
         'Pizzas': 'pizza',
         'Bebidas': 'beer',
         'Sobremesas': 'ice-cream',
-        // Adicione mais categorias conforme necessário
     };
 
     const scrollViewRef = useRef<ScrollView>(null);
@@ -65,10 +63,10 @@ export default function Home() {
 
     function handleChangeCategory(item: CategoryProps, index: number) {
         setCategorySelected(item);
-        scrollViewRef.current?.scrollTo({ x: index * 150, animated: true }); // Ajuste a posição conforme necessário
+        scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
     }
 
-    const [products, setProducts] = useState<ProductProps[] | []>([]);
+    const [products, setProducts] = useState<ProductProps[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(false);
 
     const [productSelected, setProdctSelected] = useState<ProductProps | undefined>();
@@ -107,6 +105,13 @@ export default function Home() {
         navigation.navigate('Qrcode');
     }
 
+    function truncateString(name: string, arg1: number): React.ReactNode {
+        if (name.length > arg1) {
+            return name.slice(0, arg1);
+        }
+        return name;
+    }
+
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
@@ -118,8 +123,8 @@ export default function Home() {
                 <View style={styles.perfil}>
                     {isAuthenticated ? (
                         <TouchableOpacity style={styles.botaoPerfil} onPress={handlePerfil}>
-                            <Image source={{uri: `${api.defaults.baseURL}/files/${user.profileImage}`}} style={styles.perfilFoto} />
-                            <Text style={styles.textoNomePerfil}>{user.name}</Text>
+                            <Image source={{ uri: `${api.defaults.baseURL}/files/${user.profileImage}` }} style={styles.perfilFoto} />
+                            <Text style={styles.textoNomePerfil}>{truncateString(user.name, 20)}</Text>
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity style={styles.botaoPerfil} onPress={handleLogar}>
@@ -128,9 +133,16 @@ export default function Home() {
                         </TouchableOpacity>
                     )}
 
-                    <TouchableOpacity style={styles.botaoIcone} onPress={handleQrcode}>
-                        <Icon name="qr-code-outline" style={styles.icone} />
-                    </TouchableOpacity>
+                    {tableNumber ? (
+                        <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
+                            <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
+                            <Icon name="exit" style={styles.iconeMesaSair} />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity style={styles.botaoIcone} onPress={handleQrcode}>
+                            <Icon name="qr-code-outline" style={styles.icone} />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 <View style={styles.logoContainer}>
@@ -153,9 +165,9 @@ export default function Home() {
                 </View>
 
                 <View style={styles.addressContainer}>
-                    <TouchableOpacity style={styles.buttonAddressContainer}>
-                        <Icon name="map" size={20} color="#fff" />
-                        <Text style={styles.addressText}>Endereço: Rua das Pizzas, 123</Text>
+                    <TouchableOpacity style={styles.buttonAddressContainer} >
+                        <Icon name="location" size={20} color="#fff" />
+                        <Text style={styles.buttonText}>Localização</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
