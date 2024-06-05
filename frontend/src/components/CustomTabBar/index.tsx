@@ -3,7 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../styles/COLORS';
 
-export default function CustomTabBar({ state, descriptors, navigation }) {
+interface CustomTabBarProps {
+    state: any;
+    descriptors: any;
+    navigation: any;
+}
+
+const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.content}>
@@ -33,7 +39,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
 
                     return (
                         <TouchableOpacity
-                            key={route.key}  // Add a unique key prop here
+                            key={route.key}
                             accessibilityRole="button"
                             accessibilityState={isFocused ? { selected: true } : {}}
                             accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -43,8 +49,8 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
                             style={styles.buttonTab}
                         >
                             <View style={{ alignItems: 'center', padding: 4 }}>
-                                <View style={[styles.innerButton, { backgroundColor: isFocused ? "#fece9a" : "transparent" }]}>
-                                    <Icon name={options.tabBarIcon} size={34} color={isFocused ? COLORS.primary : "#535353"} />
+                                <View style={[styles.innerButton, { backgroundColor: isFocused ? "#fcd8b1" : "transparent" }]}>
+                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? COLORS.primary : "#535353", size: 34 })}
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -53,7 +59,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
             </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -83,12 +89,12 @@ const styles = StyleSheet.create({
     buttonTab: {
         justifyContent: 'center',
         alignItems: 'center',
-
     },
 
     innerButton: {
         padding: 10,
-        borderRadius: 99
-    }
-
+        borderRadius: 99,
+    },
 });
+
+export default CustomTabBar;

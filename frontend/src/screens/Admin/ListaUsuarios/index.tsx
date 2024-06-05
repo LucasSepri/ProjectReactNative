@@ -182,12 +182,15 @@ const ListUsers = () => {
 
     return (
         <View style={styles.container}>
-            <TextInput
-                style={styles.searchInput}
-                placeholder="Pesquisar usuários..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-            />
+            <View style={styles.searchContainer}>
+                <Icon name="search" size={24} color="gray" style={styles.searchIcon} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Pesquisar usuários..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
+            </View>
             <FlatList
                 data={filteredUsers}
                 keyExtractor={item => item.id.toString()}
@@ -203,14 +206,21 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#f0f0f0',
     },
-    searchInput: {
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        marginBottom: 20,
-        paddingHorizontal: 10,
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
         backgroundColor: '#fff',
+        borderRadius: 8,
+        paddingLeft: 8,
+    },
+    searchIcon: {
+        marginRight: 8,
+    },
+    searchInput: {
+        flex: 1,
+        height: 40,
+        fontSize: 16,
     },
     userContainer: {
         marginBottom: 20,

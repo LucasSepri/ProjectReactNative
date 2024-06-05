@@ -84,7 +84,7 @@ router.post('/order/add', new AddItemController().handle);
 
 router.post('/order/send', new SendOrderController().handle);
 
-router.get('/orders', isAuthenticated, new ListOrdersController().handle);
+router.get('/orders', new ListOrdersController().handle);
 router.get('/order/detail', isAuthenticated, new DetailOrderController().handle);
 
 router.put('/order/finish', isAuthenticated, new FinishOrderController().handle);

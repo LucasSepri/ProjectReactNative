@@ -60,21 +60,30 @@ export default function SignUp() {
         formData.append('password', password);
 
         if (selectedImage) {
-            const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-            const fileUri = fileInfo.uri;
-            const fileType = 'image/jpeg'; // Ajuste conforme o tipo da imagem
-            const fileName = fileUri.split('/').pop();
-
-            const response = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
-            const blob = new Blob([response], { type: fileType });
-
-            formData.append('profileImage', JSON.parse(JSON.stringify({
+            try {
+              console.log('Selected image URI:', selectedImage);
+              const fileInfo = await FileSystem.getInfoAsync(selectedImage);
+              console.log('File info:', fileInfo);
+      
+              if (!fileInfo.exists) {
+                throw new Error('File does not exist');
+              }
+      
+              const fileUri = fileInfo.uri;
+              const fileType = 'image/jpeg'; 
+              const fileName = fileUri.split('/').pop();
+      
+              formData.append('profileImage', {
                 uri: fileUri,
                 name: fileName,
                 type: fileType,
-                blob: blob,
-            })));
-        }
+              } as any);
+            } catch (error) {
+              console.error('Error getting file info:', error);
+              Alert.alert('Erro', 'Erro ao obter informações do arquivo');
+              return;
+            }
+          }
 
         try {
             const response = await api.post('/users', formData, {

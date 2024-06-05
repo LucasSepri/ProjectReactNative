@@ -40,6 +40,23 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
+    botaoMesaSair:{
+        padding: 5,
+        borderRadius: 10,
+        backgroundColor: COLORS.red,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    textoMesaSair:{
+        color: COLORS.white,
+        fontSize: 18,
+        marginRight: 10,
+    },
+    iconeMesaSair: {
+        color: COLORS.white,
+        fontSize: 22,
+    },
     icone: {
         color: COLORS.white,
         fontSize: 32,
@@ -216,20 +233,6 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 3,
     },
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
 
 });
 

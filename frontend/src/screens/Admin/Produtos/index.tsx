@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform, TextInput, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
@@ -18,7 +18,9 @@ const App = () => {
     const [selectedCategoryView, setSelectedCategoryView] = useState(null);
     const [loadingProducts, setLoadingProducts] = useState(false);
     const [error, setError] = useState(null);
-    const [editingProduct, setEditingProduct] = useState(null);
+    const [editingProduct, setEditingProduct] = useState(false);
+    const [productId, setProductId] = useState(null);
+    const scrollRef = useRef();
 
     const loadCategories = async () => {
         try {
@@ -35,6 +37,23 @@ const App = () => {
 
     useEffect(() => {
         loadCategories();
+    }, []);
+
+    const loadProducts = async () => {
+        try {
+            const response = await api.get('/category/product');
+            setProducts(response.data);
+            // if (response.data.length > 0) {
+            //     setSelectedCategory(response.data[0].id);
+            // }
+        } catch (err) {
+            console.error('Erro ao buscar produtos:', err);
+            setError('Erro ao carregar produtos.');
+        }
+    };
+
+    useEffect(() => {
+        loadProducts();
     }, []);
 
 
@@ -106,8 +125,8 @@ const App = () => {
     }, []);
 
     const handleSubmit = async () => {
-        if (!productName || !productPrice || !productDescription || !selectedImage || !selectedCategory) {
-            Alert.alert('Erro', 'Por favor, preencha todos os campos e selecione uma imagem');
+        if (!editingProduct || !productName || !productPrice || !productDescription || !selectedImage || !selectedCategory) {
+            alert('Por favor, preencha todos os campos e selecione uma imagem');
             return;
         }
 
@@ -118,31 +137,42 @@ const App = () => {
         formData.append('category_id', selectedCategory);
 
         if (selectedImage) {
-            const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-            const fileUri = fileInfo.uri;
-            const fileType = 'image/jpeg';
-            const fileName = fileUri.split('/').pop();
+            try {
+                let fileUri;
+                if (editingProduct) {
+                    fileUri = selectedImage;
+                } else {
+                    const fileInfo = await FileSystem.getInfoAsync(selectedImage);
 
-            const response = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
-            const blob = new Blob([response], { type: fileType });
+                    if (!fileInfo.exists) {
+                        throw new Error('File does not exist');
+                    }
 
-            formData.append('file', JSON.parse(JSON.stringify({
-                uri: fileUri,
-                name: fileName,
-                type: fileType,
-                blob: blob,
-            })));
+                    fileUri = fileInfo.uri;
+                }
+                const fileType = 'image/jpeg'; // or derive from fileInfo if available
+                const fileName = fileUri.split('/').pop();
+
+                formData.append('file', { uri: fileUri, name: fileName, type: fileType } as any);
+
+            } catch (error) {
+                console.error('Error getting file info:', error);
+                Alert.alert('Erro', 'Erro ao obter informações do arquivo');
+                return;
+            }
         }
 
         try {
             let response;
             if (editingProduct) {
-                response = await api.put(`/product/upload`, formData, {
+                formData.append('id', productId);
+                response = await api.put('/product/update', formData, {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'multipart/form-data',
                     },
                 });
+                loadProducts();
             } else {
                 response = await api.post('/product', formData, {
                     headers: {
@@ -150,6 +180,7 @@ const App = () => {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
+                loadProducts();
             }
             if (response.status === 200) {
                 Alert.alert('Sucesso', editingProduct ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
@@ -165,6 +196,8 @@ const App = () => {
         }
     };
 
+
+
     useEffect(() => {
         if (selectedCategoryView !== null) {
             fetchProducts();
@@ -173,12 +206,14 @@ const App = () => {
 
 
     const handleEditProduct = (product) => {
-        setEditingProduct(product);
+        setEditingProduct(true);
         setProductName(product.name);
         setProductPrice(String(product.price));
         setProductDescription(product.description);
         setSelectedImage(`${api.defaults.baseURL}/files/${product.banner}`);
         setSelectedCategory(product.category_id);
+        setProductId(product.id);
+        (scrollRef.current as ScrollView).scrollTo({ y: 0, animated: true });
     };
 
 
@@ -194,8 +229,12 @@ const App = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Crie um novo produto:</Text>
+        <ScrollView ref={scrollRef} contentContainerStyle={styles.container}>
+            {editingProduct ? (
+                <Text style={styles.title}>Editar esse Produto</Text>
+            ) : (
+                <Text style={styles.title}>Crie um novo produto:</Text>
+            )}
             <Text style={styles.label}>Escolha a categoria:</Text>
 
             <View style={styles.pickerContainer}>
@@ -248,14 +287,15 @@ const App = () => {
                 style={styles.input}
             />
 
+
             <TouchableOpacity onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>Criar Produto</Text>
+                <Text style={styles.buttonText}>{editingProduct ? "Editar Produto" : "Criar Produto"}</Text>
             </TouchableOpacity>
 
             <Text style={styles.productsTitle}>Produtos</Text>
 
             <View style={styles.pickerContainer}>
-                <TouchableOpacity onPress={loadCategories} style={styles.reloadButton}>
+                <TouchableOpacity onPress={loadProducts} style={styles.reloadButton}>
                     <Ionicons name="refresh" style={styles.reloadIcon} />
                 </TouchableOpacity>
                 <Picker
