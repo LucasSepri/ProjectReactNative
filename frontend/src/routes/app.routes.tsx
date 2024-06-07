@@ -2,12 +2,12 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
 
-import Order from "../screens/Order";
 import FinishOrder from "../screens/FinishOrder";
 import Perfil from "../screens/Perfil";
 import SignIn from "../screens/SignIn";
 import Qrcode from "../screens/Qrcode";
 import SignUp from "../screens/SignUp";
+import EditarPerfil from "../screens/EditarPerfil";
 import Home from "../screens/Home";
 
 import TabRouter from "./tab.routes";
@@ -17,10 +17,6 @@ export type StackParamList = {
     TabRouter: undefined;
     Home: undefined;
     Perfil: undefined;
-    Order: {
-        number: number | string;
-        order_id: string;
-    };
     FinishOrder: {
         number: number | string,
         order_id: string;
@@ -28,7 +24,7 @@ export type StackParamList = {
     Qrcode: undefined;
     SignIn: undefined;
     SignUp: undefined;
-
+    EditarPerfil: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -52,11 +48,6 @@ function AppRoutes() {
                     },
                     headerTintColor: '#FFF',
                 }}
-            />
-            <Stack.Screen
-                name="Order"
-                component={Order}
-                options={{ headerShown: false }}
             />
 
             <Stack.Screen
@@ -98,6 +89,17 @@ function AppRoutes() {
                     },
                     headerTintColor: '#FFF',
                 }} />
+            <Stack.Screen
+                name="EditarPerfil"
+                component={EditarPerfil}
+                options={{
+                    title: "Editar Perfil",
+                    headerStyle: {
+                        backgroundColor: '#1d1d2e',
+                    },
+                    headerTintColor: '#FFF',
+                }}
+            />
         </Stack.Navigator>
     );
 }

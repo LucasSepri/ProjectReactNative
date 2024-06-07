@@ -159,6 +159,16 @@ const ListUsers = () => {
             );
         }
     };
+    const refreshList = async () => {
+        try {
+            const response = await api.get('/users');
+            setUsers(response.data);
+            setFilteredUsers(response.data);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
 
     const renderItem = ({ item }) => (
         <View style={styles.userContainer}>
@@ -182,15 +192,21 @@ const ListUsers = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.searchContainer}>
-                <Icon name="search" size={24} color="gray" style={styles.searchIcon} />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Pesquisar usuários..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                />
+            <View style={styles.searchContainerRefresh}>
+                <TouchableOpacity onPress={refreshList} style={styles.refreshList}>
+                    <Icon name="refresh" size={24} color="gray" style={styles.refreshIcon} />
+                </TouchableOpacity>
+                <View style={styles.searchContainer}>
+                    <Icon name="search" size={24} color="gray" style={styles.searchIcon} />
+                    <TextInput
+                        style={styles.searchInput}
+                        placeholder="Pesquisar usuários..."
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                    />
+                </View>
             </View>
+
             <FlatList
                 data={filteredUsers}
                 keyExtractor={item => item.id.toString()}
@@ -209,10 +225,12 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
         backgroundColor: '#fff',
         borderRadius: 8,
         paddingLeft: 8,
+        flex: 1,
+        height: 50,
+        marginLeft: 10,
     },
     searchIcon: {
         marginRight: 8,
@@ -283,6 +301,30 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
     },
+    searchContainerRefresh: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 10,
+        backgroundColor: '#f2f2f2',
+        marginBottom: 20,
+    },
+    refreshList: {
+        padding: 10,
+        borderRadius: 25,
+        backgroundColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    refreshIcon: {
+        fontSize: 24,
+        color: '#606060',
+    },
+
+
 });
 
 export default ListUsers;

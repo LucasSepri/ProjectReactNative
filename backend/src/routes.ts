@@ -11,6 +11,7 @@ import { AuthUserController } from "./controllers/user/AuthUserController";
 import { DetailUserController } from "./controllers/user/DetailUserController";
 import { ListUserController } from "./controllers/user/ListUserController";
 import { UpdateCargoUserController } from './controllers/user/UpdateCargoUserController';
+import { UpdateUserController } from './controllers/user/UpdateUserController';
 
 // -- IMPORTANDO CATEGORY CONTROLLERS --
 import { CreateCategoryController } from "./controllers/category/CreateCategoryController";
@@ -55,6 +56,7 @@ router.post('/session', new AuthUserController().handle);
 router.get('/users', isAuthenticated, new ListUserController().handle);
 router.put('/users/cargo', isAuthenticated, new UpdateCargoUserController().handle);
 
+router.put('/me/update', isAuthenticated, upload.single('profileImage'), new UpdateUserController().handle);
 router.get('/me', isAuthenticated, new DetailUserController().handle);
 router.delete('/me/excluir', isAuthenticated, new DeleteUserController().handle);
 

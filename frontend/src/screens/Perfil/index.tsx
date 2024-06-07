@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { View, Text, ImageBackground, Image, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -26,13 +26,13 @@ export default function Perfil() {
                 }
             });
             signOut(); // Limpar os dados de autenticação do usuário
-            // Navegar para a tela de login ou para a página inicial
+            navigation.navigate('Home'); // Navegar para a tela de login ou para a página inicial
         } catch (error) {
             console.error('Erro ao excluir conta:', error);
         }
     }
 
-    const handleDeleteUser = (userId) => {
+    const handleDeleteUser = () => {
         Alert.alert(
             "Confirmar exclusão",
             "Você tem certeza que quer excluir sua conta?",
@@ -46,9 +46,7 @@ export default function Perfil() {
         );
     };
 
-
     return (
-
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <Image
@@ -59,7 +57,10 @@ export default function Perfil() {
                 <Text style={styles.email}>{user.email}</Text>
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.button, styles.editButton]}>
+                <TouchableOpacity
+                    style={[styles.button, styles.editButton]}
+                    onPress={() => navigation.navigate('EditarPerfil')}
+                >
                     <Ionicons name="pencil" size={24} color="white" />
                     <Text style={[styles.buttonText, styles.editText]}>Editar Perfil</Text>
                 </TouchableOpacity>
