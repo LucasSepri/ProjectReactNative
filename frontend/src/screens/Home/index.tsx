@@ -8,6 +8,7 @@ import {
     ScrollView,
     ActivityIndicator,
     Modal,
+    Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -112,6 +113,22 @@ export default function Home() {
         return name;
     }
 
+    const openWhatsApp = () => {
+        const phoneNumber = '+5511999999999'; // Substitua pelo número desejado, incluindo o código do país
+        const url = `whatsapp://send?phone=${phoneNumber}`;
+        Linking.openURL(url).catch(() => {
+            alert('Certifique-se de que o WhatsApp está instalado no seu dispositivo');
+        });
+    };
+
+    const openLocation = () => {
+        const address = 'Rua Dona Veridiana, 661, Higienópolis, São Paulo - SP, 01238-010'; // Substitua pelo nome ou endereço desejado
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        Linking.openURL(url).catch(() => {
+            alert('Não foi possível abrir o Google Maps');
+        });
+    };
+
     return (
         <ScrollView style={styles.container}>
             {/* HEADER */}
@@ -153,21 +170,21 @@ export default function Home() {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.buttonWhatsApp} >
+                    <TouchableOpacity style={styles.buttonWhatsApp} onPress={openWhatsApp}>
                         <Icon name="logo-whatsapp" size={20} color="#fff" />
                         <Text style={styles.buttonText}>Telefone</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.buttonHorario} >
+                    {/* <TouchableOpacity style={styles.buttonHorario} >
                         <Icon name="time" size={20} color="#fff" />
                         <Text style={styles.buttonText}>Horários</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 <View style={styles.addressContainer}>
-                    <TouchableOpacity style={styles.buttonAddressContainer} >
+                    <TouchableOpacity style={styles.buttonAddressContainer} onPress={openLocation}>
                         <Icon name="location" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Localização</Text>
+                        <Text style={styles.buttonText}>Rua Dona Veridiana, 661, Higienópolis</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>

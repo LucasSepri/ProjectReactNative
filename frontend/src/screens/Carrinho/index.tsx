@@ -8,7 +8,8 @@ import { COLORS } from '../../styles/COLORS';
 import styles from './style';
 import { useFoods } from '../../context/FoodsContext';
 import { useTable } from '../../context/TableContext';
-import {AuthContext } from '../../context/AuthContext'
+import { AuthContext } from '../../context/AuthContext'
+import { set } from 'react-hook-form';
 
 const Carrinho = ({ navigation }) => {
   const { isAuthenticated, user } = useContext(AuthContext);
@@ -52,34 +53,40 @@ const Carrinho = ({ navigation }) => {
   };
 
   const handlePedidoPress = async () => {
+    if (tableNumber) {
+      setDeliveryType("mesa");
+    }
+
     if (!deliveryType) {
       alert('Por favor, selecione uma forma de entrega.');
       return;
     }
-  
+
     if (deliveryType === 'endereco' && !deliveryAddress.trim()) {
       alert('Por favor, forneça um endereço de entrega.');
       return;
     }
-  
+
     try {
       const orderItems = foods.map(food => ({
         amount: food.quantity,
         product_id: food.id,
         price: parseFloat(food.price.toString())
       }));
-  
+
       const orderData = {
         deliveryType,
-        table: deliveryType === 'mesa' ? tableNumber : null,
+        table: deliveryType === 'mesa' ? parseInt(tableNumber, 10) : null,
         address: deliveryType === 'endereco' ? deliveryAddress : null,
         data: new Date().toISOString(), // Data do pedido
         precoTotal: totalPrice, // Preço total do pedido
         items: orderItems
       };
-  
+
+      ;
+
       const response = await api.post('/order', orderData);
-  
+
       alert('Pedido realizado com sucesso!');
       setFoods([]);
       navigation.navigate('Pedidos');
@@ -88,8 +95,13 @@ const Carrinho = ({ navigation }) => {
       alert('Ocorreu um erro ao realizar o pedido. Por favor, tente novamente.');
     }
   };
-  
-  
+
+
+  function AbrirMesa(){
+    navigation.navigate('Qrcode');
+  }
+
+
 
   const CartCard = ({ item }) => {
     const itemPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(',', '.')) : parseFloat(item.price);
@@ -155,6 +167,9 @@ const Carrinho = ({ navigation }) => {
                 if (itemValue !== 'endereco') {
                   setAddressSubmitted(false);
                   setDeliveryAddress('');
+                }
+                if (itemValue === 'mesa') {
+                  AbrirMesa();
                 }
               }}
               style={styles.picker}>

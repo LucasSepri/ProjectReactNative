@@ -61,9 +61,7 @@ export default function SignUp() {
 
         if (selectedImage) {
             try {
-              console.log('Selected image URI:', selectedImage);
               const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-              console.log('File info:', fileInfo);
       
               if (!fileInfo.exists) {
                 throw new Error('File does not exist');

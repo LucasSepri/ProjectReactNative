@@ -9,6 +9,7 @@ type AuthContextData = {
     loadingAuth: boolean;
     loading: boolean;
     signOut: () => Promise<void>;
+    setUser: (user: UserProps) => void;
 }
 
 type UserProps = {
@@ -126,7 +127,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 signIn,
                 loading,
                 loadingAuth,
-                signOut
+                signOut,
+                setUser
             }}
         >
             {children}
