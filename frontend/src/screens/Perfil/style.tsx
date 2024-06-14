@@ -25,7 +25,17 @@ export const styles = StyleSheet.create({
       },
       email: {
         fontSize: 18,
-        marginBottom: 20,
+        marginBottom: 5,
+        color: '#666',
+      },
+      phone: {
+        fontSize: 18,
+        marginBottom: 5,
+        color: '#666',
+      },
+      address: {
+        fontSize: 18,
+        marginBottom: 10,
         color: '#666',
       },
       buttonContainer: {

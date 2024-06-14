@@ -18,7 +18,9 @@ type UserProps = {
     email: string;
     token: string;
     isAdmin: boolean;
-    profileImage: string; // Adicionar a propriedade profileImage
+    profileImage: string;
+    phone: string; // Nova propriedade phone
+    address: string; // Nova propriedade address
 }
 
 type AuthProviderProps = {
@@ -39,7 +41,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email: '',
         token: '',
         isAdmin: null,
-        profileImage: '', // Inicializar a propriedade profileImage
+        profileImage: '',
+        phone: '', // Inicializar a propriedade phone
+        address: '', // Inicializar a propriedade address
     });
 
     const [loadingAuth, setLoadingAuth] = useState(false);
@@ -49,11 +53,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     useEffect(() => {
         async function getUser() {
-            // Pegar os dados do usuário no storage
             const userInfo = await AsyncStorage.getItem('@token');
             let hasUser: UserProps = JSON.parse(userInfo || '{}');
 
-            // Verificar se recebemos as informações
             if (Object.keys(hasUser).length > 0) {
                 api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
                 setUser(hasUser);
@@ -73,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 password
             });
 
-            const { id, name, token, isAdmin, profileImage } = response.data;
+            const { id, name, token, isAdmin, profileImage, phone, address } = response.data;
 
             const data = {
                 id,
@@ -81,7 +83,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 email,
                 token,
                 isAdmin,
-                profileImage, // Incluir a URL da imagem de perfil
+                profileImage,
+                phone, // Incluir a nova propriedade phone
+                address, // Incluir a nova propriedade address
             }
 
             await AsyncStorage.setItem('@token', JSON.stringify(data));
@@ -94,29 +98,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 email,
                 token,
                 isAdmin,
-                profileImage, // Incluir a URL da imagem de perfil
+                profileImage,
+                phone,
+                address,
             });
 
             setLoadingAuth(false);
 
         } catch (err) {
-            console.log('erro ao acessar', err);
+            console.log('Erro ao acessar:', err);
             setLoadingAuth(false);
         }
     }
 
     async function signOut() {
-        await AsyncStorage.clear()
-            .then(() => {
-                setUser({
-                    id: '',
-                    name: '',
-                    email: '',
-                    token: '',
-                    isAdmin: null,
-                    profileImage: '', // Limpar a URL da imagem de perfil
-                });
-            });
+        await AsyncStorage.clear();
+        setUser({
+            id: '',
+            name: '',
+            email: '',
+            token: '',
+            isAdmin: null,
+            profileImage: '',
+            phone: '', // Limpar a propriedade phone
+            address: '', // Limpar a propriedade address
+        });
     }
 
     return (
