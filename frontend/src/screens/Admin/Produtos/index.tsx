@@ -337,6 +337,7 @@ const App = () => {
                                 <Text style={styles.productDescription}>{item.description}</Text>
                                 <Text style={styles.productIngredients}>{item.ingredients}</Text>
                                 <Text style={styles.productPrice}>R$ {item.price}</Text>
+                                {/* <Text style={styles.productPrice}>{`${api.defaults.baseURL}/files/${item.banner}`}</Text> */}
                             </View>
                         </View>
                     ))
