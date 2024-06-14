@@ -1,5 +1,6 @@
 import prismaClient from "../../prisma";
 import fs from "fs/promises"; // Importar o módulo fs para manipulação de arquivos
+import path from "path";
 
 interface ProductRequest {  
     id: string;
@@ -30,13 +31,18 @@ class UpdateProductService {
             // Remover a imagem antiga do banner se existir
             if (product.banner) {
                 try {
-                    await fs.unlink(`${__dirname}/../../../tmp/${product.banner}`);
+                    const imagePath = process.env.DATABASE_TIPO === 'online' 
+                            ? path.join(__dirname, product.banner)
+                            : path.join(__dirname, '../../../../tmp', product.banner);
+
+                    await fs.unlink(imagePath);
+
                 } catch (error) {
                     console.error("Error removing old product banner:", error);
                 }
             }
             // Definir o novo banner
-            productData.banner = banner;
+            productData.banner = path.basename(banner);
         }
         if (category_id) productData.category_id = category_id;
 
