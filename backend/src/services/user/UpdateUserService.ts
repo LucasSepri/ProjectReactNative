@@ -49,7 +49,12 @@ class UpdateUserService {
                 await this.deleteProfileImage(user.profileImage);
             }
             // Set new profile image
-            userData.profileImage = profileImage;
+            let Corrigido = null;
+            if (profileImage) {
+                const parts = profileImage.split(/[\\/]+/);
+                Corrigido = parts[parts.length - 1];
+            }
+            userData.profileImage = Corrigido;
         }
         if (phone) userData.phone = phone;
         if (address) userData.address = address;

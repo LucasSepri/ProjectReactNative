@@ -23,7 +23,11 @@ class UpdateProductController {
         if (!req.file) {
             //banner = null;
         } else {
-            banner = req.file.path.split(process.env.FTP === 'true' ? "/" : "\\" ).pop();
+            let Corrigido = null;
+            if (banner) {
+                const parts = banner.split(/[\\/]+/);
+                Corrigido = parts[parts.length - 1];
+            }
         }
 
         const product = await updateProductService.execute({
@@ -34,8 +38,8 @@ class UpdateProductController {
             banner,
             category_id
         });
-         return res.json(product);
-         
+        return res.json(product);
+
         // if (!req.file) {
         //     throw new Error("erro no upload do arquivo");
         // } else {

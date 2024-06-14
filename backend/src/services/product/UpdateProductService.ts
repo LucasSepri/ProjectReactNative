@@ -1,7 +1,7 @@
 import prismaClient from "../../prisma";
 import fs from "fs/promises"; // Importar o módulo fs para manipulação de arquivos
 
-interface ProductRequest {  
+interface ProductRequest {
     id: string;
     name?: string;
     price?: string;
@@ -36,7 +36,12 @@ class UpdateProductService {
                 }
             }
             // Definir o novo banner
-            productData.banner = banner;
+            let Corrigido = null;
+            if (banner) {
+                const parts = banner.split(/[\\/]+/);
+                Corrigido = parts[parts.length - 1];
+            }
+            productData.banner = Corrigido;
         }
         if (category_id) productData.category_id = category_id;
 

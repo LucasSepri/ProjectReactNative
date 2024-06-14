@@ -32,6 +32,12 @@ class CreateUserService {
         // Hash da senha
         const passwordHash = await hash(password, 8);
 
+        let Corrigido = null;
+        if (profileImage) {
+            const parts = profileImage.split(/[\\/]+/);
+            Corrigido = parts[parts.length - 1];
+        }
+
         // Criar usuário no banco de dados
         const user = await prismaClient.user.create({
             data: {
@@ -40,7 +46,7 @@ class CreateUserService {
                 password: passwordHash,
                 phone: phone,
                 address: address,
-                profileImage: profileImage ? profileImage.split(process.env.FTP === 'true' ? "//" : "\\").pop() || null : null
+                profileImage: Corrigido
             },
             select: {
                 id: true,
