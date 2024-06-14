@@ -55,6 +55,8 @@ export default function Perfil() {
                 />
                 <Text style={styles.name}>{user.name}</Text>
                 <Text style={styles.email}>{user.email}</Text>
+                <Text style={styles.phone}>{user.phone}</Text>
+                <Text style={styles.address}>{user.address}</Text>
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity

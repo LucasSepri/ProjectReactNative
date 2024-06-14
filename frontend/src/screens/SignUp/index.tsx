@@ -23,6 +23,8 @@ export default function SignUp() {
     const { signIn } = useContext(AuthContext);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -38,7 +40,6 @@ export default function SignUp() {
             allowsEditing: true,
             quality: 1,
         });
-
 
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
@@ -58,30 +59,32 @@ export default function SignUp() {
         formData.append('name', name);
         formData.append('email', email);
         formData.append('password', password);
+        formData.append('phone', phone); // Adiciona o campo phone ao FormData
+        formData.append('address', address); // Adiciona o campo address ao FormData
 
         if (selectedImage) {
             try {
-              const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-      
-              if (!fileInfo.exists) {
-                throw new Error('File does not exist');
-              }
-      
-              const fileUri = fileInfo.uri;
-              const fileType = 'image/jpeg'; 
-              const fileName = fileUri.split('/').pop();
-      
-              formData.append('profileImage', {
-                uri: fileUri,
-                name: fileName,
-                type: fileType,
-              } as any);
+                const fileInfo = await FileSystem.getInfoAsync(selectedImage);
+
+                if (!fileInfo.exists) {
+                    throw new Error('File does not exist');
+                }
+
+                const fileUri = fileInfo.uri;
+                const fileType = 'image/jpeg';
+                const fileName = fileUri.split('/').pop();
+
+                formData.append('profileImage', {
+                    uri: fileUri,
+                    name: fileName,
+                    type: fileType,
+                } as any);
             } catch (error) {
-              console.error('Error getting file info:', error);
-              Alert.alert('Erro', 'Erro ao obter informações do arquivo');
-              return;
+                console.error('Error getting file info:', error);
+                Alert.alert('Erro', 'Erro ao obter informações do arquivo');
+                return;
             }
-          }
+        }
 
         try {
             const response = await api.post('/users', formData, {
@@ -117,7 +120,6 @@ export default function SignUp() {
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
-
                 placeholderTextColor={'#F0F0F0'}
             />
             <TextInput
@@ -125,6 +127,22 @@ export default function SignUp() {
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
+                autoCapitalize='none'
+                placeholderTextColor={'#F0F0F0'}
+            />
+            <TextInput
+                placeholder='Telefone'
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                autoCapitalize='none'
+                placeholderTextColor={'#F0F0F0'}
+            />
+            <TextInput
+                placeholder='Endereço'
+                style={styles.input}
+                value={address}
+                onChangeText={setAddress}
                 autoCapitalize='none'
                 placeholderTextColor={'#F0F0F0'}
             />
