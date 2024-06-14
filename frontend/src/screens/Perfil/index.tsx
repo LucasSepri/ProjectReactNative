@@ -55,6 +55,7 @@ export default function Perfil() {
                 />
                 <Text style={styles.name}>{user.name}</Text>
                 <Text style={styles.email}>{user.email}</Text>
+                {/* <Text style={{fontSize: 8}}>{user.profileImage}</Text> */}
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity

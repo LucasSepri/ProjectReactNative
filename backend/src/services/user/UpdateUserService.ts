@@ -2,6 +2,7 @@ import { Client } from "basic-ftp";
 import prismaClient from "../../prisma";
 import bcrypt from "bcryptjs";
 import fs from "fs/promises"; // Importar o módulo fs para manipulação de arquivos
+import path from "path"; // Importar o módulo path para manipulação de caminhos de arquivos
 
 interface UserRequest {
     userId: string;
@@ -61,19 +62,19 @@ class UpdateUserService {
                         // Deleta o arquivo do servidor FTP
                         await client.remove(filePath);
                     } else {
+                        const imagePath = process.env.DATABASE_TIPO === 'online' 
+                            ? path.join(__dirname, user.profileImage)
+                            : path.join(__dirname, '../../../../tmp', user.profileImage);
 
-                        if (process.env.DATABASE_TIPO === 'online') {
-                            await fs.unlink(`${__dirname}/${user.profileImage}`);
-                        } else {
-                            await fs.unlink(`${__dirname}../../../../tmp/${user.profileImage}`);
-                        }
+                        // Deleta o arquivo do sistema de arquivos local
+                        await fs.unlink(imagePath);
                     }
                 } catch (error) {
                     console.error("Error removing old profile image:", error);
                 }
             }
-            // Definir a nova imagem do perfil
-            userData.profileImage = profileImage;
+            // Extrair o nome do arquivo da nova imagem do perfil
+            userData.profileImage = path.basename(profileImage);
         }
         if (newPassword) userData.password = hashedPassword;
 
