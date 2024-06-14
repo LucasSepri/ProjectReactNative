@@ -36,7 +36,6 @@ class UpdateProductService {
                             : path.join(__dirname, '../../../../tmp', product.banner);
 
                     await fs.unlink(imagePath);
-
                 } catch (error) {
                     console.error("Error removing old product banner:", error);
                 }
