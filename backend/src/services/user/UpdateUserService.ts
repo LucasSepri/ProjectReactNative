@@ -61,7 +61,12 @@ class UpdateUserService {
                         // Deleta o arquivo do servidor FTP
                         await client.remove(filePath);
                     } else {
-                        await fs.unlink(`${__dirname}/../../../tmp/${user.profileImage}`);
+
+                        if (process.env.DATABASE_TIPO === 'online') {
+                            await fs.unlink(`${__dirname}/${user.profileImage}`);
+                        } else {
+                            await fs.unlink(`${__dirname}../../../../tmp/${user.profileImage}`);
+                        }
                     }
                 } catch (error) {
                     console.error("Error removing old profile image:", error);
