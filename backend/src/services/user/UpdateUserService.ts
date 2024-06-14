@@ -1,3 +1,4 @@
+import { Client } from "basic-ftp";
 import prismaClient from "../../prisma";
 import bcrypt from "bcryptjs";
 import fs from "fs/promises"; // Importar o módulo fs para manipulação de arquivos
@@ -44,7 +45,24 @@ class UpdateUserService {
             // Remover a imagem antiga do perfil se existir
             if (user.profileImage) {
                 try {
-                    await fs.unlink(`${__dirname}/../../../tmp/${user.profileImage}`);
+                    if (process.env.FTP === 'true') {
+                        const client = new Client();
+                        await client.access({
+                            host: process.env.FTP_HOST,
+                            user: process.env.FTP_USER,
+                            password: process.env.FTP_PASS,
+                            secure: true,
+                            secureOptions: { rejectUnauthorized: false }
+                        });
+
+                        // Caminho do arquivo no servidor FTP
+                        const filePath = `/${user.profileImage}`;
+
+                        // Deleta o arquivo do servidor FTP
+                        await client.remove(filePath);
+                    } else {
+                        await fs.unlink(`${__dirname}/../../../tmp/${user.profileImage}`);
+                    }
                 } catch (error) {
                     console.error("Error removing old profile image:", error);
                 }

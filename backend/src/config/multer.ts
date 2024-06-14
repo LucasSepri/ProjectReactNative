@@ -7,67 +7,67 @@ import { Client } from 'basic-ftp';
 
 export default {
     upload(folder: string) {
-        // if (process.env.FTP === 'true') {
-        //     // const storage = multer.memoryStorage(); // Armazena na memória temporariamente
+        if (process.env.FTP === 'true') {
+            // const storage = multer.memoryStorage(); // Armazena na memória temporariamente
 
-        //     return {
-        //         storage: {
-        //             _handleFile(req, file, cb) {
-        //                 const fileHash = crypto.randomBytes(16).toString('hex');
-        //                 const fileName = `${fileHash}-${file.originalname}`;
+            return {
+                storage: {
+                    _handleFile(req, file, cb) {
+                        const fileHash = crypto.randomBytes(16).toString('hex');
+                        const fileName = `${fileHash}-${file.originalname}`;
 
-        //                 const client = new Client();
+                        const client = new Client();
 
-        //                 (async () => {
-        //                     try {
-        //                         await client.access({
-        //                             host: process.env.FTP_HOST,
-        //                             user: process.env.FTP_USER,
-        //                             password: process.env.FTP_PASS,
-        //                             secure: true,
-        //                             secureOptions: { rejectUnauthorized: false }
-        //                         });
+                        (async () => {
+                            try {
+                                await client.access({
+                                    host: process.env.FTP_HOST,
+                                    user: process.env.FTP_USER,
+                                    password: process.env.FTP_PASS,
+                                    secure: true,
+                                    secureOptions: { rejectUnauthorized: false }
+                                });
 
-        //                         const filePath = `${folder}/${fileName}`;
-        //                         await client.uploadFrom(file.stream, filePath);
+                                const filePath = `${folder}/${fileName}`;
+                                await client.uploadFrom(file.stream, filePath);
 
-        //                         cb(null, {
-        //                             path: filePath,
-        //                             size: file.size
-        //                         });
-        //                     } catch (err) {
-        //                         cb(err);
-        //                     } finally {
-        //                         client.close();
-        //                     }
-        //                 })();
-        //             },
-        //             _removeFile(req, file, cb) {
-        //                 const client = new Client();
+                                cb(null, {
+                                    path: filePath,
+                                    size: file.size
+                                });
+                            } catch (err) {
+                                cb(err);
+                            } finally {
+                                client.close();
+                            }
+                        })();
+                    },
+                    _removeFile(req, file, cb) {
+                        const client = new Client();
 
-        //                 (async () => {
-        //                     try {
-        //                         await client.access({
-        //                             host: process.env.FTP_HOST,
-        //                             user: process.env.FTP_USER,
-        //                             password: process.env.FTP_PASS,
-        //                             secure: true,
-        //                             secureOptions: { rejectUnauthorized: false },
-        //                         });
+                        (async () => {
+                            try {
+                                await client.access({
+                                    host: process.env.FTP_HOST,
+                                    user: process.env.FTP_USER,
+                                    password: process.env.FTP_PASS,
+                                    secure: true,
+                                    secureOptions: { rejectUnauthorized: false },
+                                });
 
-        //                         await client.remove(file.path);
-        //                         cb(null);
-        //                     } catch (err) {
-        //                         cb(err);
-        //                     } finally {
-        //                         client.close();
-        //                     }
-        //                 })();
-        //             }
-        //         }
-        //     };
+                                await client.remove(file.path);
+                                cb(null);
+                            } catch (err) {
+                                cb(err);
+                            } finally {
+                                client.close();
+                            }
+                        })();
+                    }
+                }
+            };
 
-        // } else {
+        } else {
             return {
                 storage: multer.diskStorage({
                     destination: resolve(__dirname, '..', '..', folder),
@@ -78,7 +78,7 @@ export default {
                         return callback(null, fileName);
                     }
                 })
-            // };
+            };
         }
 
     }

@@ -33,8 +33,7 @@ class CreateUserService {
                 name: name,
                 email: email,
                 password: passwordHash,
-                // profileImage: profileImage.split(process.env.FTP === 'true' ? "\\" : "/").pop() || null 
-                profileImage: profileImage.split(process.env.FTP === 'true' ? "/" : "\\" ).pop() || null 
+                profileImage: profileImage.split(process.env.FTP === 'true' ? "//" : "\\").pop() || null 
             },
             select: {
                 id: true,
