@@ -1,5 +1,6 @@
 import prismaClient from "../../prisma";
 import { hash } from "bcryptjs";
+import path from "path";
 
 interface UserRequest {
     name: string;
@@ -28,12 +29,15 @@ class CreateUserService {
 
         const passwordHash = await hash(password, 8);
 
+        // Extrair o nome do arquivo da imagem
+        const profileImageName = profileImage ? path.basename(profileImage) : null;
+
         const user = await prismaClient.user.create({
             data: {
                 name: name,
                 email: email,
                 password: passwordHash,
-                profileImage: profileImage.split(process.env.FTP === 'true' ? "//" : "\\").pop() || null 
+                profileImage: profileImageName
             },
             select: {
                 id: true,
@@ -43,8 +47,8 @@ class CreateUserService {
             }
         });
 
-        return { user }
+        return { user };
     }
 }
 
-export { CreateUserService }
+export { CreateUserService };
