@@ -57,6 +57,7 @@ export default function Perfil() {
                 <Text style={styles.email}>{user.email}</Text>
                 <Text style={styles.phone}>{user.phone}</Text>
                 <Text style={styles.address}>{user.address}</Text>
+                <Text style={styles.address}>{`${api.defaults.baseURL}/files/${user.profileImage}`}</Text>
             </View>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
