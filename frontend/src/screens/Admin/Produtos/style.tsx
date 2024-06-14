@@ -158,6 +158,11 @@ export default StyleSheet.create({
         color: '#999',
         fontStyle: 'italic', // Estilo itálico para diferenciar dos outros textos
     },
+    productCategory:{
+        fontSize: 16,
+        color: COLORS.primary,
+        fontWeight: 'bold',
+    },
     productPrice: {
         fontSize: 18,
         fontWeight: 'bold',

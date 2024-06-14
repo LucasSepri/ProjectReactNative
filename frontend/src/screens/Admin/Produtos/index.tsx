@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, Platform, TextInput, ScrollView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Platform, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { api } from '../../../services/api';
@@ -43,9 +43,6 @@ const App = () => {
         try {
             const response = await api.get('/category/product');
             setProducts(response.data);
-            // if (response.data.length > 0) {
-            //     setSelectedCategory(response.data[0].id);
-            // }
         } catch (err) {
             console.error('Erro ao buscar produtos:', err);
             setError('Erro ao carregar produtos.');
@@ -55,8 +52,6 @@ const App = () => {
     useEffect(() => {
         loadProducts();
     }, []);
-
-
 
     useEffect(() => {
         (async () => {
@@ -125,11 +120,6 @@ const App = () => {
     }, []);
 
     const handleSubmit = async () => {
-        // if (!editingProduct || !productName || !productPrice || !productDescription || !selectedImage || !selectedCategory) {
-        //     alert('Por favor, preencha todos os campos e selecione uma imagem');
-        //     return;
-        // }
-
         let formData = new FormData();
         formData.append('name', productName);
         formData.append('price', productPrice);
@@ -196,15 +186,6 @@ const App = () => {
         }
     };
 
-
-
-    useEffect(() => {
-        if (selectedCategoryView !== null) {
-            fetchProducts();
-        }
-    }, [selectedCategoryView]);
-
-
     const handleEditProduct = (product) => {
         setEditingProduct(true);
         setProductName(product.name);
@@ -216,8 +197,6 @@ const App = () => {
         (scrollRef.current as ScrollView).scrollTo({ y: 0, animated: true });
     };
 
-
-
     const handleDeleteProduct = async (id) => {
         try {
             await api.delete('/product/remove', { data: { id } });
@@ -226,6 +205,11 @@ const App = () => {
         } catch (err) {
             setError('Erro ao excluir categoria.');
         }
+    };
+
+    const getCategoryName = (categoryId) => {
+        const category = categories.find(category => category.id === categoryId);
+        return category ? category.name : 'Categoria desconhecida';
     };
 
     return (
@@ -287,7 +271,6 @@ const App = () => {
                 style={styles.input}
             />
 
-
             <TouchableOpacity onPress={handleSubmit} style={styles.button}>
                 <Text style={styles.buttonText}>{editingProduct ? "Editar Produto" : "Criar Produto"}</Text>
             </TouchableOpacity>
@@ -335,9 +318,8 @@ const App = () => {
 
                                 <Text style={styles.productName}>{item.name}</Text>
                                 <Text style={styles.productDescription}>{item.description}</Text>
-                                <Text style={styles.productIngredients}>{item.ingredients}</Text>
+                                <Text style={styles.productCategory}>{getCategoryName(item.category_id)}</Text>
                                 <Text style={styles.productPrice}>R$ {item.price}</Text>
-                                {/* <Text style={styles.productPrice}>{`${api.defaults.baseURL}/files/${item.banner}`}</Text> */}
                             </View>
                         </View>
                     ))
@@ -346,6 +328,5 @@ const App = () => {
         </ScrollView>
     );
 };
-
 
 export default App;
