@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: 'https://projectreactnative.onrender.com'
+    baseURL: 'http://192.168.3.98:3333'
 });
 export {api};
 

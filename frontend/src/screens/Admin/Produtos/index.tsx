@@ -125,10 +125,10 @@ const App = () => {
     }, []);
 
     const handleSubmit = async () => {
-        if (!editingProduct || !productName || !productPrice || !productDescription || !selectedImage || !selectedCategory) {
-            alert('Por favor, preencha todos os campos e selecione uma imagem');
-            return;
-        }
+        // if (!editingProduct || !productName || !productPrice || !productDescription || !selectedImage || !selectedCategory) {
+        //     alert('Por favor, preencha todos os campos e selecione uma imagem');
+        //     return;
+        // }
 
         let formData = new FormData();
         formData.append('name', productName);

@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, Image, TouchableOpacity, TextInput, FlatList, Modal } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { SafeAreaView, View, Text, Image, TouchableOpacity, TextInput, FlatList } from 'react-native';
 import { PrimaryButton } from '../../components/Button';
 import { api } from '../../services/api';
 import { Picker } from '@react-native-picker/picker';
@@ -8,9 +8,8 @@ import { COLORS } from '../../styles/COLORS';
 import styles from './style';
 import { useFoods } from '../../context/FoodsContext';
 import { useTable } from '../../context/TableContext';
-import { AuthContext } from '../../context/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import UserDetailsModal from '../../components/InformacoesDeContatoModal';  // Importar o novo componente
+import { AuthContext } from '../../context/AuthContext'
+import { set } from 'react-hook-form';
 
 const Carrinho = ({ navigation }) => {
   const { isAuthenticated, user } = useContext(AuthContext);
@@ -20,18 +19,6 @@ const Carrinho = ({ navigation }) => {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [addressSubmitted, setAddressSubmitted] = useState(false);
   const [deliveryType, setDeliveryType] = useState('');
-  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      if (!isAuthenticated) {
-        await AsyncStorage.setItem('cart', JSON.stringify(foods));
-        // Não mostrar o modal automaticamente ao carregar
-      }
-    };
-
-    checkAuthentication();
-  }, [isAuthenticated, foods, navigation]);
 
   const handleIncrement = (itemId) => {
     setFoods(prevFoods =>
@@ -53,17 +40,68 @@ const Carrinho = ({ navigation }) => {
     setFoods(prevFoods => prevFoods.filter(food => food.id !== itemId));
   };
 
+  const submitAddress = () => {
+    if (!deliveryAddress.trim()) {
+      alert('Por favor, digite um endereço.');
+    } else {
+      setAddressSubmitted(true);
+    }
+  };
+
+  const editAddress = () => {
+    setAddressSubmitted(false);
+  };
 
   const handlePedidoPress = async () => {
-    setModalVisible(true);
+    if (tableNumber) {
+      setDeliveryType("mesa");
+    }
+
+    if (!deliveryType) {
+      alert('Por favor, selecione uma forma de entrega.');
+      return;
+    }
+
+    if (deliveryType === 'endereco' && !deliveryAddress.trim()) {
+      alert('Por favor, forneça um endereço de entrega.');
+      return;
+    }
+
+    try {
+      const orderItems = foods.map(food => ({
+        amount: food.quantity,
+        product_id: food.id,
+        price: parseFloat(food.price.toString())
+      }));
+
+      const orderData = {
+        deliveryType,
+        table: deliveryType === 'mesa' ? parseInt(tableNumber, 10) : null,
+        address: deliveryType === 'endereco' ? deliveryAddress : null,
+        data: new Date().toISOString(), // Data do pedido
+        precoTotal: totalPrice, // Preço total do pedido
+        items: orderItems
+      };
+
+      ;
+
+      const response = await api.post('/order', orderData);
+
+      alert('Pedido realizado com sucesso!');
+      setFoods([]);
+      navigation.navigate('Pedidos');
+    } catch (error) {
+      console.error('Erro ao enviar o pedido:', error);
+      alert('Ocorreu um erro ao realizar o pedido. Por favor, tente novamente.');
+    }
   };
 
 
-  const handleModalSubmit = (userData) => {
-    console.log('User Data:', userData);
-    // Aqui você pode salvar os dados do usuário conforme necessário
-    setModalVisible(false); // Fechar o modal após submissão
-  };
+  function AbrirMesa(){
+    navigation.navigate('Qrcode');
+  }
+
+
 
   const CartCard = ({ item }) => {
     const itemPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(',', '.')) : parseFloat(item.price);
@@ -108,7 +146,53 @@ const Carrinho = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-
+      {tableNumber ? (
+        <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
+          <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
+          <Icon name="exit" size={20} style={styles.iconeMesaSair} />
+        </TouchableOpacity>
+      ) : (
+        addressSubmitted ? (
+          <TouchableOpacity onPress={editAddress} style={styles.addressSubmittedContainer}>
+            <Text style={styles.addressSubmittedText}>{deliveryAddress}</Text>
+            <Icon name="create-outline" size={20} color={COLORS.white} />
+          </TouchableOpacity>
+        ) : (
+          <>
+            <Picker
+              selectedValue={deliveryOption}
+              onValueChange={(itemValue) => {
+                setDeliveryOption(itemValue);
+                setDeliveryType(itemValue);
+                if (itemValue !== 'endereco') {
+                  setAddressSubmitted(false);
+                  setDeliveryAddress('');
+                }
+                if (itemValue === 'mesa') {
+                  AbrirMesa();
+                }
+              }}
+              style={styles.picker}>
+              <Picker.Item label="Selecione a forma de entrega" value="" />
+              <Picker.Item label="Selecionar Mesa" value="mesa" />
+              <Picker.Item label="Selecionar Endereço" value="endereco" />
+            </Picker>
+            {deliveryOption === 'endereco' && (
+              <>
+                <TextInput
+                  placeholder="Digite seu endereço"
+                  value={deliveryAddress}
+                  onChangeText={setDeliveryAddress}
+                  style={styles.addressInput}
+                />
+                <TouchableOpacity onPress={submitAddress} style={styles.sendButton}>
+                  <Text style={styles.sendButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </>
+        )
+      )}
       <FlatList
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.flatList}
@@ -123,19 +207,9 @@ const Carrinho = ({ navigation }) => {
         </View>
         <PrimaryButton title="PEDIR AGORA" onPress={handlePedidoPress} />
       </View>
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <UserDetailsModal
-          isVisible={modalVisible}
-          onClose={() => setModalVisible(false)}
-          onSubmit={handleModalSubmit} navigation={navigation}        />
-      </Modal>
     </SafeAreaView>
   );
 };
 
 export default Carrinho;
+

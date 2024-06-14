@@ -5,20 +5,17 @@ interface UserRequest {
     name: string;
     email: string;
     password: string;
-    phone?: string;
-    address?: string;
     profileImage?: string;
 }
 
 class CreateUserService {
-    async execute({ name, email, password, phone, address, profileImage }: UserRequest) {
+    async execute({ name, email, password, profileImage }: UserRequest) {
 
-        // Verificar se o e-mail foi fornecido
+        // Verificar se ele enviou um email
         if (!email) {
-            throw new Error("Email não fornecido");
+            throw new Error("Email Incorreto");
         }
-
-        // Verificar se o e-mail já está cadastrado na plataforma
+        // Verificar se esse email já está cadastrado na plataforma
         const userAlreadyExists = await prismaClient.user.findFirst({
             where: {
                 email: email,
@@ -29,24 +26,14 @@ class CreateUserService {
             throw new Error("Email já cadastrado");
         }
 
-        // Hash da senha
         const passwordHash = await hash(password, 8);
 
-        let Corrigido = null;
-        if (profileImage) {
-            const parts = profileImage.split(/[\\/]+/);
-            Corrigido = parts[parts.length - 1];
-        }
-
-        // Criar usuário no banco de dados
         const user = await prismaClient.user.create({
             data: {
                 name: name,
                 email: email,
                 password: passwordHash,
-                phone: phone,
-                address: address,
-                profileImage: Corrigido
+                profileImage: profileImage.split(process.env.FTP === 'true' ? "//" : "\\").pop() || null 
             },
             select: {
                 id: true,
@@ -56,8 +43,8 @@ class CreateUserService {
             }
         });
 
-        return { user };
+        return { user }
     }
 }
 
-export { CreateUserService };
+export { CreateUserService }

@@ -25,8 +25,6 @@ export default function EditarPerfil() {
   const [email, setEmail] = useState(user.email);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [phone, setPhone] = useState(user.phone); // Novo estado para o telefone
-  const [address, setAddress] = useState(user.address); // Novo estado para o endereço
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(`${api.defaults.baseURL}/files/${user.profileImage}`);
 
@@ -51,21 +49,19 @@ export default function EditarPerfil() {
 
   async function handleUpdateProfile() {
     setLoading(true);
-
+  
     if (newPassword && !currentPassword) {
       Alert.alert("Erro", "Por favor, preencha a senha atual para alterar a senha.");
       setLoading(false);
       return;
     }
-
+  
     let formData = new FormData();
     formData.append('userId', user.id);
-
+  
     // Adicione apenas os campos que foram alterados
     if (name !== user.name) formData.append('name', name);
     if (email !== user.email) formData.append('email', email);
-    if (phone !== user.phone) formData.append('phone', phone); // Adicionando o campo de telefone
-    if (address !== user.address) formData.append('address', address); // Adicionando o campo de endereço
     if (newPassword && currentPassword) {
       formData.append('currentPassword', currentPassword);
       formData.append('newPassword', newPassword);
@@ -74,25 +70,25 @@ export default function EditarPerfil() {
       setLoading(false);
       return;
     }
-
+  
     if (selectedImage && selectedImage !== `${api.defaults.baseURL}/files/${user.profileImage}`) {
       try {
         const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-
+  
         if (!fileInfo.exists) {
           throw new Error('File does not exist');
         }
-
+  
         const fileUri = fileInfo.uri;
         const fileType = 'image/jpeg';
         const fileName = fileUri.split('/').pop();
-
+  
         formData.append('profileImage', {
           uri: fileUri,
           name: fileName,
           type: fileType,
         } as any);
-
+  
       } catch (error) {
         console.error('Error getting file info:', error);
         Alert.alert('Erro', 'Erro ao obter informações do arquivo');
@@ -100,7 +96,7 @@ export default function EditarPerfil() {
         return;
       }
     }
-
+  
     try {
       const response = await api.put('/me/update', formData, {
         headers: {
@@ -118,6 +114,9 @@ export default function EditarPerfil() {
       setLoading(false);
     }
   }
+  
+
+
 
   return (
     <View style={styles.container}>
@@ -144,20 +143,6 @@ export default function EditarPerfil() {
         value={email}
         onChangeText={setEmail}
         autoCapitalize='none'
-        placeholderTextColor={'#F0F0F0'}
-      />
-      <TextInput
-        placeholder='Telefone'
-        style={styles.input}
-        value={phone}
-        onChangeText={setPhone}
-        placeholderTextColor={'#F0F0F0'}
-      />
-      <TextInput
-        placeholder='Endereço'
-        style={styles.input}
-        value={address}
-        onChangeText={setAddress}
         placeholderTextColor={'#F0F0F0'}
       />
       <TextInput
