@@ -5,10 +5,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import FinishOrder from "../screens/FinishOrder";
 import Perfil from "../screens/Perfil";
 import SignIn from "../screens/SignIn";
-import Qrcode from "../screens/Qrcode";
+import Pesquisa from "../screens/Pesquisa";
 import SignUp from "../screens/SignUp";
 import EditarPerfil from "../screens/EditarPerfil";
 import Home from "../screens/Home";
+import ProductDetails from "../screens/ProductDetails";
 
 import TabRouter from "./tab.routes";
 
@@ -21,10 +22,11 @@ export type StackParamList = {
         number: number | string,
         order_id: string;
     };
-    Qrcode: undefined;
+    Pesquisa: undefined;
     SignIn: undefined;
     SignUp: undefined;
     EditarPerfil: undefined;
+    ProductDetails: { product: any, category: any };
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -72,7 +74,11 @@ function AppRoutes() {
                     headerTintColor: '#FFF',
                 }}
             />
-            <Stack.Screen name="Qrcode" component={Qrcode} options={{
+            <Stack.Screen name="Pesquisa" 
+            component={Pesquisa} 
+            options={{
+                headerShown: true,
+                title: "Pesquisar Produto",
                 headerStyle: {
                     backgroundColor: '#1d1d2e',
                 },
@@ -94,6 +100,18 @@ function AppRoutes() {
                 component={EditarPerfil}
                 options={{
                     title: "Editar Perfil",
+                    headerStyle: {
+                        backgroundColor: '#1d1d2e',
+                    },
+                    headerTintColor: '#FFF',
+                }}
+            />
+            <Stack.Screen
+                name="ProductDetails"
+                component={ProductDetails}
+                options={{
+                    headerShown: false,
+                    title: "Detalhes do Produto",
                     headerStyle: {
                         backgroundColor: '#1d1d2e',
                     },

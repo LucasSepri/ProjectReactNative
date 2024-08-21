@@ -7,7 +7,6 @@ import {
     Image,
     ScrollView,
     ActivityIndicator,
-    Modal,
     Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +14,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { AuthContext } from '../../context/AuthContext';
 import Icon from 'react-native-vector-icons/Ionicons';
-import ModalProduto from '../../components/ModalProdutos'
 import styles from './style';
 import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
@@ -32,7 +30,7 @@ type ProductProps = {
     banner: string;
     id: string;
     name: string;
-}
+};
 
 type NavigationProp = NativeStackNavigationProp<StackParamList, 'Home'>;
 
@@ -41,8 +39,11 @@ export default function Home() {
     const { isAuthenticated, user } = useContext(AuthContext);
     const { tableNumber, clearTable } = useTable();
 
-    const [category, setCategory] = useState<CategoryProps[]>([]);
-    const [categorySelected, setCategorySelected] = useState<CategoryProps>();
+    const [categories, setCategories] = useState<CategoryProps[]>([]);
+    const [categorySelected, setCategorySelected] = useState<CategoryProps | null>(null);
+    const [products, setProducts] = useState<ProductProps[]>([]);
+    const [loadingProducts, setLoadingProducts] = useState(false);
+    const [productSelected, setProductSelected] = useState<ProductProps | undefined>();
 
     const categoryIcons = {
         'Pizzas': 'pizza',
@@ -53,46 +54,45 @@ export default function Home() {
     const scrollViewRef = useRef<ScrollView>(null);
 
     useEffect(() => {
-        async function loadInfo() {
+        async function loadCategories() {
             const response = await api.get('/category');
-            setCategory(response.data);
-            setCategorySelected(response.data[0]);
+            // Adiciona a categoria "Todos" na lista de categorias
+            setCategories([{ id: 'all', name: 'Todos' }, ...response.data]);
+            setCategorySelected({ id: 'all', name: 'Todos' }); // Define "Todos" como a categoria inicial
         }
 
-        loadInfo();
+        loadCategories();
     }, []);
 
-    function handleChangeCategory(item: CategoryProps, index: number) {
-        setCategorySelected(item);
-        scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
-    }
-
-    const [products, setProducts] = useState<ProductProps[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(false);
-
-    const [productSelected, setProdctSelected] = useState<ProductProps | undefined>();
-    const [modalVisible, setModalVisible] = useState(false);
-
     useEffect(() => {
-        async function loadProduct() {
+        async function loadProducts() {
             setLoadingProducts(true);
-            const response = await api.get('/category/product', {
-                params: {
-                    category_id: categorySelected?.id
-                }
-            });
-            setProducts(response.data);
-            setProdctSelected(response.data[0]);
-            setLoadingProducts(false);
+            try {
+                const response = await api.get('/category/product', {
+                    params: {
+                        category_id: categorySelected && categorySelected.id !== 'all' ? categorySelected.id : undefined
+                    }
+                });
+                setProducts(response.data);
+                setProductSelected(response.data[0]);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoadingProducts(false);
+            }
         }
-        if (categorySelected) {
-            loadProduct();
-        }
+        loadProducts();
     }, [categorySelected]);
 
-    function handleProductPress(item: ProductProps) {
-        setProdctSelected(item);
-        setModalVisible(true);
+    function handleChangeCategory(item: CategoryProps | null, index?: number) {
+        setCategorySelected(item);
+        if (index !== undefined) {
+            scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
+        }
+    }
+
+    function handleProductPress(product: ProductProps) {
+        navigation.navigate('ProductDetails', { product, category: categorySelected });
     }
 
     function handleLogar() {
@@ -102,15 +102,13 @@ export default function Home() {
     function handlePerfil() {
         navigation.navigate('Perfil');
     }
-    function handleQrcode() {
-        navigation.navigate('Qrcode');
+
+    function handleSearch() {
+        navigation.navigate('Pesquisa');
     }
 
-    function truncateString(name: string, arg1: number): React.ReactNode {
-        if (name.length > arg1) {
-            return name.slice(0, arg1);
-        }
-        return name;
+    function truncateString(name: string, maxLength: number): React.ReactNode {
+        return name.length > maxLength ? name.slice(0, maxLength) : name;
     }
 
     const openWhatsApp = () => {
@@ -137,6 +135,12 @@ export default function Home() {
                 style={styles.headerImagemDeFundo}
                 resizeMode="cover"
             >
+                {tableNumber ? (
+                    <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
+                        <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
+                        <Icon name="exit" style={styles.iconeMesaSair} />
+                    </TouchableOpacity>
+                ) : null}
                 <View style={styles.perfil}>
                     {isAuthenticated ? (
                         <TouchableOpacity style={styles.botaoPerfil} onPress={handlePerfil}>
@@ -150,16 +154,9 @@ export default function Home() {
                         </TouchableOpacity>
                     )}
 
-                    {tableNumber ? (
-                        <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
-                            <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
-                            <Icon name="exit" style={styles.iconeMesaSair} />
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity style={styles.botaoIcone} onPress={handleQrcode}>
-                            <Icon name="qr-code-outline" style={styles.icone} />
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity style={styles.botaoIcone} onPress={handleSearch}>
+                        <Icon name="search" style={styles.icone} />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.logoContainer}>
@@ -174,11 +171,6 @@ export default function Home() {
                         <Icon name="logo-whatsapp" size={20} color="#fff" />
                         <Text style={styles.buttonText}>Telefone</Text>
                     </TouchableOpacity>
-
-                    {/* <TouchableOpacity style={styles.buttonHorario} >
-                        <Icon name="time" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Horários</Text>
-                    </TouchableOpacity> */}
                 </View>
 
                 <View style={styles.addressContainer}>
@@ -198,7 +190,7 @@ export default function Home() {
                     contentContainerStyle={styles.categoriesListContainer}
                     ref={scrollViewRef}
                 >
-                    {category.map((item, index) => {
+                    {categories.map((item, index) => {
                         const iconForCategory = categoryIcons[item.name] || 'fast-food';
                         return (
                             <TouchableOpacity
@@ -221,39 +213,28 @@ export default function Home() {
                 {loadingProducts ? (
                     <ActivityIndicator size={60} color={COLORS.primary} />
                 ) : (
-                    products.map((item) => {
-                        return (
-                            <TouchableOpacity
-                                key={item.id}
-                                style={styles.foodItem}
-                                onPress={() => handleProductPress(item)}
-                            >
-                                <View style={styles.imageContainer}>
-                                    <Image
-                                        source={{ uri: `${api.defaults.baseURL}/files/${item.banner}` }}
-                                        style={styles.image}
-                                    />
-                                </View>
-                                <View style={styles.infoContainer}>
-                                    <Text style={styles.name}>{item.name}</Text>
-                                    <Text style={styles.description}>{item.description}</Text>
-                                    <Text style={styles.ingredients}>{item.ingredients}</Text>
-                                    <Text style={styles.price}>R$ {item.price}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        );
-                    })
+                    products.map((item) => (
+                        <TouchableOpacity
+                            key={item.id}
+                            style={styles.foodItem}
+                            onPress={() => handleProductPress(item)}
+                        >
+                            <View style={styles.imageContainer}>
+                                <Image
+                                    source={{ uri: `${api.defaults.baseURL}/files/${item.banner}` }}
+                                    style={styles.image}
+                                />
+                            </View>
+                            <View style={styles.infoContainer}>
+                                <Text style={styles.name}>{item.name}</Text>
+                                <Text style={styles.description}>{item.description}</Text>
+                                <Text style={styles.ingredients}>{item.ingredients}</Text>
+                                <Text style={styles.price}>R$ {item.price}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))
                 )}
             </View>
-
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <ModalProduto productSelected={productSelected} setModalVisible={setModalVisible} />
-            </Modal>
-        </ScrollView >
+        </ScrollView>
     );
 }

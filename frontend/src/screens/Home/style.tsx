@@ -40,22 +40,32 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
-    botaoMesaSair:{
+    /* botaoMesaSair: {
         padding: 5,
-        borderRadius: 10,
         backgroundColor: COLORS.red,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+    }, */
+    botaoMesaSair: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLORS.primary,
+        padding: 16,
+        marginHorizontal: 20,
+        borderRadius: 8,
+        marginTop: 16,
+        // marginBottom: 16,
     },
-    textoMesaSair:{
+    textoMesaSair: {
         color: COLORS.white,
-        fontSize: 18,
-        marginRight: 10,
+        fontWeight: 'bold',
+        marginRight: 8,
     },
     iconeMesaSair: {
         color: COLORS.white,
-        fontSize: 22,
+        fontSize: 20,
     },
     icone: {
         color: COLORS.white,
@@ -86,17 +96,9 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginRight: 10,
     },
-    buttonHorario: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        backgroundColor: COLORS.primary,
-        borderRadius: 5,
-    },
     buttonText: {
         color: '#fff',
-        marginLeft: 5
+        marginLeft: 5,
     },
     addressContainer: {
         alignItems: 'center',
@@ -119,7 +121,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginLeft: 10,
     },
-
 
     /*************  MAIN SCREEN  ****************/
     // Container produtos
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
     },
 
     // Produtos
-    foodListContainer:{
+    foodListContainer: {
         padding: 10,
         marginBottom: 80,
     },
@@ -233,7 +234,6 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 3,
     },
-
 });
 
 export default styles;

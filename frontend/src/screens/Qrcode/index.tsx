@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { Button, View, Text, ActivityIndicator, Alert } from 'react-native';
+import { Button, View, Text, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../styles/COLORS';
 import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { useTable } from '../../context/TableContext';
-import { set } from 'react-hook-form';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-type NavigationProp = NativeStackNavigationProp<StackParamList, 'Qrcode'>;
+type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
 export default function Qrcode() {
   const navigation = useNavigation<NavigationProp>();
@@ -34,9 +34,8 @@ export default function Qrcode() {
   async function handleBarCodeScanned({ data }: { data: string }) {
     setScanned(true);
     setLoading(true);
-    // Verifica se o QR code contém '&&' seguido de números
     if (data.startsWith("&&") && !isNaN(Number(data.slice(2)))) {
-      const number = data.slice(2); // Remove os caracteres '&&'
+      const number = data.slice(2);
       setTableNumber(number);
       try {
         navigation.goBack();
@@ -44,19 +43,18 @@ export default function Qrcode() {
       } catch (error) {
         tryAgain();
       }
-
     } else {
       Alert.alert(
         "Código inválido",
         "O código lido não é válido. Tente novamente.",
         [
           {
-            text: "OK", onPress: () => tryAgain(),
-            style: "cancel"
+            text: "OK",
+            onPress: () => tryAgain(),
+            style: "cancel",
           },
         ]
       );
-
     }
   }
 
@@ -65,6 +63,10 @@ export default function Qrcode() {
     setLoading(false);
   }
 
+  function reloadQrcode() {
+    setScanned(false);
+    setLoading(false);
+  }
 
   return (
     <View style={styles.container}>
@@ -73,13 +75,30 @@ export default function Qrcode() {
           <ActivityIndicator size={50} color={COLORS.primary} />
         </View>
       ) : (
-        <CameraView
-          style={styles.camera}
-          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={{
-            barcodeTypes: ['qr'],
-          }}
-        />
+        <View style={styles.cameraContainer}>
+          <CameraView
+            style={styles.camera}
+            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            barcodeScannerSettings={{
+              barcodeTypes: ['qr'],
+            }}
+          />
+          <TouchableOpacity
+            style={styles.squareButton}
+            onPress={reloadQrcode}
+          >
+            <View style={styles.containerQr}>
+              {/* Top Left */}
+              <View style={[styles.corner, styles.topLeft]} />
+              {/* Top Right */}
+              <View style={[styles.corner, styles.topRight]} />
+              {/* Bottom Left */}
+              <View style={[styles.corner, styles.bottomLeft]} />
+              {/* Bottom Right */}
+              <View style={[styles.corner, styles.bottomRight]} />
+            </View>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
