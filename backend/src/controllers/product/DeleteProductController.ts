@@ -1,21 +1,14 @@
-// src/controllers/user/DeleteUserController.ts
-
-import { Request, Response } from "express";
-import { DeleteProductService } from "../../services/product/DeleteProductService";
+import { Request, Response } from 'express';
+import DeleteProductService from '../../services/product/DeleteProductService';
 
 class DeleteProductController {
     async handle(req: Request, res: Response) {
-        const { id } = req.body;
+        const { id } = req.params;
 
-        const deleteProductService = new DeleteProductService();
+        await DeleteProductService.execute(id);
 
-        try {
-            await deleteProductService.execute(id);
-            return res.status(204).send();
-        } catch (error) {
-            return res.status(400).json({ error: error.message });
-        }
+        return res.status(200).json({ message: 'Produto excluído com sucesso.' });
     }
 }
 
-export { DeleteProductController };
+export default new DeleteProductController();

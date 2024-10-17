@@ -1,38 +1,26 @@
-import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
+// src/middlewares/isAuthenticated.ts
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-interface PayLoad {
-    sub: string;
+interface JwtPayload {
+  id: string;
+  isAdmin: boolean;
 }
 
+export function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
 
-export function isAuthenticated(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Token não fornecido.' });
+  }
 
-    //Receber o token
-    const authToken = req.headers.authorization;
+  const token = authHeader.split(' ')[1];
 
-    if (!authToken) {
-        return res.status(401).end();
-    }
-
-    const [, token] = authToken.split(" ");
-    try {
-        //Validar se o token está preenchido
-        const { sub } = verify(
-            token,
-            process.env.JWT_SECRET
-        ) as PayLoad;
-
-        //    Recuperar o id do token e colocar em uma variavel user_id dentro do req.
-        req.user_id = sub;
-
-        return next();
-
-    } catch (err) {
-        return res.status(401).end();
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default-secret-key') as JwtPayload;
+    req.user = { id: decoded.id, isAdmin: decoded.isAdmin }; // Adiciona o usuário ao request
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Token inválido.' });
+  }
 }

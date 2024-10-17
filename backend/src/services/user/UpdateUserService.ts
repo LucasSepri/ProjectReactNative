@@ -1,98 +1,63 @@
-import { Client } from "basic-ftp";
-import prismaClient from "../../prisma";
-import bcrypt from "bcryptjs";
-import fs from "fs/promises"; // Importar o módulo fs para manipulação de arquivos
-import path from "path"; // Importar o módulo path para manipulação de caminhos de arquivos
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import { deleteFile } from '../../utils/deleteFile';
 
-interface UserRequest {
-    userId: string;
-    name?: string;
-    email?: string;
-    currentPassword?: string;
-    newPassword?: string;
-    profileImage?: string;
+const prisma = new PrismaClient();
+
+interface UpdateUserRequest {
+  id: string;
+  name?: string;
+  email?: string;
+  password?: string;
+  profileImage?: string;
 }
 
 class UpdateUserService {
-    async execute({ userId, email, name, currentPassword, newPassword, profileImage }: UserRequest) {
-        // Fetch the user from the database
-        const user = await prismaClient.user.findUnique({
-            where: { id: userId },
-        });
+  async execute({ id, name, email, password, profileImage }: UpdateUserRequest) {
+    // Encontra o usuário pelo ID
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
 
-        if (!user) {
-            throw new Error("User not found");
-        }
-
-        // Check if the current password matches, if provided
-        if (currentPassword) {
-            const passwordMatch = await bcrypt.compare(currentPassword, user.password);
-            if (!passwordMatch) {
-                throw new Error("Current password is incorrect");
-            }
-        }
-
-        // If new password is provided, hash it
-        let hashedPassword = user.password;
-        if (newPassword) {
-            hashedPassword = await bcrypt.hash(newPassword, 8);
-        }
-
-        // Prepare data for update
-        const userData: any = {};
-        if (name) userData.name = name;
-        if (email) userData.email = email;
-        if (profileImage) {
-            // Remover a imagem antiga do perfil se existir
-            if (user.profileImage) {
-                try {
-                    if (process.env.FTP === 'true') {
-                        const client = new Client();
-                        await client.access({
-                            host: process.env.FTP_HOST,
-                            user: process.env.FTP_USER,
-                            password: process.env.FTP_PASS,
-                            secure: true,
-                            secureOptions: { rejectUnauthorized: false }
-                        });
-
-                        // Caminho do arquivo no servidor FTP
-                        const filePath = `/${user.profileImage}`;
-
-                        // Deleta o arquivo do servidor FTP
-                        await client.remove(filePath);
-                    } else {
-                        const imagePath = process.env.DATABASE_TIPO === 'online' 
-                            ? path.join(__dirname, user.profileImage)
-                            : path.join(__dirname, '../../../../tmp', user.profileImage);
-
-                        // Deleta o arquivo do sistema de arquivos local
-                        await fs.unlink(imagePath);
-                    }
-                } catch (error) {
-                    console.error("Error removing old profile image:", error);
-                }
-            }
-            // Extrair o nome do arquivo da nova imagem do perfil
-            userData.profileImage = path.basename(profileImage);
-        }
-        if (newPassword) userData.password = hashedPassword;
-
-        // Update the user with the new details
-        const updatedUser = await prismaClient.user.update({
-            where: { id: userId },
-            data: userData,
-            select: {
-                id: true,
-                isAdmin: true,
-                email: true,
-                name: true,
-                profileImage: true,
-            }
-        });
-
-        return updatedUser;
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
     }
+
+    // Verifica se o novo e-mail já está em uso por outro usuário
+    if (email && email !== user.email) {
+      const emailExists = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (emailExists) {
+        throw new Error('E-mail já cadastrado por outro usuário.');
+      }
+    }
+
+    // Deleta a imagem existente, se houver
+    if (user.profileImage && profileImage) {
+      deleteFile(user.profileImage.replace('/uploads/', ''));
+    }
+
+    // Atualiza os dados do usuário
+    const updatedUser = await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        name: name ?? user.name,
+        email: email ?? user.email,
+        password: password ? await bcrypt.hash(password, 8) : user.password,
+        profileImage: profileImage ?? user.profileImage,
+      },
+    });
+
+    return updatedUser;
+  }
 }
 
-export { UpdateUserService };
+export default new UpdateUserService();

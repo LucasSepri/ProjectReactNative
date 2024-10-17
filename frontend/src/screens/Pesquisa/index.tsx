@@ -42,7 +42,7 @@ const PizzaScreen = () => {
   useEffect(() => {
     async function loadCategories() {
       try {
-        const response = await api.get('/category');
+        const response = await api.get('/categories');
         setCategories([{ id: 'all', name: 'Todos' }, ...response.data]);
         setCategorySelected({ id: 'all', name: 'Todos' });
       } catch (error) {
@@ -57,7 +57,11 @@ const PizzaScreen = () => {
     async function loadProducts() {
       setLoadingProducts(true);
       try {
-        const response = await api.get('/category/product', {
+        const response = await api.get(
+          categorySelected && categorySelected.id !== 'all'
+              ? `/products/${categorySelected.id}`
+              : '/products'
+      , {
           params: {
             category_id: categorySelected && categorySelected.id !== 'all' ? categorySelected.id : undefined
           }
@@ -99,7 +103,7 @@ const PizzaScreen = () => {
       onPress={() => handleProductPress(item)}
     >
       <View style={styles.imageContainer}>
-        <Image source={{ uri: `${api.defaults.baseURL}/files/${item.banner}` }} style={styles.image} />
+        <Image source={{ uri: `${api.defaults.baseURL}${item.banner}` }} style={styles.image} />
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>

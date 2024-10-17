@@ -20,7 +20,7 @@ export default function Perfil() {
 
     async function handleDeleteAccount() {
         try {
-            await api.delete('/me/excluir', {
+            await api.delete(`/users/${user.id}`, {
                 data: {
                     userId: user.id
                 }
@@ -50,7 +50,7 @@ export default function Perfil() {
         <View style={styles.container}>
             <View style={styles.profileContainer}>
                 <Image
-                    source={{ uri: `${api.defaults.baseURL}/files/${user.profileImage}` }}
+                    source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }}
                     style={styles.profileImage}
                 />
                 <Text style={styles.name}>{user.name}</Text>

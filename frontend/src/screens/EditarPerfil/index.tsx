@@ -23,10 +23,9 @@ export default function EditarPerfil() {
   const { user, setUser } = useContext(AuthContext);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(`${api.defaults.baseURL}/files/${user.profileImage}`);
+  const [selectedImage, setSelectedImage] = useState(`${api.defaults.baseURL}${user.profileImage}`);
 
   const pickImageAsync = async () => {
     let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -50,28 +49,19 @@ export default function EditarPerfil() {
   async function handleUpdateProfile() {
     setLoading(true);
   
-    if (newPassword && !currentPassword) {
-      Alert.alert("Erro", "Por favor, preencha a senha atual para alterar a senha.");
-      setLoading(false);
-      return;
-    }
-  
     let formData = new FormData();
     formData.append('userId', user.id);
   
-    // Adicione apenas os campos que foram alterados
+    // Adiciona apenas os campos que foram alterados
     if (name !== user.name) formData.append('name', name);
     if (email !== user.email) formData.append('email', email);
-    if (newPassword && currentPassword) {
-      formData.append('currentPassword', currentPassword);
-      formData.append('newPassword', newPassword);
-    } else if (newPassword && !currentPassword) {
-      Alert.alert("Erro", "Por favor, preencha a senha atual para alterar a senha.");
-      setLoading(false);
-      return;
+    
+    // Adiciona ama nova senha apenas se ela for fornecida
+    if (password) {
+      formData.append('password', password);
     }
   
-    if (selectedImage && selectedImage !== `${api.defaults.baseURL}/files/${user.profileImage}`) {
+    if (selectedImage && selectedImage !== `${api.defaults.baseURL}${user.profileImage}`) {
       try {
         const fileInfo = await FileSystem.getInfoAsync(selectedImage);
   
@@ -80,7 +70,7 @@ export default function EditarPerfil() {
         }
   
         const fileUri = fileInfo.uri;
-        const fileType = 'image/jpeg';
+        const fileType = fileUri.split('.').pop() === 'jpg' ? 'image/jpeg' : 'image/png';
         const fileName = fileUri.split('/').pop();
   
         formData.append('profileImage', {
@@ -88,7 +78,6 @@ export default function EditarPerfil() {
           name: fileName,
           type: fileType,
         } as any);
-  
       } catch (error) {
         console.error('Error getting file info:', error);
         Alert.alert('Erro', 'Erro ao obter informações do arquivo');
@@ -98,12 +87,14 @@ export default function EditarPerfil() {
     }
   
     try {
-      const response = await api.put('/me/update', formData, {
+      // Atualiza o endpoint aqui
+      const response = await api.put(`/users/${user.id}`, formData, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
         }
       });
+      // Supondo que a resposta contenha os dados do usuário atualizado
       setUser(response.data);
       Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
       navigation.goBack();
@@ -115,6 +106,8 @@ export default function EditarPerfil() {
     }
   }
   
+
+
 
 
 
@@ -146,20 +139,12 @@ export default function EditarPerfil() {
         placeholderTextColor={'#F0F0F0'}
       />
       <TextInput
-        placeholder='Senha Atual'
-        style={styles.input}
-        placeholderTextColor={'#F0F0F0'}
-        secureTextEntry={true}
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-      />
-      <TextInput
         placeholder='Nova Senha'
         style={styles.input}
         placeholderTextColor={'#F0F0F0'}
         secureTextEntry={true}
-        value={newPassword}
-        onChangeText={setNewPassword}
+        value={password}
+        onChangeText={setPassword}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleUpdateProfile} disabled={loading}>

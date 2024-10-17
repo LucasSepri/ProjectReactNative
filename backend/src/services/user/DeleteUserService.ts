@@ -1,69 +1,44 @@
-import prismaClient from "../../prisma";
-import fs from 'fs';
-import path from 'path';
-import { Client } from 'basic-ftp';
+import { PrismaClient } from '@prisma/client';
+import { deleteFile } from '../../utils/deleteFile'; // Função para deletar arquivos
 
+const prisma = new PrismaClient();
 
 class DeleteUserService {
-    async execute(userId: string) {
-        const user = await prismaClient.user.findUnique({
-            where: {
-                id: userId
-            }
-        });
+  async execute(id: string) {
+    // Encontra o usuário pelo ID
+    const user = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        addresses: true, // Inclui endereços para garantir que a exclusão em cascata funcione
+      },
+    });
 
-        if (!user) {
-            throw new Error("Usuário não encontrado.");
-        }
-
-        if (user.profileImage) {
-            if (process.env.FTP === 'true') {
-                const client = new Client();
-
-                (async () => {
-                    try {
-                        await client.access({
-                            host: process.env.FTP_HOST,
-                            user: process.env.FTP_USER,
-                            password: process.env.FTP_PASS,
-                            secure: true,
-                            secureOptions: { rejectUnauthorized: false }
-                        });
-
-                        // Caminho do arquivo no servidor FTP
-                        const filePath = `/${user.profileImage}`;
-
-                        // Deleta o arquivo do servidor FTP
-                        await client.remove(filePath);
-                        console.log("Imagem de perfil excluída com sucesso do FTP.");
-                    } catch (error) {
-                        console.error("Erro ao excluir a imagem de perfil do FTP:", error);
-                    } finally {
-                        client.close();
-                    }
-                })();
-            } else {
-                // Remove a imagem de perfil do diretório 'tmp'
-                const filePath = path.resolve(__dirname, '..', '..', '..', 'tmp', user.profileImage);
-
-                fs.unlink(filePath, (err) => {
-                    if (err) {
-                        // console.error("Falha ao excluir a imagem de perfil:", err);
-                        // console.error("Caminho do arquivo:", filePath);
-                    } else {
-                        // console.log("Imagem de perfil excluída com sucesso.");
-                        // console.log("Caminho do arquivo:", filePath);
-                    }
-                });
-            }
-        }
-
-        await prismaClient.user.delete({
-            where: {
-                id: userId
-            }
-        });
+    if (!user) {
+      throw new Error('Usuário não encontrado.');
     }
+
+    // Deleta a imagem de perfil, se houver
+    if (user.profileImage) {
+      deleteFile(user.profileImage.replace('/uploads/', ''));
+    }
+
+    // Atualiza as ordens para remover a associação com o usuário
+    await prisma.order.updateMany({
+      where: { user_id: id }, // Encontra todas as ordens do usuário
+      data: { user_id: null }, // Remove a associação com o usuário
+    });
+
+    // Deleta o usuário
+    await prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+
+    return { message: 'Usuário excluído com sucesso.' };
+  }
 }
 
-export { DeleteUserService };
+export default new DeleteUserService();

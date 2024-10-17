@@ -18,9 +18,9 @@ export default function App() {
                 <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
                 <AuthProvider>
                     <TableProvider>
-                        <FoodsProvider>
+                        {/* <FoodsProvider> */}
                             <Routes />
-                        </FoodsProvider>
+                        {/* </FoodsProvider> */}
                     </TableProvider>
                 </AuthProvider>
             </NavigationContainer>

@@ -1,114 +1,152 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import styles from './style'; // Importando seu estilo
 import { api } from '../../services/api';
+import { AuthContext } from '../../context/AuthContext';
+import { COLORS } from '../../styles/COLORS';
 
-const PedidoScreen = () => {
-  const [pedidos, setPedidos] = useState([]);
+const OrdemScreen = ({ navigation }) => {
+  const { user } = useContext(AuthContext);
+  const [orders, setOrders] = useState([]);
+  const [allOrders, setAllOrders] = useState([]); // Para armazenar todas as ordens
+  const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
 
-  useEffect(() => {
-    const fetchPedidos = async () => {
+  const loadOrders = async () => {
+    setLoading(true);
+    if (JSON.stringify(user.name) === '""') {
+      setOrders([]);
+      setAllOrders([]);
+      setStartDate(new Date());
+      setEndDate(new Date());
+      return setLoading(false);
+    } else {
       try {
-        const response = await api.get('/orders');
-        setPedidos(response.data);
+        const response = await api.get('/orders/'); // Supondo que você tenha uma rota para obter as ordens
+        setOrders(response.data);
+        setAllOrders(response.data); // Armazena todas as ordens
       } catch (error) {
-        console.error('Erro ao buscar os pedidos:', error);
+        console.error('Erro ao carregar as ordens:', error);
+      } finally {
+        setLoading(false);
       }
-    };
-
-    fetchPedidos();
-  }, []);
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Entregue':
-        return <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />;
-      case 'Em andamento':
-        return <Ionicons name="time" size={24} color="#FFC107" />;
-      case 'Cancelado':
-        return <Ionicons name="close-circle" size={24} color="#F44336" />;
-      default:
-        return null;
     }
   };
 
-  const formatDescricao = (items) => {
-    if (!items || items.length === 0) return ''; // Verifica se existe items e se não está vazio
-    return items.map(item => `(${item.amount}) ${item.product.name} `).join(', ');
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', loadOrders);
+    return unsubscribe;
+  }, [navigation, user]);
+
+  const handleCancelOrder = async (orderId) => {
+    console.log('Cancelando ordem com ID:', orderId);
+    try {
+      await api.delete(`/orders/${orderId}/cancel/`);
+      Alert.alert('Sucesso', 'Ordem cancelada com sucesso.');
+      loadOrders();
+    } catch (error) {
+      console.error('Erro ao cancelar a ordem:', error);
+      Alert.alert('Erro', 'Não foi possível cancelar a ordem.');
+    }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.pedidoContainer}>
-      <Text style={styles.data}>Pedido em {item.created_at}</Text>
-      <Text style={styles.descricao}>Descrição: {formatDescricao(item.items)}</Text>
-      <Text style={styles.precoTotal}>Total: R$ {item.precoTotal.toFixed(2)}</Text>
-      <View style={styles.statusContainer}>
-        <Text>Status: </Text>
-        {getStatusIcon(item.status)}
-        <Text style={styles.statusText}>{item.status}</Text>
-      </View>
-    </View>
-  );
+  const renderOrderItem = ({ item }) => {
+    const orderDate = new Date(item.created_at);
+
+    return (
+      <TouchableOpacity style={styles.orderCard} onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}>
+        <Text style={styles.orderText}>Ordem ID: {item.id}</Text>
+        <Text style={styles.orderText}>Status: {item.status}</Text>
+        <Text style={styles.orderText}>Preço Total: R$ {item.totalPrice.toFixed(2)}</Text>
+        <Text style={styles.orderText}>Data: {orderDate.toLocaleDateString()} {orderDate.toLocaleTimeString()}</Text>
+
+        {item.status === 'Criado' && (
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => handleCancelOrder(item.id)}
+          >
+            <Text style={styles.cancelButtonText}>Cancelar Ordem</Text>
+          </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+    );
+  };
+
+  const filterOrdersByDate = () => {
+    const filteredOrders = allOrders.filter(order => {
+      const orderDate = new Date(order.created_at);
+      return orderDate >= startDate && orderDate <= endDate;
+    });
+    setOrders(filteredOrders);
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Meus Pedidos</Text>
-      <FlatList
-        data={pedidos}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-      />
+      <Text style={styles.header}>Aqui você verá suas Ordens</Text>
+
+      {/* Filtro de datas */}
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterTitle}>Filtrar por Data:</Text>
+        <View style={styles.datePickerContainer}>
+          <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartPicker(true)}>
+            <Text style={styles.dateButtonText}>Data de Início: {startDate.toLocaleDateString()}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dateButton} onPress={() => setShowEndPicker(true)}>
+            <Text style={styles.dateButtonText}>Data de Fim: {endDate.toLocaleDateString()}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.filterButton} onPress={filterOrdersByDate}>
+          <Text style={styles.filterButtonText}>Filtrar Ordens</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* DatePickers */}
+      {showStartPicker && (
+        <DateTimePicker
+          value={startDate}
+          mode="date"
+          display="default"
+          onChange={(event, date) => {
+            setShowStartPicker(false);
+            if (date) setStartDate(date);
+          }}
+        />
+      )}
+      {showEndPicker && (
+        <DateTimePicker
+          value={endDate}
+          mode="date"
+          display="default"
+          onChange={(event, date) => {
+            setShowEndPicker(false);
+            if (date) setEndDate(date);
+          }}
+        />
+      )}
+
+      {/* Lista de ordens */}
+      {loading ? (
+        <ActivityIndicator size={50} color={COLORS.secondary} />
+      ) : (
+        <>
+          {orders.length === 0 ? (
+            <Text style={styles.noOrdersText}>Você não tem ordens no momento.</Text>
+          ) : (
+            <FlatList
+              data={orders}
+              renderItem={renderOrderItem}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          )}
+        </>
+      )}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 80, // Margem de 60 no bottom
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333333',
-    textAlign: 'center',
-  },
-  pedidoContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 20,
-    elevation: 3,
-  },
-  data: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333333',
-  },
-  descricao: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: '#666666',
-  },
-  precoTotal: {
-    fontSize: 16,
-    marginBottom: 10,
-    color: '#666666',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  statusText: {
-    marginLeft: 5,
-    fontSize: 16,
-    color: '#333333',
-  },
-});
-
-export default PedidoScreen;
+export default OrdemScreen;

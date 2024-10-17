@@ -1,26 +1,34 @@
-// createOrderController.ts
-import { Request, Response } from 'express'; 
-import { CreateOrderService } from '../../services/order/CreateOrderService';
+import { Request, Response } from 'express';
+import CreateOrderService from '../../services/order/CreateOrderService';
 
 class CreateOrderController {
-    async handle(req: Request, res: Response) {
-        const { deliveryType, table, address, items } = req.body;
+  async handle(req: Request, res: Response) {
+    const user_id = req.user?.id; // ID do usuário autenticado
 
-        const createOrderService = new CreateOrderService();
-
-        try {
-            const order = await createOrderService.execute({
-                deliveryType,
-                table,
-                address,
-                items
-            });
-            return res.status(201).json(order);
-        } catch (error) {
-            console.error(`Erro ao criar pedido: ${error}`);
-            return res.status(500).json({ error: "Erro ao criar pedido" });
-        }
+    if (!user_id) {
+      return res.status(401).json({ error: 'Usuário não autenticado.' });
     }
+
+    const { deliveryType, deliveryAddress, tableNumber } = req.body;
+
+    // Validação dos dados
+    if (!deliveryType) {
+      return res.status(400).json({ error: 'Tipo de entrega não informado.' });
+    }
+
+    try {
+      const order = await CreateOrderService.execute({
+        user_id,
+        deliveryType,
+        deliveryAddress,
+        tableNumber,
+      });
+
+      return res.status(201).json(order);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  }
 }
 
-export { CreateOrderController }
+export default new CreateOrderController();

@@ -1,30 +1,39 @@
-import { PrismaClient } from "@prisma/client";
+import prismaClient from '../../prisma';
 
-const prisma = new PrismaClient();
-
-class ListOrdersService {
-    async execute() {
-        const orders = await prisma.order.findMany({
-            where: {
-                draft: false,
-                status: {
-                    not: "Entregue" // Considerando que "Entregue" é o status para pedidos entregues
-                }
-            },
-            include: {
-                items: {
-                    include: {
-                        product: true
-                    }
-                }
-            },
-            orderBy: {
-                created_at: 'desc'
-            },
-        });
-
-        return orders;
-    }
+interface ListOrdersRequest {
+  user_id?: string;
+  isAdmin?: boolean;
 }
 
-export { ListOrdersService };
+class ListOrdersService {
+  async execute({ user_id, isAdmin }: ListOrdersRequest) {
+    let orders;
+
+    if (isAdmin) {
+      // Se o usuário for administrador, retorna todas as ordens
+      orders = await prismaClient.order.findMany({
+        include: {
+          items: true,
+          user: {
+            select: { id: true, name: true, email: true }, // Inclui informações do usuário
+          },
+        },
+      });
+    } else {
+      // Caso contrário, retorna apenas as ordens do usuário autenticado
+      orders = await prismaClient.order.findMany({
+        where: { user_id },
+        include: {
+          items: true,
+          user: {
+            select: { id: true, name: true, email: true }, // Inclui informações do usuário
+          },
+        },
+      });
+    }
+
+    return orders;
+  }
+}
+
+export default new ListOrdersService();

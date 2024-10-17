@@ -68,17 +68,53 @@ export default StyleSheet.create({
         paddingLeft: 10,
         backgroundColor: '#fff',
     },
-    button: {
-        backgroundColor: '#007BFF',
-        paddingVertical: 15,
+    // button: {
+    //     backgroundColor: '#007BFF',
+    //     paddingVertical: 15,
+    //     alignItems: 'center',
+    //     borderRadius: 5,
+    // },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly', // Distribui o espaço de maneira equilibrada
         alignItems: 'center',
-        borderRadius: 5,
+        marginTop: 15,
     },
+    
+    button: {
+        flex: 1, // Torna ambos os botões de tamanho igual
+        marginHorizontal: 5, // Dá espaço horizontal entre os botões
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 3, // Para sombra no Android
+    },
+    
+    submitButton: {
+        backgroundColor: '#4CAF50', // Verde para criar/editar
+    },
+    
+    cancelButton: {
+        backgroundColor: '#F44336', // Vermelho para cancelar
+    },
+    
     buttonText: {
         color: '#fff',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
     },
+    
+    cancelButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    
     productsTitle: {
         fontSize: 24,
         fontWeight: 'bold',
@@ -158,7 +194,7 @@ export default StyleSheet.create({
         color: '#999',
         fontStyle: 'italic', // Estilo itálico para diferenciar dos outros textos
     },
-    productCategory:{
+    productCategory: {
         fontSize: 16,
         color: COLORS.primary,
         fontWeight: 'bold',

@@ -1,59 +1,29 @@
 import { Request, Response } from 'express';
-import { UpdateProductService } from '../../services/product/UpdateProductService';
-
-// MINHA MODIFICAÇÃO:: Importando a interface 'File' do 'multer'
-// import { File } from 'multer';
-
-// MINHA MODIFICAÇÃO:: Criando uma interface para sobrescrever a interface 'Request' do 'express'
-// interface MulterRequest extends Request {
-//     file: File; // Usando a interface 'File' do 'multer'
-// }
+import UpdateProductService from '../../services/product/UpdateProductService';
+import upload from '../../config/multer'; // Ajuste o caminho se necessário
 
 class UpdateProductController {
-    // MINHA MODIFICAÇÃO:: Alterando o tipo do parâmetro 'req' para a interface criada
+  async handle(req: Request, res: Response) {
+    const { id } = req.params; // Assume que o ID do produto a ser atualizado vem na URL
+    const { name, price, description, category_id } = req.body;
+    const bannerPath = req.file?.filename ? `/uploads/${req.file.filename}` : undefined;
 
-    async handle(req: Request, res: Response) {
-        // async handle(req: MulterRequest, res: Response) {
+    try {
+      // Chama o serviço de atualização de produto
+      const updatedProduct = await UpdateProductService.execute({
+        id,
+        name,
+        price: price ? parseFloat(price) : undefined, // Certifique-se de converter para número
+        description,
+        banner: bannerPath,
+        category_id,
+      });
 
-        const { id, name, price, description, category_id } = req.body;
-
-        const updateProductService = new UpdateProductService();
-
-        let banner;
-        if (!req.file) {
-            //banner = null;
-        } else {
-            banner = req.file.path.split(process.env.FTP === 'true' ? "/" : "\\" ).pop();
-        }
-
-        const product = await updateProductService.execute({
-            id,
-            name,
-            price,
-            description,
-            banner,
-            category_id
-        });
-         return res.json(product);
-         
-        // if (!req.file) {
-        //     throw new Error("erro no upload do arquivo");
-        // } else {
-        //     const banner = req.file.path.split(process.env.FTP === 'true' ? "/" : "\\" ).pop();
-
-        //     const product = await updateProductService.execute({
-        //         id,
-        //         name,
-        //         price,
-        //         description,
-        //         banner,
-        //         category_id
-        //     });
-
-        //     return res.json(product);
-        // }
-
+      return res.status(200).json(updatedProduct);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
     }
+  }
 }
 
-export { UpdateProductController };
+export default new UpdateProductController();

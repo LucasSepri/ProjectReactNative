@@ -11,18 +11,19 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { StackParamList } from '../../routes/app.routes';
 import { AuthContext } from '../../context/AuthContext';
-import Icon from 'react-native-vector-icons/Ionicons';
-import styles from './style';
+import { useTable } from '../../context/TableContext';
 import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
-import { useTable } from '../../context/TableContext';
+import Icon from 'react-native-vector-icons/Ionicons';
+import styles from './style';
+import { StackParamList } from '../../routes/app.routes';
 
 export type CategoryProps = {
     id: string;
     name: string;
 };
+
 type ProductProps = {
     price: string;
     ingredients: string;
@@ -32,7 +33,7 @@ type ProductProps = {
     name: string;
 };
 
-type NavigationProp = NativeStackNavigationProp<StackParamList, 'Home'>;
+type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
 export default function Home() {
     const navigation = useNavigation<NavigationProp>();
@@ -53,26 +54,26 @@ export default function Home() {
 
     const scrollViewRef = useRef<ScrollView>(null);
 
+    // Função para carregar categorias
     useEffect(() => {
-        async function loadCategories() {
-            const response = await api.get('/category');
-            // Adiciona a categoria "Todos" na lista de categorias
+        const loadCategories = async () => {
+            const response = await api.get('/categories');
             setCategories([{ id: 'all', name: 'Todos' }, ...response.data]);
-            setCategorySelected({ id: 'all', name: 'Todos' }); // Define "Todos" como a categoria inicial
-        }
-
+            setCategorySelected({ id: 'all', name: 'Todos' });
+        };
         loadCategories();
     }, []);
 
+    // Função para carregar produtos
     useEffect(() => {
-        async function loadProducts() {
+        const loadProducts = async () => {
             setLoadingProducts(true);
             try {
-                const response = await api.get('/category/product', {
-                    params: {
-                        category_id: categorySelected && categorySelected.id !== 'all' ? categorySelected.id : undefined
-                    }
-                });
+                const response = await api.get(
+                    categorySelected && categorySelected.id !== 'all'
+                        ? `/products/${categorySelected.id}`
+                        : '/products'
+                );
                 setProducts(response.data);
                 setProductSelected(response.data[0]);
             } catch (error) {
@@ -80,39 +81,41 @@ export default function Home() {
             } finally {
                 setLoadingProducts(false);
             }
-        }
+        };
         loadProducts();
     }, [categorySelected]);
 
-    function handleChangeCategory(item: CategoryProps | null, index?: number) {
+    // Função para alterar categoria
+    const handleChangeCategory = (item: CategoryProps | null, index?: number) => {
         setCategorySelected(item);
         if (index !== undefined) {
             scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
         }
-    }
+    };
 
-    function handleProductPress(product: ProductProps) {
+    // Funções de navegação
+    const handleProductPress = (product: ProductProps) => {
         navigation.navigate('ProductDetails', { product, category: categorySelected });
-    }
+    };
 
-    function handleLogar() {
+    const handleLogar = () => {
         navigation.navigate('SignIn');
-    }
+    };
 
-    function handlePerfil() {
+    const handlePerfil = () => {
         navigation.navigate('Perfil');
-    }
+    };
 
-    function handleSearch() {
+    const handleSearch = () => {
         navigation.navigate('Pesquisa');
-    }
+    };
 
-    function truncateString(name: string, maxLength: number): React.ReactNode {
-        return name.length > maxLength ? name.slice(0, maxLength) : name;
-    }
+    const truncateString = (name: string, maxLength: number): string => {
+        return name.length > maxLength ? `${name.slice(0, maxLength)}...` : name;
+    };
 
     const openWhatsApp = () => {
-        const phoneNumber = '+5511999999999'; // Substitua pelo número desejado, incluindo o código do país
+        const phoneNumber = '+5511999999999';
         const url = `whatsapp://send?phone=${phoneNumber}`;
         Linking.openURL(url).catch(() => {
             alert('Certifique-se de que o WhatsApp está instalado no seu dispositivo');
@@ -120,7 +123,7 @@ export default function Home() {
     };
 
     const openLocation = () => {
-        const address = 'Rua Dona Veridiana, 661, Higienópolis, São Paulo - SP, 01238-010'; // Substitua pelo nome ou endereço desejado
+        const address = 'Rua Dona Veridiana, 661, Higienópolis, São Paulo - SP, 01238-010';
         const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
         Linking.openURL(url).catch(() => {
             alert('Não foi possível abrir o Google Maps');
@@ -135,16 +138,16 @@ export default function Home() {
                 style={styles.headerImagemDeFundo}
                 resizeMode="cover"
             >
-                {tableNumber ? (
+                {tableNumber && (
                     <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
                         <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
                         <Icon name="exit" style={styles.iconeMesaSair} />
                     </TouchableOpacity>
-                ) : null}
+                )}
                 <View style={styles.perfil}>
                     {isAuthenticated ? (
                         <TouchableOpacity style={styles.botaoPerfil} onPress={handlePerfil}>
-                            <Image source={{ uri: `${api.defaults.baseURL}/files/${user.profileImage}` }} style={styles.perfilFoto} />
+                            <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} style={styles.perfilFoto} />
                             <Text style={styles.textoNomePerfil}>{truncateString(user.name, 20)}</Text>
                         </TouchableOpacity>
                     ) : (
@@ -181,8 +184,8 @@ export default function Home() {
                 </View>
             </ImageBackground>
 
+            {/* CATEGORIAS */}
             <Text style={styles.tituloContainerProdutos}>PRODUTOS</Text>
-
             <View style={styles.categoriasContainer}>
                 <ScrollView
                     horizontal
@@ -209,6 +212,7 @@ export default function Home() {
                 </ScrollView>
             </View>
 
+            {/* PRODUTOS */}
             <View style={styles.foodListContainer}>
                 {loadingProducts ? (
                     <ActivityIndicator size={60} color={COLORS.primary} />
@@ -221,7 +225,7 @@ export default function Home() {
                         >
                             <View style={styles.imageContainer}>
                                 <Image
-                                    source={{ uri: `${api.defaults.baseURL}/files/${item.banner}` }}
+                                    source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
                                     style={styles.image}
                                 />
                             </View>

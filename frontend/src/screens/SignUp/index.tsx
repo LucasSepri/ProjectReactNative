@@ -20,7 +20,7 @@ import { COLORS } from '../../styles/COLORS';
 
 export default function SignUp() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
-    const { signIn } = useContext(AuthContext);
+    const { signIn, user } = useContext(AuthContext);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -92,7 +92,14 @@ export default function SignUp() {
             });
             await signIn({ email, password });
             Alert.alert("Sucesso", "Conta criada e você está logado!");
-            navigation.navigate('Home');
+            // navigation.navigate('Home');
+            if (user.isAdmin == false) {
+                try{
+                navigation.navigate('Home');
+                } catch (error) {
+                  console.log("Error");
+                }
+            }
         } catch (error) {
             Alert.alert("Erro", "Erro ao criar conta. Por favor, tente novamente mais tarde.");
         } finally {

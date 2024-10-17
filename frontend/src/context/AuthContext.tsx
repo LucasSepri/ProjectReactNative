@@ -68,12 +68,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setLoadingAuth(true);
 
         try {
-            const response = await api.post('/session', {
+            const response = await api.post('/login', {
                 email,
                 password
             });
 
-            const { id, name, token, isAdmin, profileImage } = response.data;
+            // Desestruturando o token e os dados do usuário corretamente
+            const { token, user } = response.data;
+            const { id, name, isAdmin, profileImage } = user;
 
             const data = {
                 id,
@@ -81,20 +83,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 email,
                 token,
                 isAdmin,
-                profileImage, // Incluir a URL da imagem de perfil
+                profileImage, // Incluindo a URL da imagem de perfil
             }
 
+            // Salvando o token no AsyncStorage
             await AsyncStorage.setItem('@token', JSON.stringify(data));
 
+            // Configurando o token no cabeçalho das requisições
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+            // Atualizando o estado do usuário
             setUser({
                 id,
                 name,
                 email,
                 token,
                 isAdmin,
-                profileImage, // Incluir a URL da imagem de perfil
+                profileImage, // Incluindo a URL da imagem de perfil
             });
 
             setLoadingAuth(false);
@@ -104,6 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setLoadingAuth(false);
         }
     }
+
 
     async function signOut() {
         await AsyncStorage.clear()

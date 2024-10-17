@@ -1,28 +1,14 @@
-// services/category/UpdateCategoryService.ts
-import prismaClient from "../../prisma";
-
-interface CategoryRequest {
-    id: string;
-    name: string;
-}
+import prismaClient from '../../prisma';
 
 class UpdateCategoryService {
-    async execute({ id, name }: CategoryRequest) {
-        if (name === '') {
-            throw new Error('Nome inválido');
-        }
+  async execute(id: string, name: string) {
+    const category = await prismaClient.category.update({
+      where: { id },
+      data: { name },
+    });
 
-        const category = await prismaClient.category.update({
-            where: { id },
-            data: { name },
-            select: {
-                id: true,
-                name: true
-            }
-        });
-
-        return category;
-    }
+    return category;
+  }
 }
 
-export { UpdateCategoryService };
+export default new UpdateCategoryService();

@@ -42,8 +42,10 @@ const ListUsers = () => {
 
     const deleteUser = async (userId) => {
         try {
-            await api.delete('/me/excluir', {
-                data: { userId }
+            await api.delete(`/users/${userId}`, {
+                data: {
+                    userId: userId
+                }
             });
             Alert.alert('Usuário excluído com sucesso.');
             setUsers(users.filter(user => user.id !== userId));
@@ -57,8 +59,9 @@ const ListUsers = () => {
     };
 
     const updateUserRole = async (userId, isAdmin) => {
+        const endpoint = isAdmin ? `/users/revoke/${userId}` : `/users/promote/${userId}`;
         try {
-            await api.put('/users/cargo', { userId, isAdmin: !isAdmin });
+            await api.put(endpoint, { user_id: user.id, isAdmin: user.isAdmin }); 
             const updatedUsers = users.map(user => {
                 if (user.id === userId) {
                     return { ...user, isAdmin: !isAdmin };
@@ -66,14 +69,18 @@ const ListUsers = () => {
                 return user;
             });
             setUsers(updatedUsers);
-
+    
             if (userId === user.id) {
                 signOut();
             }
         } catch (error) {
-            console.error('Error updating user role:', error);
+            Alert.alert(
+                "Erro",
+                "Não é possível atualizar o cargo do usuário. Tente novamente mais tarde."
+            );
         }
     };
+    
 
     const handleUpdateCargoUser = (userId, isAdmin) => {
         if (userId === user.id) {
@@ -168,7 +175,7 @@ const ListUsers = () => {
     const renderItem = ({ item }) => (
         <View style={styles.userContainer}>
             <View style={styles.userInfoContainer}>
-                <Image source={{ uri: `${api.defaults.baseURL}/files/${item.profileImage}` }} style={styles.profileImage} />
+                <Image source={{ uri: `${api.defaults.baseURL}${item.profileImage}` }} style={styles.profileImage} />
                 <View style={styles.userInfo}>
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.email}>{item.email}</Text>

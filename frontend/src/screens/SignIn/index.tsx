@@ -17,7 +17,7 @@ import { COLORS } from '../../styles/COLORS';
 
 export default function SignIn() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
-    const { signIn, loadingAuth, user,isAuthenticated } = useContext(AuthContext);
+    const { signIn, loadingAuth, user, isAuthenticated } = useContext(AuthContext);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,16 +29,29 @@ export default function SignIn() {
             await signIn({ email, password });
         }
     }
+     {/* APAGAR */}
+    async function handleLogin2() {
+        await signIn({ email: 'lucassepriano@gmail.com', password: '1234' });
+    }
+    async function handleLogin3() {
+        await signIn({ email: 'lucasseprianon@gmail.com', password: '1234' });
+    }
+     {/* ----- */}
 
     useEffect(() => {
+        // alert(user.isAdmin);
         if (isAuthenticated) {
             if (user.isAdmin == false) {
+                try{
                 navigation.navigate('Home');
-            } 
+                } catch (error) {
+                  console.log("Error");
+                }
+            }
         }
     }, [isAuthenticated, user, navigation]);
 
-    
+
     function navigateToSignUp() {
         navigation.navigate('SignUp'); // Navega para a tela de SignUp
     }
@@ -77,11 +90,29 @@ export default function SignIn() {
                     )}
                 </TouchableOpacity>
 
+
                 <TouchableOpacity onPress={navigateToSignUp}>
                     <Text style={styles.registerText}>
                         Não tem uma conta? Cadastre-se
                     </Text>
                 </TouchableOpacity>
+
+                {/* APAGAR */}
+                {/* <TouchableOpacity style={{backgroundColor: "blue", paddingHorizontal: 33, paddingVertical: 22, marginVertical: 10}} onPress={handleLogin2}>
+                    {loadingAuth ? (
+                        <ActivityIndicator size={20} color="#101026" />
+                    ) : (
+                        <Text style={{color: "white"}}>Administrador</Text>
+                    )}
+                </TouchableOpacity>
+                <TouchableOpacity style={{backgroundColor: "green", paddingHorizontal: 33, paddingVertical: 22, }} onPress={handleLogin3}>
+                    {loadingAuth ? (
+                        <ActivityIndicator size={20} color="#101026" />
+                    ) : (
+                        <Text style={{color: "white"}}>Usuario</Text>
+                    )}
+                </TouchableOpacity> */}
+                 {/* ------- */}
             </View>
         </View>
     );

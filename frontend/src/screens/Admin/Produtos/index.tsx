@@ -24,13 +24,12 @@ const App = () => {
 
     const loadCategories = async () => {
         try {
-            const response = await api.get('/category');
+            const response = await api.get('/categories');
             setCategories(response.data);
             if (response.data.length > 0) {
                 setSelectedCategory(response.data[0].id);
             }
         } catch (err) {
-            console.error('Erro ao buscar categorias:', err);
             setError('Erro ao carregar categorias.');
         }
     };
@@ -41,7 +40,7 @@ const App = () => {
 
     const loadProducts = async () => {
         try {
-            const response = await api.get('/category/product');
+            const response = await api.get('/products');
             setProducts(response.data);
         } catch (err) {
             console.error('Erro ao buscar produtos:', err);
@@ -55,7 +54,7 @@ const App = () => {
 
     useEffect(() => {
         (async () => {
-            const response = await api.get('/category');
+            const response = await api.get('/categories');
             setCategories(response.data);
             if (response.data.length > 0) {
                 setSelectedCategory(response.data[0].id);
@@ -75,11 +74,9 @@ const App = () => {
         try {
             let response;
             if (selectedCategoryView === 'all') {
-                response = await api.get('/category/product');
+                response = await api.get('/products');
             } else {
-                response = await api.get('/category/product', {
-                    params: { category_id: selectedCategoryView }
-                });
+                response = await api.get(`/products/${selectedCategoryView}`);
             }
             setProducts(response.data);
         } catch (err) {
@@ -111,7 +108,7 @@ const App = () => {
 
     useEffect(() => {
         (async () => {
-            const response = await api.get('/category');
+            const response = await api.get('/categories');
             setCategories(response.data);
             if (response.data.length > 0) {
                 setSelectedCategory(response.data[0].id);
@@ -143,7 +140,7 @@ const App = () => {
                 const fileType = 'image/jpeg'; // or derive from fileInfo if available
                 const fileName = fileUri.split('/').pop();
 
-                formData.append('file', { uri: fileUri, name: fileName, type: fileType } as any);
+                formData.append('banner', { uri: fileUri, name: fileName, type: fileType } as any);
 
             } catch (error) {
                 console.error('Error getting file info:', error);
@@ -155,8 +152,8 @@ const App = () => {
         try {
             let response;
             if (editingProduct) {
-                formData.append('id', productId);
-                response = await api.put('/product/update', formData, {
+                // formData.append('id', productId);
+                response = await api.put(`/products/${productId}`, formData, {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'multipart/form-data',
@@ -164,7 +161,7 @@ const App = () => {
                 });
                 loadProducts();
             } else {
-                response = await api.post('/product', formData, {
+                response = await api.post('/products', formData, {
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'multipart/form-data',
@@ -174,12 +171,12 @@ const App = () => {
             }
             if (response.status === 200) {
                 Alert.alert('Sucesso', editingProduct ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
-                setProductName('');
-                setProductPrice('');
-                setProductDescription('');
-                setSelectedImage(null);
-                setEditingProduct(null);
             }
+            setProductName('');
+            setProductPrice('');
+            setProductDescription('');
+            setSelectedImage(null);
+            setEditingProduct(null);
         } catch (error) {
             console.error('Erro ao criar/editar produto:', error);
             Alert.alert('Erro', editingProduct ? 'Erro ao editar produto' : 'Erro ao criar produto');
@@ -191,16 +188,26 @@ const App = () => {
         setProductName(product.name);
         setProductPrice(String(product.price));
         setProductDescription(product.description);
-        setSelectedImage(`${api.defaults.baseURL}/files/${product.banner}`);
+        setSelectedImage(`${api.defaults.baseURL}${product.banner}`);
         setSelectedCategory(product.category_id);
         setProductId(product.id);
         (scrollRef.current as ScrollView).scrollTo({ y: 0, animated: true });
     };
+    const handleCancelEdit = () => {
+        setEditingProduct(false);
+        setProductName('');
+        setProductPrice('');
+        setProductDescription('');
+        setSelectedImage(null);
+        setSelectedCategory(categories[0].id);
+        setProductId(null);
+    }
 
     const handleDeleteProduct = async (id) => {
         try {
-            await api.delete('/product/remove', { data: { id } });
-            setProducts(products.filter(product => product.id !== id));
+            await api.delete(`/products/${id}`);
+            // setProducts(products.filter(product => product.id !== id));
+            loadProducts();
             Alert.alert('Sucesso', 'Produto excluído com sucesso!');
         } catch (err) {
             setError('Erro ao excluir categoria.');
@@ -241,7 +248,8 @@ const App = () => {
                 {selectedImage ? (
                     <Image source={{ uri: selectedImage }} style={styles.image} />
                 ) : (
-                    <Text style={styles.uploadText}>Foto do Produto</Text>
+                    <Text style={styles.uploadText}>Toque para adicionar Imagem</Text>
+
                 )}
             </TouchableOpacity>
 
@@ -257,11 +265,16 @@ const App = () => {
                 placeholder='Preço do produto'
                 placeholderTextColor='#000'
                 value={productPrice}
-                onChangeText={setProductPrice}
+                onChangeText={(text) => {
+                    // Substituir vírgulas por pontos
+                    const formattedText = text.replace(',', '.');
+                    setProductPrice(formattedText);
+                }}
                 keyboardType='numeric'
                 autoCapitalize='none'
                 style={styles.input}
             />
+
             <TextInput
                 placeholder='Descrição do produto'
                 placeholderTextColor='#000'
@@ -271,9 +284,27 @@ const App = () => {
                 style={styles.input}
             />
 
-            <TouchableOpacity onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>{editingProduct ? "Editar Produto" : "Criar Produto"}</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+                {/* Botão de Criar/Editar Produto */}
+                {(productName !== '' &&
+                    productPrice !== '' &&
+                    productDescription !== '' &&
+                    selectedImage !== null &&
+                    selectedCategory !== null) && (
+                        <TouchableOpacity onPress={handleSubmit} style={[styles.button, styles.submitButton]}>
+                            <Text style={styles.buttonText}>{editingProduct ? "Editar Produto" : "Criar Produto"}</Text>
+                        </TouchableOpacity>
+                    )}
+
+                {/* Exibir o botão "Cancelar" somente quando estiver editando */}
+                {editingProduct && (
+                    <TouchableOpacity onPress={handleCancelEdit} style={[styles.button, styles.cancelButton]}>
+                        <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+
+
 
             <Text style={styles.productsTitle}>Produtos</Text>
 
@@ -302,7 +333,7 @@ const App = () => {
                         <View key={item.id} style={styles.productItem}>
                             <View style={styles.imageContainer}>
                                 <Image
-                                    source={{ uri: `${api.defaults.baseURL}/files/${item.banner}` }}
+                                    source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
                                     style={styles.productImage}
                                 />
                             </View>

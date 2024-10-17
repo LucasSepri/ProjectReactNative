@@ -1,20 +1,25 @@
-import { Request, Response } from "express";
-import { CreateUserService } from "../../services/user/CreateUserService";
+import { Request, Response } from 'express';
+import CreateUserService from '../../services/user/CreateUserService';
 
 class CreateUserController {
-    async handle(req: Request, res: Response) {
-        const { name, email, password } = req.body;
-        const profileImage = req.file?.path; // Certifique-se de obter o nome do arquivo corretamente
+  async handle(req: Request, res: Response) {
+    const { name, email, password, profileImage } = req.body;
+    const profileImagePath = req.file?.filename ? `/uploads/${req.file.filename}` : null;
 
-        const createUserService = new CreateUserService();
+    try {
+      // Chama o serviço de criação de usuário
+      const user = await CreateUserService.execute({
+        name,
+        email,
+        password,
+        profileImage: profileImagePath,
+      });
 
-        try {
-            const user = await createUserService.execute({ name, email, password, profileImage });
-            return res.json(user);
-        } catch (err) {
-            return res.status(400).json({ error: err.message });
-        }
+      return res.status(201).json(user);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
     }
+  }
 }
 
-export { CreateUserController }
+export default new CreateUserController();

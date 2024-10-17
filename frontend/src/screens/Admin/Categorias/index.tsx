@@ -16,7 +16,7 @@ export default function AdminCategorias() {
 
     const fetchCategories = async () => {
         try {
-            const response = await api.get('/category');
+            const response = await api.get('/categories');
             setCategories(response.data);
         } catch (err) {
             setError('Erro ao buscar categorias.');
@@ -31,12 +31,14 @@ export default function AdminCategorias() {
 
         try {
             if (editingCategory) {
-                await api.put('/category/update', { id: editingCategory.id, name });
+                await api.put(`/categories/${editingCategory.id}`, { name });
                 setCategories(categories.map(cat => cat.id === editingCategory.id ? { ...cat, name } : cat));
                 setEditingCategory(null);
+                alert('Categoria editada com sucesso.');
             } else {
-                const response = await api.post('/category', { name });
+                const response = await api.post('/categories', { name });
                 setCategories([...categories, response.data]);
+                alert('Categoria adicionada com sucesso.');
             }
 
             setName('');
@@ -53,8 +55,9 @@ export default function AdminCategorias() {
 
     const handleDeleteCategory = async (id) => {
         try {
-            await api.delete('/category/remove', { data: { id } });
+            await api.delete(`/categories/${id}`);
             setCategories(categories.filter(cat => cat.id !== id));
+            alert('Categoria excluída com sucesso.');
         } catch (err) {
             setError('Erro ao excluir categoria.');
         }

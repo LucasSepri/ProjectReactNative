@@ -1,14 +1,13 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-
-import FinishOrder from "../screens/FinishOrder";
 import Perfil from "../screens/Perfil";
 import SignIn from "../screens/SignIn";
 import Pesquisa from "../screens/Pesquisa";
 import SignUp from "../screens/SignUp";
 import EditarPerfil from "../screens/EditarPerfil";
 import Home from "../screens/Home";
+import OrderDetails from "../screens/OrderDetails";
 import ProductDetails from "../screens/ProductDetails";
 
 import TabRouter from "./tab.routes";
@@ -17,11 +16,8 @@ import TabRouter from "./tab.routes";
 export type StackParamList = {
     TabRouter: undefined;
     Home: undefined;
+    OrderDetails: undefined;
     Perfil: undefined;
-    FinishOrder: {
-        number: number | string,
-        order_id: string;
-    };
     Pesquisa: undefined;
     SignIn: undefined;
     SignUp: undefined;
@@ -40,23 +36,22 @@ function AppRoutes() {
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="Perfil"
-                component={Perfil}
+                name="OrderDetails"
+                component={OrderDetails}
                 options={{
-                    headerShown: true,
-                    title: "Seus Dados",
+                    title: "Detalhes do Pedido",
                     headerStyle: {
                         backgroundColor: '#1d1d2e',
                     },
                     headerTintColor: '#FFF',
                 }}
             />
-
             <Stack.Screen
-                name="FinishOrder"
-                component={FinishOrder}
+                name="Perfil"
+                component={Perfil}
                 options={{
-                    title: "finalizando",
+                    headerShown: true,
+                    title: "Seus Dados",
                     headerStyle: {
                         backgroundColor: '#1d1d2e',
                     },
@@ -74,16 +69,16 @@ function AppRoutes() {
                     headerTintColor: '#FFF',
                 }}
             />
-            <Stack.Screen name="Pesquisa" 
-            component={Pesquisa} 
-            options={{
-                headerShown: true,
-                title: "Pesquisar Produto",
-                headerStyle: {
-                    backgroundColor: '#1d1d2e',
-                },
-                headerTintColor: '#FFF',
-            }} />
+            <Stack.Screen name="Pesquisa"
+                component={Pesquisa}
+                options={{
+                    headerShown: true,
+                    title: "Pesquisar Produto",
+                    headerStyle: {
+                        backgroundColor: '#1d1d2e',
+                    },
+                    headerTintColor: '#FFF',
+                }} />
 
             <Stack.Screen
                 name="SignUp"

@@ -1,9 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+//criar uma migration: yarn prisma migrate dev 
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,74 +8,134 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//criar uma migration: yarn prisma migrate dev 
+
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  isAdmin    Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-  profileImage String? // Campo para armazenar a URL da imagem de perfil
-
-  @@map("users")
+  id            String     @id @default(uuid())
+  name          String
+  email         String     @unique
+  password      String
+  isAdmin       Boolean    @default(false)
+  profileImage  String?    // Campo opcional para imagem de perfil
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+  
+  orders        Order[]    // Remover `@relation(onDelete: SetNull)`
+  favorites     Favorite[] // Relacionamento com produtos favoritos
+  addresses     Address[]  // Relacionamento com endereços
+  cart          Cart?      // Relacionamento com carrinho
 }
 
-
+// Tabela de Categorias de Produtos
 model Category {
-  id        String      @id @default(uuid())
-  name      String
-  created_at DateTime? @default(now())
-  updated_at DateTime? @default(now())
-
-  @@map("categories")
-  products Product[]
-} 
-
-model Product {
-  id          String      @id @default(uuid())
+  id          String     @id @default(uuid())
   name        String
-  price       String
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  
+  products    Product[]  // Relacionamento com produtos
+}
+
+// Tabela de Produtos
+model Product {
+  id          String     @id @default(uuid())
+  name        String
+  price       Float      // Mudamos para Float, para evitar problemas de precisão com valores monetários
   description String
-  banner      String
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @default(now())
+  banner      String     // URL da imagem do produto
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
 
-  category Category @relation(fields: [category_id], references: [id])
+  category    Category   @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id String     // FK da categoria
 
-  @@map("products")
-  category_id String
-  items Item[]
+  orderItems  Item[]     // Relacionamento com itens de pedidos
+  cartItems   CartItem[] // Relacionamento com itens no carrinho
+  favorites   Favorite[] // Relacionamento com favoritos
 }
 
+// Tabela de Pedidos (Ordem)
 model Order {
-  id          String      @id @default(uuid())
-  table       Int?        // Campo opcional para a mesa
-  address     String?     // Novo campo opcional para o endereço
-  status      String      // Status do pedido: "Entregue", "Em andamento" ou "Cancelado
-  descricao   String      // Descrição do pedido
-  precoTotal  Float       // Preço total do pedido
-  draft       Boolean     @default(true)
-
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @default(now())
-
-  @@map("orders")
-  items Item[]
+  id          String     @id @default(uuid())
+  userName    String     // Nome do usuário que fez o pedido
+  userEmail   String     // Email do usuário que fez o pedido
+  user        User?      @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  user_id     String?    // FK do usuário
+  status      String     // Status do pedido: "Entregue", "Em andamento", "Cancelado"
+  totalPrice  Float      // Preço total do pedido
+  deliveryType String    // Tipo de entrega: "Endereço" ou "Mesa"
+  deliveryAddress String? // Endereço de entrega, caso o cliente escolha essa opção
+  tableNumber String?    // Número da mesa, caso seja no estabelecimento
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  
+  items       Item[]     // Relacionamento com itens de pedidos
 }
 
+
+
+// Tabela de Itens de Pedidos
 model Item {
-  id          String      @id @default(uuid())
-  amount      Int
+  id           String     @id @default(uuid())
+  amount       Int        // Quantidade do produto no pedido
+  product_name String     // Nome do produto no momento da compra
+  product_price Float     // Preço do produto no momento da compra
 
-  created_at  DateTime? @default(now())
-  updated_at  DateTime? @default(now())
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @default(now()) @updatedAt
 
-  order Order @relation(fields: [order_id], references: [id])
-  product Product @relation(fields: [product_id], references: [id])
+  order        Order      @relation(fields: [order_id], references: [id], onDelete: Cascade) // Adicione onDelete: Cascade aqui
+  order_id     String     // FK do pedido
 
-  @@map("items")
-  order_id   String
-  product_id String
+  product      Product?   @relation(fields: [product_id], references: [id], onDelete: SetNull)
+  product_id   String?    // FK do produto (opcional, pode ser null após exclusão do produto)
+}
+
+
+
+// Tabela de Carrinho
+model Cart {
+  id          String     @id @default(uuid())
+  user        User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     String     @unique // Garantir que cada usuário tenha apenas um carrinho
+  items       CartItem[] // Relacionamento com os itens do carrinho
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+}
+
+// Itens no Carrinho
+model CartItem {
+  id          String     @id @default(uuid())
+  amount      Int        // Quantidade do produto no carrinho
+  product     Product    @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id  String     // FK do produto adicionado
+  cart        Cart       @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  cart_id     String     // FK do carrinho
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+}
+
+// Tabela de Produtos Favoritos
+model Favorite {
+  id          String     @id @default(uuid())
+  user        User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     String     // FK do usuário
+
+  product     Product    @relation(fields: [product_id], references: [id])
+  product_id  String     // FK do produto
+}
+
+// Tabela de Endereços
+model Address {
+  id         String      @id @default(uuid())
+  userId     String
+  address    String
+  city       String
+  state      String
+  zipCode    String
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
 }

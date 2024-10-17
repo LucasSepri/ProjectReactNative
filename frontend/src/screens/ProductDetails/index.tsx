@@ -1,38 +1,103 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, Pressable } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, ScrollView, Pressable, Alert } from 'react-native';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../services/api';
-import { useFoods } from '../../context/FoodsContext';
+import { AuthContext } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { StackParamList } from '../../routes/app.routes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-const ProductDetails = ({ route, navigation }) => {
+type NavigationProp = NativeStackNavigationProp<StackParamList>;
+
+const ProductDetails = ({ route }) => {
+    const navigation = useNavigation<NavigationProp>();
+    const { isAuthenticated } = useContext(AuthContext);
+
     const { product, category } = route.params;
-    const { addToCart } = useFoods();
     const [quantity, setQuantity] = useState(1);
     const [total, setTotal] = useState(0);
     const [size, setSize] = useState('broto');
-    
-    // Verifica se o produto é uma pizza
-    const isPizza = category.name?.toLowerCase() === 'pizza'; // Ajuste a condição conforme sua lógica de identificação
+    const [isFavorite, setIsFavorite] = useState(false);
 
-    const handleAddToCart = () => {
-        const item = {
-            ...product,
-            ingredients: product.ingredients || [],
-            quantity,
-            size: isPizza ? size : undefined // Só define o tamanho se for uma pizza
+    const isPizza = category.name?.toLowerCase() === 'pizza';
+
+    // Verifica se o produto é favorito ao montar o componente
+    const checkIfFavorite = async () => {
+        if (!isAuthenticated) return;
+
+        try {
+            const response = await api.get(`/favorites/${product.id}`); // Rota para verificar se o produto é favorito
+            setIsFavorite(response.data.isFavorite); // Atualiza o estado de acordo com a resposta
+        } catch (error) {
+            console.error('Erro ao verificar se o produto é favorito:', error);
+        }
+    };
+    useEffect(() => {
+        checkIfFavorite();
+    }, [product.id, isAuthenticated]);
+
+    const handleAddToCart = async () => {
+        if (!isAuthenticated) {
+            Alert.alert(
+                "Atenção",
+                "Para adicionar ao carrinho, você precisa estar logado.",
+                [
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Login", onPress: () => navigation.navigate('SignIn') }
+                ]
+            );
+            return;
+        }
+
+        const payload = {
+            product_id: product.id,
+            amount: quantity,
         };
-        addToCart(item);
-        alert(`Adicionado ${quantity} de ${product.name} ao carrinho`);
+
+        try {
+            const response = await api.post('/cart', payload);
+            if (response.status === 201) {
+                alert(`Adicionado ${quantity} de ${product.name} ao carrinho`);
+                navigation.navigate('Home'); // Mude para Carrinho aqui
+            }
+        } catch (error) {
+            console.error('Erro ao adicionar ao carrinho:', error);
+            alert('Erro ao adicionar o produto ao carrinho. Tente novamente.');
+        }
+    };
+
+
+    const handleFavoriteToggle = async () => {
+        if (!isAuthenticated) {
+            Alert.alert(
+                "Atenção",
+                "Para favoritar, você precisa estar logado.",
+                [
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Login", onPress: () => navigation.navigate('SignIn') }
+                ]
+            );
+            return;
+        }
+
+        try {
+            const response = isFavorite ? await api.delete(`/favorites/${product.id}`)
+                : await api.post('/favorites', { productId: product.id });
+            checkIfFavorite();
+        } catch (error) {
+            console.error('Erro ao atualizar favoritos:', error);
+            alert('Erro ao atualizar os favoritos. Tente novamente.');
+        }
     };
 
     const increment = () => setQuantity(prev => prev + 1);
     const decrement = () => quantity > 1 && setQuantity(prev => prev - 1);
 
     useEffect(() => {
-        if (product && typeof product.price === 'string') {
-            const priceAsNumber = parseFloat(product.price.replace(',', '.'));
+        if (product && product.price) {
+            const priceAsNumber = parseFloat(product.price.toString().replace(',', '.'));
             if (!isNaN(priceAsNumber)) {
                 setTotal(priceAsNumber * quantity);
             }
@@ -42,12 +107,12 @@ const ProductDetails = ({ route, navigation }) => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.imageContainer}>
-                <Image source={{ uri: `${api.defaults.baseURL}/files/${product.banner}` }} style={styles.image} />
+                <Image source={{ uri: `${api.defaults.baseURL}${product.banner}` }} style={styles.image} />
                 <TouchableOpacity
                     style={[styles.button, styles.favoriteButton]}
-                    onPress={() => alert('Favoritar')}
+                    onPress={handleFavoriteToggle}
                 >
-                    <Icon name="heart" size={24} color={COLORS.white} />
+                    <Icon name={isFavorite ? "heart" : "heart-outline"} size={24} color={COLORS.white} />
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.button, styles.backButton]}

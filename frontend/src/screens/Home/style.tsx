@@ -6,7 +6,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.white,
     },
-
     headerImagemDeFundo: {
         flex: 1,
     },
@@ -18,35 +17,28 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     botaoPerfil: {
-        borderRadius: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 10,
         paddingVertical: 5,
     },
     perfilFoto: {
         width: 40,
         height: 40,
-        borderRadius: 25,
+        borderRadius: 20,
+        borderWidth: 1,
+        overflow: 'hidden', // Adiciona recorte para a imagem
     },
     textoNomePerfil: {
         color: COLORS.white,
         fontSize: 18,
         marginLeft: 10,
+        fontWeight: '500',
     },
-
     botaoIcone: {
         padding: 10,
         borderRadius: 10,
     },
-    /* botaoMesaSair: {
-        padding: 5,
-        backgroundColor: COLORS.red,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }, */
     botaoMesaSair: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -56,7 +48,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         borderRadius: 8,
         marginTop: 16,
-        // marginBottom: 16,
     },
     textoMesaSair: {
         color: COLORS.white,
@@ -99,13 +90,13 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         marginLeft: 5,
+        fontWeight: '500',
     },
     addressContainer: {
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
         paddingVertical: 10,
-        paddingHorizontal: 5,
         borderRadius: 5,
     },
     buttonAddressContainer: {
@@ -120,8 +111,8 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         marginLeft: 10,
+        fontWeight: '400',
     },
-
     /*************  MAIN SCREEN  ****************/
     // Container produtos
     tituloContainerProdutos: {
@@ -129,8 +120,8 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginTop: 20,
+        color: COLORS.primary,
     },
-
     // Categorias
     categoriasContainer: {
         paddingVertical: 5,
@@ -139,7 +130,6 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 10,
     },
-
     categoryButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -161,7 +151,6 @@ const styles = StyleSheet.create({
         color: COLORS.white,
         fontSize: 20,
     },
-
     // Produtos
     foodListContainer: {
         padding: 10,
@@ -200,6 +189,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 8,
+        color: COLORS.dark, // Adiciona uma cor mais escura para o nome
     },
     description: {
         fontSize: 16,
@@ -215,8 +205,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'right',
+        color: COLORS.primary, // Usa a cor primária para o preço
     },
-
     loadingContainer: {
         height: 150,
         width: '100%',
