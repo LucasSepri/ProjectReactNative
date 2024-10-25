@@ -10,10 +10,12 @@ const styles = StyleSheet.create({
   picker: {
     marginBottom: 10,
     color: COLORS.primary,
-    backgroundColor: COLORS.white, 
+    backgroundColor: COLORS.white,
     marginHorizontal: 16,
-    
+    borderRadius: 8,
+    borderColor: COLORS.primary,
   },
+
   addressInput: {
     borderWidth: 1,
     borderColor: COLORS.primary,
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     position: 'relative',
-    shadowColor: '#000',
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 0,
       height: 4, // Aumentar a altura da sombra
@@ -128,16 +130,23 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     color: COLORS.primary,
   },
-  emptyCartContainer: {
+  emptyContainer: {
     flex: 1,
-    paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emptyCartText: {
-    fontSize: 20,
-    color: COLORS.black,
+  emptyMessage: {
+    fontSize: 18,
+    color: COLORS.darkGrey,
+    textAlign: 'center',
+    marginBottom: 8,
   },
+  emptyInstruction: {
+    fontSize: 16,
+    color: COLORS.grey,
+    textAlign: 'center',
+  },
+
   botaoMesaSair: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -173,6 +182,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 8,
     fontSize: 16, // Aumentar tamanho da fonte
+  },
+
+  deliveryOptionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  observationInput: {
+    borderWidth: 1,
+    borderColor: COLORS.primary,
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 8,
+    color: COLORS.primary,
+    backgroundColor: COLORS.white, // Melhorar visibilidade
+    fontSize: 16, // Aumentar tamanho da fonte
+    marginHorizontal: 16,
+  },
+
+  deliveryOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  deliveryOptionText: {
+    marginLeft: 8,
+    fontSize: 16, // Aumentar tamanho da fonte
+  },
+  deliveryOptionRadio: {
+    marginRight: 8,
   },
 });
 

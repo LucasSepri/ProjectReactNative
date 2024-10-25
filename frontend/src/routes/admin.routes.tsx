@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import EditarPerfil from "../screens/EditarPerfil";
 import AdminRoutes from "./drawer.routes";
+import { COLORS } from "../styles/COLORS";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
@@ -28,9 +29,9 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Editar Perfil",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }}
             />
 

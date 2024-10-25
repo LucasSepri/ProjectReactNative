@@ -26,7 +26,7 @@ function AdminRoutes() {
             screenOptions={({ route }) => ({
                 headerShown: true,
                 headerStyle: {
-                    backgroundColor: COLORS.dark,
+                    backgroundColor: COLORS.primary,
                 },
                 headerTintColor: COLORS.white,
                 drawerActiveTintColor: COLORS.primary,

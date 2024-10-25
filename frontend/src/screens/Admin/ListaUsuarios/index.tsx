@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './style';
 import { AuthContext } from '../../../context/AuthContext';
 import { api } from '../../../services/api';
+import { COLORS } from '../../../styles/COLORS';
 
 const ListUsers = () => {
     const { signOut, user } = useContext(AuthContext);
@@ -61,7 +62,7 @@ const ListUsers = () => {
     const updateUserRole = async (userId, isAdmin) => {
         const endpoint = isAdmin ? `/users/revoke/${userId}` : `/users/promote/${userId}`;
         try {
-            await api.put(endpoint, { user_id: user.id, isAdmin: user.isAdmin }); 
+            await api.put(endpoint, { user_id: user.id, isAdmin: user.isAdmin });
             const updatedUsers = users.map(user => {
                 if (user.id === userId) {
                     return { ...user, isAdmin: !isAdmin };
@@ -69,7 +70,7 @@ const ListUsers = () => {
                 return user;
             });
             setUsers(updatedUsers);
-    
+
             if (userId === user.id) {
                 signOut();
             }
@@ -80,7 +81,7 @@ const ListUsers = () => {
             );
         }
     };
-    
+
 
     const handleUpdateCargoUser = (userId, isAdmin) => {
         if (userId === user.id) {
@@ -148,14 +149,14 @@ const ListUsers = () => {
         if (isAdmin) {
             return (
                 <TouchableOpacity style={styles.removeAdminButton} onPress={() => handleUpdateCargoUser(userId, true)}>
-                    <Icon name="remove-circle" size={20} color="#fff" />
+                    <Icon name="remove-circle" size={20} color={COLORS.white} />
                     <Text style={styles.userRoleButtonText}> Remover Admin</Text>
                 </TouchableOpacity>
             );
         } else {
             return (
                 <TouchableOpacity style={styles.addAdminButton} onPress={() => handleUpdateCargoUser(userId, false)}>
-                    <Icon name="add-circle" size={20} color="#fff" />
+                    <Icon name="add-circle" size={20} color={COLORS.white} />
                     <Text style={styles.userRoleButtonText}> Tornar Admin</Text>
                 </TouchableOpacity>
             );
@@ -172,6 +173,12 @@ const ListUsers = () => {
         }
     };
 
+
+    useEffect(() => {
+        refreshList();
+    }, [ navigator]);
+
+
     const renderItem = ({ item }) => (
         <View style={styles.userContainer}>
             <View style={styles.userInfoContainer}>
@@ -182,7 +189,7 @@ const ListUsers = () => {
                     <Text>{item.isAdmin ? 'Admin' : 'Usuario'}</Text>
                 </View>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteUser(item.id)}>
-                    <Icon name="trash" size={20} color="#fff" />
+                    <Icon name="trash" size={20} color={COLORS.white} />
                 </TouchableOpacity>
             </View>
             <View style={styles.roleButtonContainer}>
@@ -195,10 +202,11 @@ const ListUsers = () => {
         <View style={styles.container}>
             <View style={styles.searchContainerRefresh}>
                 <TouchableOpacity onPress={refreshList} style={styles.refreshList}>
-                    <Icon name="refresh" size={24} color="gray" style={styles.refreshIcon} />
+                    <Icon name="refresh" size={24} color={COLORS.grey} style={styles.refreshIcon} />
                 </TouchableOpacity>
+
                 <View style={styles.searchContainer}>
-                    <Icon name="search" size={24} color="gray" style={styles.searchIcon} />
+                    <Icon name="search" size={24} color={COLORS.grey} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Pesquisar usuários..."

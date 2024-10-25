@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     buttonText: {
-        color: '#fff',
+        color: COLORS.white,
         marginLeft: 5,
         fontWeight: '500',
     },
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     addressText: {
-        color: '#fff',
+        color: COLORS.white,
         fontSize: 16,
         marginLeft: 10,
         fontWeight: '400',
@@ -160,10 +160,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: '#fff',
+        backgroundColor: COLORS.white,
         borderRadius: 12,
         padding: 16,
-        shadowColor: '#000',
+        shadowColor: COLORS.black,
         shadowOffset: {
             width: 0,
             height: 2,
@@ -213,9 +213,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: '#fff',
+        backgroundColor: COLORS.white,
         borderRadius: 12,
-        shadowColor: '#000',
+        shadowColor: COLORS.black,
         shadowOffset: {
             width: 0,
             height: 2,

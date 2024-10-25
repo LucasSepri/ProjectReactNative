@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { View, ActivityIndicator, Text } from "react-native";
+import { COLORS } from "../styles/COLORS";
 
 import AppRoutes from "./app.routes";
 import AdminRoutes from "./admin.routes"; // Certifique-se de que este componente existe
-import AuthRoutes from "./auth.routes";
 
 import { AuthContext } from "../context/AuthContext";
 
@@ -16,17 +16,17 @@ function Routes() {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: "#1D1D2E",
+                    backgroundColor: COLORS.dark,
                     justifyContent: "center",
                     alignItems: "center"
                 }}
             >
-                <ActivityIndicator size={60} color="#f5f7fb" />
+                <ActivityIndicator size={60} color={COLORS.white} />
             </View>
         );
     }
 
-    if (!isAuthenticated) {
+    /* if (!isAuthenticated) {
         return <AppRoutes />;
     } else {
         if (user.isAdmin == true) {
@@ -34,9 +34,15 @@ function Routes() {
         } else {
             return <AppRoutes />;
         }
+    } */
+    if (!isAuthenticated) {
+        return <AppRoutes />;
     }
 
-    
+    return user.isAdmin ? <AdminRoutes /> : <AppRoutes />;
+
+
+
 }
 
 export default Routes;

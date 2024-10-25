@@ -1,5 +1,6 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { COLORS } from "../styles/COLORS";
 
 import Perfil from "../screens/Perfil";
 import SignIn from "../screens/SignIn";
@@ -41,9 +42,9 @@ function AppRoutes() {
                 options={{
                     title: "Detalhes do Pedido",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }}
             />
             <Stack.Screen
@@ -53,9 +54,9 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Seus Dados",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }}
             />
             <Stack.Screen
@@ -64,9 +65,9 @@ function AppRoutes() {
                 options={{
                     title: "Logar-se",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }}
             />
             <Stack.Screen name="Pesquisa"
@@ -75,9 +76,9 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Pesquisar Produto",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }} />
 
             <Stack.Screen
@@ -86,9 +87,9 @@ function AppRoutes() {
                 options={{
                     title: "cadastrar-se",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }} />
             <Stack.Screen
                 name="EditarPerfil"
@@ -96,9 +97,9 @@ function AppRoutes() {
                 options={{
                     title: "Editar Perfil",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }}
             />
             <Stack.Screen
@@ -108,9 +109,9 @@ function AppRoutes() {
                     headerShown: false,
                     title: "Detalhes do Produto",
                     headerStyle: {
-                        backgroundColor: '#1d1d2e',
+                        backgroundColor: COLORS.dark,
                     },
-                    headerTintColor: '#FFF',
+                    headerTintColor: COLORS.white,
                 }}
             />
         </Stack.Navigator>

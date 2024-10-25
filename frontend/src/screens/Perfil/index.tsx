@@ -7,6 +7,7 @@ import { StackParamList } from '../../routes/app.routes';
 import { api } from "../../services/api";
 import { styles } from "./style";
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from "../../styles/COLORS";
 
 export default function Perfil() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
@@ -62,16 +63,16 @@ export default function Perfil() {
                     style={[styles.button, styles.editButton]}
                     onPress={() => navigation.navigate('EditarPerfil')}
                 >
-                    <Ionicons name="pencil" size={24} color="white" />
+                    <Ionicons name="pencil" size={24} color={COLORS.white} />
                     <Text style={[styles.buttonText, styles.editText]}>Editar Perfil</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={handleDeleteUser}>
-                    <Ionicons name="trash" size={24} color="white" />
-                    <Text style={[styles.buttonText, styles.dangerText]}>Excluir Conta</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={signOut} >
-                    <Ionicons name="log-out" size={24} color="white" />
+                    <Ionicons name="log-out" size={24} color={COLORS.white} />
                     <Text style={[styles.buttonText, styles.logoutText]}>Sair</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={handleDeleteUser}>
+                    <Ionicons name="trash" size={24} color={COLORS.white} />
+                    <Text style={[styles.buttonText, styles.dangerText]}>Excluir Conta</Text>
                 </TouchableOpacity>
             </View>
         </View>

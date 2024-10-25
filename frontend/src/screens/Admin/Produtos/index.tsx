@@ -6,6 +6,7 @@ import { api } from '../../../services/api';
 import * as FileSystem from 'expo-file-system';
 import styles from './style';
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../../../styles/COLORS';
 
 const App = () => {
     const [productName, setProductName] = useState('');
@@ -255,33 +256,33 @@ const App = () => {
 
             <TextInput
                 placeholder='Nome do produto'
-                placeholderTextColor='#000'
-                value={productName}
-                onChangeText={setProductName}
-                autoCapitalize='none'
-                style={styles.input}
+                placeholderTextColor={COLORS.black}
+            value={productName}
+            onChangeText={setProductName}
+            autoCapitalize='none'
+            style={styles.input}
             />
             <TextInput
                 placeholder='Preço do produto'
-                placeholderTextColor='#000'
-                value={productPrice}
-                onChangeText={(text) => {
-                    // Substituir vírgulas por pontos
-                    const formattedText = text.replace(',', '.');
-                    setProductPrice(formattedText);
-                }}
-                keyboardType='numeric'
-                autoCapitalize='none'
-                style={styles.input}
+                placeholderTextColor={COLORS.black}
+            value={productPrice}
+            onChangeText={(text) => {
+                // Substituir vírgulas por pontos
+                const formattedText = text.replace(',', '.');
+                setProductPrice(formattedText);
+            }}
+            keyboardType='numeric'
+            autoCapitalize='none'
+            style={styles.input}
             />
 
             <TextInput
                 placeholder='Descrição do produto'
-                placeholderTextColor='#000'
-                value={productDescription}
-                onChangeText={setProductDescription}
-                autoCapitalize='none'
-                style={styles.input}
+                placeholderTextColor={COLORS.black}
+            value={productDescription}
+            onChangeText={setProductDescription}
+            autoCapitalize='none'
+            style={styles.input}
             />
 
             <View style={styles.buttonContainer}>

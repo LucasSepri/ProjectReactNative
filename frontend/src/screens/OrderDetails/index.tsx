@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { api } from '../../services/api';
 import styles from './style';
+import { COLORS } from '../../styles/COLORS';
 
 const OrderDetailsScreen = ({ route, navigation }) => {
     const { orderId } = route.params;
@@ -26,7 +27,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
     }, []);
 
     if (loading) {
-        return <ActivityIndicator size={50} color="#0000ff" />;
+        return <ActivityIndicator size={50} color={COLORS.blue}  />;
     }
 
     if (!orderDetails) {
@@ -42,7 +43,20 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                 <Text style={styles.orderText}><Text style={styles.label}>Status:</Text> {orderDetails.status}</Text>
                 <Text style={styles.orderText}><Text style={styles.label}>Preço Total:</Text> R$ {orderDetails.totalPrice.toFixed(2)}</Text>
                 <Text style={styles.orderText}><Text style={styles.label}>Data:</Text> {new Date(orderDetails.created_at).toLocaleString()}</Text>
+                <Text style={styles.orderText}><Text style={styles.label}>Tipo de Entrega:</Text> {orderDetails.deliveryType}</Text>
+                {orderDetails.deliveryType === 'Endereço' && <Text style={styles.orderText}><Text style={styles.label}>Endereço de Entrega:</Text> {orderDetails.deliveryAddress}</Text>}
+                {orderDetails.deliveryType === 'Mesa' && <Text style={styles.orderText}><Text style={styles.label}>Número da Mesa:</Text> {orderDetails.tableNumber}</Text>}
             </View>
+
+            {orderDetails.observation && orderDetails.observation.trim() !== '' && (
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Observação do pedido</Text>
+                    <View style={styles.itemContainer}>
+                        <Text style={styles.orderText}>{orderDetails.observation}</Text>
+                    </View>
+                </View>
+            )}
+
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Itens do Pedido</Text>

@@ -8,7 +8,7 @@ import { useTable } from '../context/TableContext';
 // Telas
 import Home from '../screens/Home';
 import Qrcode from '../screens/Qrcode';
-import Pedidos from '../screens/Pedidos';
+import Pedidos from '../screens/Orders';
 import Carrinho from '../screens/Carrinho';
 import Favoritos from '../screens/Favoritos';
 
@@ -18,7 +18,7 @@ import CustomTabBar from '../components/CustomTabBar';
 const Tab = createBottomTabNavigator();
 
 export default function TabRoutes() {
-    const { tableNumber, clearTable } = useTable();
+    // const { tableNumber, clearTable } = useTable();
 
     return (
         <Tab.Navigator

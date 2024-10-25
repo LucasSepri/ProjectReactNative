@@ -171,14 +171,14 @@ export default function Home() {
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.buttonWhatsApp} onPress={openWhatsApp}>
-                        <Icon name="logo-whatsapp" size={20} color="#fff" />
+                        <Icon name="logo-whatsapp" size={20} color={COLORS.white}  />
                         <Text style={styles.buttonText}>Telefone</Text>
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.addressContainer}>
                     <TouchableOpacity style={styles.buttonAddressContainer} onPress={openLocation}>
-                        <Icon name="location" size={20} color="#fff" />
+                        <Icon name="location" size={20} color={COLORS.white}  />
                         <Text style={styles.buttonText}>Rua Dona Veridiana, 661, Higienópolis</Text>
                     </TouchableOpacity>
                 </View>

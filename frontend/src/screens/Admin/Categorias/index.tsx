@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../../services/api';
 
 import styles from './style';
+import { COLORS } from '../../../styles/COLORS';
 
 export default function AdminCategorias() {
     const [name, setName] = useState('');
@@ -58,9 +60,16 @@ export default function AdminCategorias() {
             await api.delete(`/categories/${id}`);
             setCategories(categories.filter(cat => cat.id !== id));
             alert('Categoria excluída com sucesso.');
+            setName('');
+            setEditingCategory(null);
         } catch (err) {
             setError('Erro ao excluir categoria.');
         }
+    };
+
+    const handleCancelEdit = () => {
+        setName('');
+        setEditingCategory(null);
     };
 
     return (
@@ -72,7 +81,23 @@ export default function AdminCategorias() {
                 value={name}
                 onChangeText={setName}
             />
-            <Button title={editingCategory ? "Editar" : "Adicionar"} onPress={handleAddCategory} />
+
+            <View style={styles.buttonContainer}>
+                {/* Botão de Criar/Editar Produto */}
+                <TouchableOpacity onPress={handleAddCategory} style={[styles.button, styles.submitButton]}>
+                    <Text style={styles.buttonText}>
+                        {editingCategory ? "Editar" : "Adicionar"}
+                    </Text>
+                </TouchableOpacity>
+
+
+                {editingCategory && (
+                    <TouchableOpacity onPress={handleCancelEdit} style={[styles.button, styles.cancelButton]}>
+                        <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                )}
+            </View>
+
 
             {error && <Text style={styles.error}>{error}</Text>}
 
@@ -82,13 +107,13 @@ export default function AdminCategorias() {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <View style={styles.categoryItem}>
-                        <Text>{item.name}</Text>
+                        <Text style={styles.textoCategorias}>{item.name}</Text>
                         <View style={styles.actions}>
                             <TouchableOpacity onPress={() => handleEditCategory(item)}>
                                 <Text style={styles.editButton}>Editar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDeleteCategory(item.id)}>
-                                <Text style={styles.deleteButton}>Excluir</Text>
+                            <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteCategory(item.id)}>
+                                <Icon name="trash" size={20} style={{ color: COLORS.white }} />
                             </TouchableOpacity>
                         </View>
                     </View>

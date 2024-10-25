@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 import { Feather } from "@expo/vector-icons";
+import { COLORS } from "../../styles/COLORS";
 
 interface ItemProps {
     data:{
@@ -24,7 +25,7 @@ export function ListItem({data, deleteItem}: ItemProps) {
         <Text style={styles.item}>{data.amount} - {data.name}</Text>
 
         <TouchableOpacity onPress={handleDeleteItem}>
-            <Feather name="trash-2" size={24} color="#FF3F4b"/>
+            <Feather name="trash-2" size={24} color={COLORS.red}/>
         </TouchableOpacity>
     </View>
   );
@@ -32,7 +33,7 @@ export function ListItem({data, deleteItem}: ItemProps) {
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: '#101026',
+        backgroundColor: COLORS.dark,
         flex:1,
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -42,10 +43,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         borderRadius: 4,
         borderWidth: 0.3,
-        borderColor: '#8a8a8a',
+        borderColor: COLORS.darkGrey,
     },
     item:{
-        color: '#FFF',
+        color: COLORS.white,
         fontSize: 16,
     }
 });

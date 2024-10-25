@@ -18,6 +18,7 @@ const Carrinho = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
+  const [observation, setObservation] = useState(''); // Novo estado para observação
 
   const handleOrderSubmit = async () => {
     if (!deliveryOption) {
@@ -29,12 +30,14 @@ const Carrinho = ({ navigation }) => {
       deliveryType: deliveryOption === 'endereco' ? 'Endereço' : 'Mesa',
       deliveryAddress: deliveryOption === 'endereco' ? deliveryAddress : undefined,
       tableNumber: deliveryOption === 'mesa' ? tableNumber : undefined,
+      observation: observation.trim(), // Adiciona a observação ao enviar
     };
 
     try {
       const response = await api.post('/orders', orderData);
       Alert.alert('Sucesso', 'Pedido criado com sucesso!');
-      navigation.navigate('Home');
+      setObservation(''); // Limpa a observação após o pedido
+      navigation.navigate('Pedidos');
     } catch (error) {
       console.error('Erro ao criar o pedido:', error);
       Alert.alert('Erro', 'Não foi possível criar o pedido. Tente novamente.');
@@ -61,8 +64,7 @@ const Carrinho = ({ navigation }) => {
       } else {
         console.error('Erro ao carregar o carrinho:', error);
       }
-    }
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -130,8 +132,9 @@ const Carrinho = ({ navigation }) => {
   };
 
   const renderEmptyCart = () => (
-    <View style={styles.emptyCartContainer}>
-      <Text style={styles.emptyCartText}>Seu carrinho está vazio. Adicione alguns produtos!</Text>
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyMessage}>Você ainda não tem produtos no Carrinho.</Text>
+      <Text style={styles.emptyInstruction}>Adicione produtos para vê-los aqui!</Text>
     </View>
   );
 
@@ -163,7 +166,7 @@ const Carrinho = ({ navigation }) => {
       ) : (
         <>
           <Picker selectedValue={deliveryOption} onValueChange={handleDeliveryOptionChange} style={styles.picker}>
-            <Picker.Item label="Selecione a forma de entrega" value="" />
+            <Picker.Item label="Selecione a forma de entrega" value=""/>
             <Picker.Item label="Selecionar Mesa" value="mesa" />
             <Picker.Item label="Selecionar Endereço" value="endereco" />
           </Picker>
@@ -182,6 +185,7 @@ const Carrinho = ({ navigation }) => {
           )}
         </>
       )}
+
       {loading ? (
         <ActivityIndicator size={50} color={COLORS.secondary} style={styles.flatList} />
       ) : (
@@ -194,13 +198,25 @@ const Carrinho = ({ navigation }) => {
         />
       )}
       {cartItems.length > 0 && (
-        <View style={styles.footer}>
-          <View style={styles.containerPreco}>
-            <Text style={styles.totalText}>Preço Total</Text>
-            <Text style={styles.totalPrice}>R$ {totalPrice.toFixed(2)}</Text>
+        <>
+          <TextInput
+            placeholder="Observações (opcional)"
+            value={observation}
+            onChangeText={setObservation}
+            style={styles.observationInput}
+            multiline={true} // Permite várias linhas
+            numberOfLines={3} // Número de linhas visíveis
+            textAlignVertical="top" // Inicia o texto no topo do campo
+            maxLength={200} // Limite de caracteres
+          />
+          <View style={styles.footer}>
+            <View style={styles.containerPreco}>
+              <Text style={styles.totalText}>Preço Total</Text>
+              <Text style={styles.totalPrice}>R$ {totalPrice.toFixed(2)}</Text>
+            </View>
+            <PrimaryButton title="PEDIR AGORA" onPress={handleOrderSubmit} />
           </View>
-          <PrimaryButton title="PEDIR AGORA" onPress={handleOrderSubmit} />
-        </View>
+        </>
       )}
     </SafeAreaView>
   );

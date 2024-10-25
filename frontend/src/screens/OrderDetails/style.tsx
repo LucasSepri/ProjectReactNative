@@ -4,7 +4,7 @@ import { COLORS } from '../../styles/COLORS';
 export default StyleSheet.create({
     container: {
         flexGrow: 1,
-        backgroundColor: '#f9f9f9',
+        backgroundColor: COLORS.white,
         padding: 20,
     },
     header: {
@@ -15,11 +15,11 @@ export default StyleSheet.create({
         marginBottom: 20,
     },
     section: {
-        backgroundColor: '#fff',
+        backgroundColor: COLORS.white,
         borderRadius: 10,
         padding: 15,
         marginBottom: 20,
-        shadowColor: '#000',
+        shadowColor: COLORS.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -31,27 +31,27 @@ export default StyleSheet.create({
         color: COLORS.secondary,
         marginBottom: 10,
         borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        borderBottomColor: COLORS.white,
         paddingBottom: 5,
     },
     orderText: {
         fontSize: 16,
         marginBottom: 8,
-        color: '#555',
+        color: COLORS.grey,
     },
     label: {
         fontWeight: 'bold',
-        color: '#333',
+        color: COLORS.darkGrey,
     },
     itemContainer: {
-        backgroundColor: '#f1f1f1',
+        backgroundColor: COLORS.white,
         borderRadius: 8,
         padding: 10,
         marginBottom: 10,
     },
     itemText: {
         fontSize: 16,
-        color: '#555',
+        color: COLORS.grey,
     },
     button: {
         backgroundColor: COLORS.primary,
@@ -61,7 +61,7 @@ export default StyleSheet.create({
         marginTop: 20,
     },
     buttonText: {
-        color: '#fff',
+        color: COLORS.white,
         fontSize: 18,
         fontWeight: 'bold',
     },

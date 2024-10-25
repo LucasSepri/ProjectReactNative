@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: COLORS.white,
+    marginBottom: '22%',
   },
   header: {
     fontSize: 24,

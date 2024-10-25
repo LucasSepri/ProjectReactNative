@@ -7,7 +7,7 @@ import Routes from "./src/routes";
 // Importando o contextos
 import { AuthProvider } from "./src/context/AuthContext";
 import { TableProvider } from './src/context/TableContext';
-import { FoodsProvider } from './src/context/FoodsContext';
+
 
 import { COLORS } from "./src/styles/COLORS";
 
@@ -18,9 +18,7 @@ export default function App() {
                 <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
                 <AuthProvider>
                     <TableProvider>
-                        {/* <FoodsProvider> */}
                             <Routes />
-                        {/* </FoodsProvider> */}
                     </TableProvider>
                 </AuthProvider>
             </NavigationContainer>

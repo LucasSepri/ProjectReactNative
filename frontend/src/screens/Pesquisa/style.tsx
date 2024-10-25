@@ -13,8 +13,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         backgroundColor: COLORS.white,
         borderRadius: 8,
-        elevation: 3,
-        paddingHorizontal: 12,
+        paddingLeft: 8,
     },
     searchIcon: {
         marginRight: 8,
@@ -24,11 +23,31 @@ const styles = StyleSheet.create({
         height: 40,
         fontSize: 16,
     },
-    loader: {
-        marginVertical: 20,
+    categoriasContainer: {
+        marginBottom: 16,
     },
-    productList: {
-        paddingBottom: 16,
+    categoriesListContainer: {
+        paddingHorizontal: 8,
+    },
+    categoryButton: {
+        flexDirection: 'row',
+        padding: 10,
+        backgroundColor: COLORS.white,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginRight: 8,
+    },
+    selectedCategoryButton: {
+        backgroundColor: COLORS.white,
+    },
+    iconeCategorias: {
+        fontSize: 24,
+        color: COLORS.grey,
+    },
+    categoryButtonText: {
+        marginTop: 5,
+        fontSize: 14,
+        color: COLORS.grey,
     },
     foodItem: {
         flexDirection: 'row',
@@ -38,7 +57,10 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 16,
         shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
@@ -65,23 +87,6 @@ const styles = StyleSheet.create({
     price: {
         fontWeight: 'bold',
         textAlign: 'right',
-        marginTop: 8,
-    },
-    emptyContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    emptyMessage: {
-        fontSize: 18,
-        color: COLORS.darkGrey,
-        textAlign: 'center',
-        marginBottom: 8,
-    },
-    emptyInstruction: {
-        fontSize: 16,
-        color: COLORS.grey,
-        textAlign: 'center',
     },
 });
 

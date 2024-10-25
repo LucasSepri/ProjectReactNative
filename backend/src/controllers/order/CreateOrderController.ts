@@ -9,7 +9,7 @@ class CreateOrderController {
       return res.status(401).json({ error: 'Usuário não autenticado.' });
     }
 
-    const { deliveryType, deliveryAddress, tableNumber } = req.body;
+    const { deliveryType, deliveryAddress, tableNumber, observation } = req.body;
 
     // Validação dos dados
     if (!deliveryType) {
@@ -22,6 +22,7 @@ class CreateOrderController {
         deliveryType,
         deliveryAddress,
         tableNumber,
+        observation, // Passa a observação ao serviço
       });
 
       return res.status(201).json(order);

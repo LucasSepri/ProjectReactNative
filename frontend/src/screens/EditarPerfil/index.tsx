@@ -48,31 +48,31 @@ export default function EditarPerfil() {
 
   async function handleUpdateProfile() {
     setLoading(true);
-  
+
     let formData = new FormData();
     formData.append('userId', user.id);
-  
+
     // Adiciona apenas os campos que foram alterados
     if (name !== user.name) formData.append('name', name);
     if (email !== user.email) formData.append('email', email);
-    
+
     // Adiciona ama nova senha apenas se ela for fornecida
     if (password) {
       formData.append('password', password);
     }
-  
+
     if (selectedImage && selectedImage !== `${api.defaults.baseURL}${user.profileImage}`) {
       try {
         const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-  
+
         if (!fileInfo.exists) {
           throw new Error('File does not exist');
         }
-  
+
         const fileUri = fileInfo.uri;
         const fileType = fileUri.split('.').pop() === 'jpg' ? 'image/jpeg' : 'image/png';
         const fileName = fileUri.split('/').pop();
-  
+
         formData.append('profileImage', {
           uri: fileUri,
           name: fileName,
@@ -85,7 +85,7 @@ export default function EditarPerfil() {
         return;
       }
     }
-  
+
     try {
       // Atualiza o endpoint aqui
       const response = await api.put(`/users/${user.id}`, formData, {
@@ -105,7 +105,7 @@ export default function EditarPerfil() {
       setLoading(false);
     }
   }
-  
+
 
 
 
@@ -128,7 +128,7 @@ export default function EditarPerfil() {
         style={styles.input}
         value={name}
         onChangeText={setName}
-        placeholderTextColor={'#F0F0F0'}
+        placeholderTextColor={COLORS.white}
       />
       <TextInput
         placeholder='Email'
@@ -136,12 +136,12 @@ export default function EditarPerfil() {
         value={email}
         onChangeText={setEmail}
         autoCapitalize='none'
-        placeholderTextColor={'#F0F0F0'}
+        placeholderTextColor={COLORS.white}
       />
       <TextInput
         placeholder='Nova Senha'
         style={styles.input}
-        placeholderTextColor={'#F0F0F0'}
+        placeholderTextColor={COLORS.white}
         secureTextEntry={true}
         value={password}
         onChangeText={setPassword}
@@ -149,7 +149,7 @@ export default function EditarPerfil() {
 
       <TouchableOpacity style={styles.button} onPress={handleUpdateProfile} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color="#FFF" />
+          <ActivityIndicator size="small" color={COLORS.white}  />
         ) : (
           <Text style={styles.buttonText}>Salvar</Text>
         )}
@@ -163,17 +163,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1d1d2e',
+    backgroundColor: COLORS.dark,
     padding: 20,
   },
   title: {
     fontSize: 24,
-    color: '#FFF',
+    color: COLORS.white,
     marginBottom: 20,
     fontWeight: 'bold',
   },
   imagePicker: {
-    backgroundColor: '#101026',
+    backgroundColor: COLORS.dark,
     borderRadius: 5,
     width: 150,
     height: 150,
@@ -193,10 +193,10 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 50,
-    backgroundColor: '#101026',
+    backgroundColor: COLORS.dark,
     borderRadius: 4,
     paddingHorizontal: 10,
-    color: '#FFF',
+    color: COLORS.white,
     marginBottom: 12,
   },
   button: {
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   buttonText: {
-    color: '#FFF',
+    color: COLORS.white,
     fontSize: 18,
     fontWeight: 'bold',
   }

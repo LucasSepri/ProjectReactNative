@@ -5,10 +5,11 @@ interface CreateOrderRequest {
   deliveryType: 'Endereço' | 'Mesa';
   deliveryAddress?: string; // Se for "Endereço", precisaremos deste campo
   tableNumber?: string; // Se for "Mesa", precisaremos deste campo
+  observation?: string; // Campo opcional para observações
 }
 
 class CreateOrderService {
-  async execute({ user_id, deliveryType, deliveryAddress, tableNumber }: CreateOrderRequest) {
+  async execute({ user_id, deliveryType, deliveryAddress, tableNumber, observation }: CreateOrderRequest) {
     // Verifica se as informações de entrega estão corretas
     if (deliveryType === 'Endereço' && !deliveryAddress) {
       throw new Error('Endereço de entrega não fornecido.');
@@ -53,7 +54,7 @@ class CreateOrderService {
         deliveryType,
         deliveryAddress: deliveryType === 'Endereço' ? deliveryAddress : null, // Endereço de entrega
         tableNumber: deliveryType === 'Mesa' ? tableNumber : null, // Número da mesa
-
+        observation, // Inclui a observação aqui
         items: {
           create: cart.items.map((cartItem) => ({
             product_id: cartItem.product_id,

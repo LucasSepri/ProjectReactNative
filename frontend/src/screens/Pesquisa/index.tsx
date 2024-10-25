@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { api } from '../../services/api';
+import styles from './style';
+import { COLORS } from '../../styles/COLORS';
 
 type ProductProps = {
   price: string;
@@ -59,13 +61,13 @@ const PizzaScreen = () => {
       try {
         const response = await api.get(
           categorySelected && categorySelected.id !== 'all'
-              ? `/products/${categorySelected.id}`
-              : '/products'
-      , {
-          params: {
-            category_id: categorySelected && categorySelected.id !== 'all' ? categorySelected.id : undefined
-          }
-        });
+            ? `/products/${categorySelected.id}`
+            : '/products'
+          , {
+            params: {
+              category_id: categorySelected && categorySelected.id !== 'all' ? categorySelected.id : undefined
+            }
+          });
         setProducts(response.data);
         setProductSelected(response.data[0]);
       } catch (error) {
@@ -116,7 +118,7 @@ const PizzaScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
+        <Ionicons name="search" size={24} color={COLORS.grey} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Procure..."
@@ -152,7 +154,7 @@ const PizzaScreen = () => {
       </View>
 
       {loadingProducts ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={COLORS.black} />
       ) : (
         <FlatList
           data={products}
@@ -164,93 +166,6 @@ const PizzaScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#f0f0f0',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingLeft: 8,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    fontSize: 16,
-  },
-  categoriasContainer: {
-    marginBottom: 16,
-  },
-  categoriesListContainer: {
-    paddingHorizontal: 8,
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  selectedCategoryButton: {
-    backgroundColor: '#ccc',
-  },
-  iconeCategorias: {
-    fontSize: 24,
-    color: '#555',
-  },
-  categoryButtonText: {
-    marginTop: 5,
-    fontSize: 14,
-    color: '#555',
-  },
-  foodItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  imageContainer: {
-    marginRight: 16,
-  },
-  image: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  infoContainer: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  ingredients: {
-    opacity: 0.6,
-  },
-  price: {
-    fontWeight: 'bold',
-    textAlign: 'right',
-  },
-});
+
 
 export default PizzaScreen;

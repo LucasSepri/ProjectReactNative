@@ -29,23 +29,14 @@ export default function SignIn() {
             await signIn({ email, password });
         }
     }
-     {/* APAGAR */}
-    async function handleLogin2() {
-        await signIn({ email: 'lucassepriano@gmail.com', password: '1234' });
-    }
-    async function handleLogin3() {
-        await signIn({ email: 'lucasseprianon@gmail.com', password: '1234' });
-    }
-     {/* ----- */}
 
     useEffect(() => {
-        // alert(user.isAdmin);
         if (isAuthenticated) {
             if (user.isAdmin == false) {
-                try{
-                navigation.navigate('Home');
+                try {
+                    navigation.navigate('Home');
                 } catch (error) {
-                  console.log("Error");
+                    console.log("Error");
                 }
             }
         }
@@ -67,7 +58,7 @@ export default function SignIn() {
                 <TextInput
                     placeholder='Digite seu Email'
                     style={styles.input}
-                    placeholderTextColor={'#F0F0F0'}
+                    placeholderTextColor={COLORS.white}
                     value={email}
                     autoCapitalize='none'
                     onChangeText={setEmail}
@@ -75,7 +66,7 @@ export default function SignIn() {
                 <TextInput
                     placeholder='Digite sua Senha'
                     style={styles.input}
-                    placeholderTextColor={'#F0F0F0'}
+                    placeholderTextColor={COLORS.white}
                     secureTextEntry={true}
                     value={password}
                     autoCapitalize='none'
@@ -84,7 +75,7 @@ export default function SignIn() {
 
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
                     {loadingAuth ? (
-                        <ActivityIndicator size={20} color="#101026" />
+                        <ActivityIndicator size={20} color={COLORS.dark}  />
                     ) : (
                         <Text style={styles.buttonText}>Entrar</Text>
                     )}
@@ -97,22 +88,6 @@ export default function SignIn() {
                     </Text>
                 </TouchableOpacity>
 
-                {/* APAGAR */}
-                {/* <TouchableOpacity style={{backgroundColor: "blue", paddingHorizontal: 33, paddingVertical: 22, marginVertical: 10}} onPress={handleLogin2}>
-                    {loadingAuth ? (
-                        <ActivityIndicator size={20} color="#101026" />
-                    ) : (
-                        <Text style={{color: "white"}}>Administrador</Text>
-                    )}
-                </TouchableOpacity>
-                <TouchableOpacity style={{backgroundColor: "green", paddingHorizontal: 33, paddingVertical: 22, }} onPress={handleLogin3}>
-                    {loadingAuth ? (
-                        <ActivityIndicator size={20} color="#101026" />
-                    ) : (
-                        <Text style={{color: "white"}}>Usuario</Text>
-                    )}
-                </TouchableOpacity> */}
-                 {/* ------- */}
             </View>
         </View>
     );
@@ -123,7 +98,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#1d1d2e'
+        backgroundColor: COLORS.dark
     },
     logo: {
         marginBottom: 10,
@@ -141,11 +116,11 @@ const styles = StyleSheet.create({
     input: {
         width: '95%',
         height: 50,
-        backgroundColor: '#101026',
+        backgroundColor: COLORS.dark,
         marginBottom: 12,
         borderRadius: 4,
         paddingHorizontal: 8,
-        color: '#FFF'
+        color: COLORS.white
     },
     button: {
         width: '95%',
@@ -162,6 +137,6 @@ const styles = StyleSheet.create({
     },
     registerText: {
         marginTop: 20,
-        color: '#FFF'
+        color: COLORS.white
     }
 });

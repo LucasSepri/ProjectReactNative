@@ -61,27 +61,27 @@ export default function SignUp() {
 
         if (selectedImage) {
             try {
-              const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-      
-              if (!fileInfo.exists) {
-                throw new Error('File does not exist');
-              }
-      
-              const fileUri = fileInfo.uri;
-              const fileType = 'image/jpeg'; 
-              const fileName = fileUri.split('/').pop();
-      
-              formData.append('profileImage', {
-                uri: fileUri,
-                name: fileName,
-                type: fileType,
-              } as any);
+                const fileInfo = await FileSystem.getInfoAsync(selectedImage);
+
+                if (!fileInfo.exists) {
+                    throw new Error('File does not exist');
+                }
+
+                const fileUri = fileInfo.uri;
+                const fileType = 'image/jpeg';
+                const fileName = fileUri.split('/').pop();
+
+                formData.append('profileImage', {
+                    uri: fileUri,
+                    name: fileName,
+                    type: fileType,
+                } as any);
             } catch (error) {
-              console.error('Error getting file info:', error);
-              Alert.alert('Erro', 'Erro ao obter informações do arquivo');
-              return;
+                console.error('Error getting file info:', error);
+                Alert.alert('Erro', 'Erro ao obter informações do arquivo');
+                return;
             }
-          }
+        }
 
         try {
             const response = await api.post('/users', formData, {
@@ -94,10 +94,10 @@ export default function SignUp() {
             Alert.alert("Sucesso", "Conta criada e você está logado!");
             // navigation.navigate('Home');
             if (user.isAdmin == false) {
-                try{
-                navigation.navigate('Home');
+                try {
+                    navigation.navigate('Home');
                 } catch (error) {
-                  console.log("Error");
+                    console.log("Error");
                 }
             }
         } catch (error) {
@@ -125,7 +125,7 @@ export default function SignUp() {
                 value={name}
                 onChangeText={setName}
 
-                placeholderTextColor={'#F0F0F0'}
+                placeholderTextColor={COLORS.white}
             />
             <TextInput
                 placeholder='Email'
@@ -133,12 +133,12 @@ export default function SignUp() {
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize='none'
-                placeholderTextColor={'#F0F0F0'}
+                placeholderTextColor={COLORS.white}
             />
             <TextInput
                 placeholder='Senha'
                 style={styles.input}
-                placeholderTextColor={'#F0F0F0'}
+                placeholderTextColor={COLORS.white}
                 secureTextEntry={true}
                 value={password}
                 autoCapitalize='none'
@@ -147,7 +147,7 @@ export default function SignUp() {
 
             <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
                 {loading ? (
-                    <ActivityIndicator size="small" color="#FFF" />
+                    <ActivityIndicator size="small" color={COLORS.white}  />
                 ) : (
                     <Text style={styles.buttonText}>Cadastrar</Text>
                 )}
@@ -161,13 +161,13 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#1d1d2e',
+        backgroundColor: COLORS.dark,
         padding: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: COLORS.white,
         marginBottom: 20,
     },
     imagePicker: {
@@ -193,10 +193,10 @@ const styles = StyleSheet.create({
     input: {
         width: '100%',
         height: 50,
-        backgroundColor: '#101026',
+        backgroundColor: COLORS.dark,
         borderRadius: 4,
         paddingHorizontal: 10,
-        color: '#FFF',
+        color: COLORS.white,
         marginBottom: 12,
     },
     button: {
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     buttonText: {
-        color: '#FFF',
+        color: COLORS.white,
         fontSize: 18,
         fontWeight: 'bold',
     }
