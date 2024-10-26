@@ -10,6 +10,8 @@ import EditarPerfil from "../screens/EditarPerfil";
 import Home from "../screens/Home";
 import OrderDetails from "../screens/OrderDetails";
 import ProductDetails from "../screens/ProductDetails";
+import MapScreen from "../screens/Mapa";
+import Endereco from "../screens/Endereco";
 
 import TabRouter from "./tab.routes";
 
@@ -24,6 +26,8 @@ export type StackParamList = {
     SignUp: undefined;
     EditarPerfil: undefined;
     ProductDetails: { product: any, category: any };
+    MapScreen: { address: string; latitude: number; longitude: number };
+    Endereco: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -36,6 +40,26 @@ function AppRoutes() {
                 component={TabRouter}
                 options={{ headerShown: false }}
             />
+            <Stack.Screen
+                name="MapScreen"
+                component={MapScreen}
+                options={{
+                    title: "MapScreen",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
+            <Stack.Screen
+                name="Endereco"
+                component={Endereco}
+                options={{
+                    title: "Endereco",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
             <Stack.Screen
                 name="OrderDetails"
                 component={OrderDetails}
@@ -54,7 +78,7 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Seus Dados",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }}
@@ -65,7 +89,7 @@ function AppRoutes() {
                 options={{
                     title: "Logar-se",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }}
@@ -87,7 +111,7 @@ function AppRoutes() {
                 options={{
                     title: "cadastrar-se",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }} />
@@ -97,7 +121,7 @@ function AppRoutes() {
                 options={{
                     title: "Editar Perfil",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }}

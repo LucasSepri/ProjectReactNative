@@ -9,11 +9,12 @@ interface UpdateUserRequest {
   name?: string;
   email?: string;
   password?: string;
+  phone?: string;
   profileImage?: string;
 }
 
 class UpdateUserService {
-  async execute({ id, name, email, password, profileImage }: UpdateUserRequest) {
+  async execute({ id, name, email, phone, password, profileImage }: UpdateUserRequest) {
     // Encontra o usuário pelo ID
     const user = await prisma.user.findUnique({
       where: {
@@ -51,6 +52,7 @@ class UpdateUserService {
       data: {
         name: name ?? user.name,
         email: email ?? user.email,
+        phone: phone ?? user.phone,
         password: password ? await bcrypt.hash(password, 8) : user.password,
         profileImage: profileImage ?? user.profileImage,
       },

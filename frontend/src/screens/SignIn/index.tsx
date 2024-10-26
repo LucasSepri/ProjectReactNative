@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import {
     View,
     Text,
-    StyleSheet,
     Image,
     TextInput,
     TouchableOpacity,
@@ -13,6 +12,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 
 import { AuthContext } from '../../context/AuthContext';
+import styles from './style';
 import { COLORS } from '../../styles/COLORS';
 
 export default function SignIn() {
@@ -25,118 +25,57 @@ export default function SignIn() {
     async function handleLogin() {
         if (email === '' || password === '') {
             return;
-        } else {
-            await signIn({ email, password });
         }
+        await signIn({ email, password });
     }
 
     useEffect(() => {
-        if (isAuthenticated) {
-            if (user.isAdmin == false) {
-                try {
-                    navigation.navigate('Home');
-                } catch (error) {
-                    console.log("Error");
-                }
-            }
+        if (isAuthenticated && user.isAdmin === false) {
+            navigation.navigate('Home');
         }
     }, [isAuthenticated, user, navigation]);
 
-
     function navigateToSignUp() {
-        navigation.navigate('SignUp'); // Navega para a tela de SignUp
+        navigation.navigate('SignUp');
     }
 
     return (
         <View style={styles.container}>
-            <Image
-                style={styles.logo}
-                source={require('../../assets/logo.png')}
-            />
+            <Image style={styles.logo} source={require('../../assets/logo.png')} />
+            <Text style={styles.title}>Bem-vindo de volta!</Text>
+            <Text style={styles.subTitle}>Faça login para continuar</Text>
 
             <View style={styles.inputContainer}>
                 <TextInput
-                    placeholder='Digite seu Email'
+                    placeholder="Email"
                     style={styles.input}
-                    placeholderTextColor={COLORS.white}
+                    placeholderTextColor={COLORS.darkGrey}
                     value={email}
-                    autoCapitalize='none'
+                    autoCapitalize="none"
                     onChangeText={setEmail}
                 />
                 <TextInput
-                    placeholder='Digite sua Senha'
+                    placeholder="Senha"
                     style={styles.input}
-                    placeholderTextColor={COLORS.white}
-                    secureTextEntry={true}
+                    placeholderTextColor={COLORS.darkGrey}
+                    secureTextEntry
                     value={password}
-                    autoCapitalize='none'
+                    autoCapitalize="none"
                     onChangeText={setPassword}
                 />
 
-                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
                     {loadingAuth ? (
-                        <ActivityIndicator size={20} color={COLORS.dark}  />
+                        <ActivityIndicator size={24} color={COLORS.white} />
                     ) : (
                         <Text style={styles.buttonText}>Entrar</Text>
                     )}
                 </TouchableOpacity>
 
-
                 <TouchableOpacity onPress={navigateToSignUp}>
-                    <Text style={styles.registerText}>
-                        Não tem uma conta? Cadastre-se
-                    </Text>
+                    <Text style={styles.registerText}>Não possui uma conta? Cadastre-se</Text>
                 </TouchableOpacity>
-
             </View>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: COLORS.dark
-    },
-    logo: {
-        marginBottom: 10,
-        width: 220,
-        height: 220,
-        borderRadius: 100,
-    },
-    inputContainer: {
-        width: '95%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 32,
-        paddingHorizontal: 16,
-    },
-    input: {
-        width: '95%',
-        height: 50,
-        backgroundColor: COLORS.dark,
-        marginBottom: 12,
-        borderRadius: 4,
-        paddingHorizontal: 8,
-        color: COLORS.white
-    },
-    button: {
-        width: '95%',
-        height: 50,
-        backgroundColor: COLORS.primary,
-        borderRadius: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: COLORS.white
-    },
-    registerText: {
-        marginTop: 20,
-        color: COLORS.white
-    }
-});

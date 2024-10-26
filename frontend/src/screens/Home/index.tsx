@@ -44,27 +44,40 @@ export default function Home() {
     const [categorySelected, setCategorySelected] = useState<CategoryProps | null>(null);
     const [products, setProducts] = useState<ProductProps[]>([]);
     const [loadingProducts, setLoadingProducts] = useState(false);
-    const [productSelected, setProductSelected] = useState<ProductProps | undefined>();
-
-    const categoryIcons = {
-        'Pizzas': 'pizza',
-        'Bebidas': 'beer',
-        'Sobremesas': 'ice-cream',
-    };
+    const [loadingCategories, setLoadingCategories] = useState(true);
 
     const scrollViewRef = useRef<ScrollView>(null);
+    const pizzariaPhoneNumber = '+5511999999999';
+    const pizzariaAddress = 'Rua Dona Veridiana, 661, Higienópolis, São Paulo - SP';
 
-    // Função para carregar categorias
-    useEffect(() => {
-        const loadCategories = async () => {
+    // Load categories on mount
+    // Modifique a função loadCategories para fora do useEffect
+    const loadCategories = async () => {
+        try {
             const response = await api.get('/categories');
-            setCategories([{ id: 'all', name: 'Todos' }, ...response.data]);
+            const categoriesWithProducts = await Promise.all(response.data.map(async (category: CategoryProps) => {
+                const productResponse = await api.get(`/products/${category.id}`);
+                return { ...category, hasProducts: productResponse.data.length > 0, products: productResponse.data };
+            }));
+
+            // Filtra categorias sem produtos
+            const filteredCategories = categoriesWithProducts.filter(category => category.hasProducts);
+            setCategories([{ id: 'all', name: 'Todos' }, ...filteredCategories]);
             setCategorySelected({ id: 'all', name: 'Todos' });
-        };
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingCategories(false);
+        }
+    };
+
+    // Chama loadCategories no primeiro carregamento
+    useEffect(() => {
         loadCategories();
     }, []);
 
-    // Função para carregar produtos
+
+    // Load products when category changes
     useEffect(() => {
         const loadProducts = async () => {
             setLoadingProducts(true);
@@ -75,7 +88,6 @@ export default function Home() {
                         : '/products'
                 );
                 setProducts(response.data);
-                setProductSelected(response.data[0]);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -85,160 +97,129 @@ export default function Home() {
         loadProducts();
     }, [categorySelected]);
 
-    // Função para alterar categoria
-    const handleChangeCategory = (item: CategoryProps | null, index?: number) => {
-        setCategorySelected(item);
-        if (index !== undefined) {
-            scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
-        }
-    };
-
-    // Funções de navegação
+    // Navigate to product details
     const handleProductPress = (product: ProductProps) => {
         navigation.navigate('ProductDetails', { product, category: categorySelected });
     };
 
-    const handleLogar = () => {
-        navigation.navigate('SignIn');
-    };
-
-    const handlePerfil = () => {
-        navigation.navigate('Perfil');
-    };
-
-    const handleSearch = () => {
-        navigation.navigate('Pesquisa');
-    };
-
-    const truncateString = (name: string, maxLength: number): string => {
-        return name.length > maxLength ? `${name.slice(0, maxLength)}...` : name;
-    };
-
+    // Helper functions
+    // Função para abrir o WhatsApp com o número da pizzaria
     const openWhatsApp = () => {
-        const phoneNumber = '+5511999999999';
-        const url = `whatsapp://send?phone=${phoneNumber}`;
+        const url = `whatsapp://send?phone=${pizzariaPhoneNumber}`;
         Linking.openURL(url).catch(() => {
-            alert('Certifique-se de que o WhatsApp está instalado no seu dispositivo');
+            alert('Certifique-se de que o WhatsApp está instalado');
         });
     };
 
+    // Função para abrir a localização no Google Maps
     const openLocation = () => {
-        const address = 'Rua Dona Veridiana, 661, Higienópolis, São Paulo - SP, 01238-010';
-        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-        Linking.openURL(url).catch(() => {
+        Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(pizzariaAddress)}`).catch(() => {
             alert('Não foi possível abrir o Google Maps');
         });
     };
 
+
     return (
         <ScrollView style={styles.container}>
-            {/* HEADER */}
-            <ImageBackground
-                source={require('../../assets/background.jpg')}
-                style={styles.headerImagemDeFundo}
-                resizeMode="cover"
-            >
-                {tableNumber && (
-                    <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
-                        <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
-                        <Icon name="exit" style={styles.iconeMesaSair} />
-                    </TouchableOpacity>
-                )}
-                <View style={styles.perfil}>
+            {/* Header */}
+            <ImageBackground source={require('../../assets/background.jpg')} style={styles.headerImage}>
+                <View style={styles.headerIconsContainer}>
                     {isAuthenticated ? (
-                        <TouchableOpacity style={styles.botaoPerfil} onPress={handlePerfil}>
-                            <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} style={styles.perfilFoto} />
-                            <Text style={styles.textoNomePerfil}>{truncateString(user.name, 20)}</Text>
+                        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Perfil')}>
+                            <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} style={styles.profileImage} />
+                            <Text style={styles.profileName}>
+                                {user.name.split(' ').slice(0, 1).join(' ').toUpperCase()}
+                            </Text>
+
                         </TouchableOpacity>
                     ) : (
-                        <TouchableOpacity style={styles.botaoPerfil} onPress={handleLogar}>
-                            <Icon name="log-in-outline" style={styles.icone} />
-                            <Text style={styles.textoNomePerfil}>Logar-se</Text>
+                        <TouchableOpacity style={styles.EntrarButton} onPress={() => navigation.navigate('SignIn')}>
+                            <Icon name="log-in-outline" size={20} color={COLORS.white} />
+                            <Text style={styles.loginText}>ENTRAR</Text>
                         </TouchableOpacity>
                     )}
 
-                    <TouchableOpacity style={styles.botaoIcone} onPress={handleSearch}>
-                        <Icon name="search" style={styles.icone} />
-                    </TouchableOpacity>
+                    {tableNumber && (
+                        <TouchableOpacity style={styles.tableExitButton} onPress={clearTable}>
+                            <Text style={styles.tableExitText}>MESA {tableNumber}</Text>
+                            <Icon name="exit-outline" style={styles.exitIcon} />
+                        </TouchableOpacity>
+                    )}
                 </View>
-
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')}
-                        style={styles.logo}
-                    />
-                </View>
-
+                <Image source={require('../../assets/logo.png')} style={styles.logo} />
+                <Text style={styles.title}>Pizzaria Don Juan</Text>
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.buttonWhatsApp} onPress={openWhatsApp}>
-                        <Icon name="logo-whatsapp" size={20} color={COLORS.white}  />
-                        <Text style={styles.buttonText}>Telefone</Text>
+                    <TouchableOpacity style={styles.whatsAppButton} onPress={openWhatsApp}>
+                        <Icon name="logo-whatsapp" size={22} color={COLORS.white} />
+                        <Text style={styles.buttonText}>{pizzariaPhoneNumber}</Text>
                     </TouchableOpacity>
-                </View>
-
-                <View style={styles.addressContainer}>
-                    <TouchableOpacity style={styles.buttonAddressContainer} onPress={openLocation}>
-                        <Icon name="location" size={20} color={COLORS.white}  />
-                        <Text style={styles.buttonText}>Rua Dona Veridiana, 661, Higienópolis</Text>
+                    <TouchableOpacity style={styles.locationButton} onPress={openLocation}>
+                        <Icon name="location-outline" size={22} color={COLORS.white} />
+                        <Text style={styles.buttonText}>{pizzariaAddress}</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
 
-            {/* CATEGORIAS */}
-            <Text style={styles.tituloContainerProdutos}>PRODUTOS</Text>
-            <View style={styles.categoriasContainer}>
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.categoriesListContainer}
-                    ref={scrollViewRef}
-                >
-                    {categories.map((item, index) => {
-                        const iconForCategory = categoryIcons[item.name] || 'fast-food';
-                        return (
+            {/* Categories */}
+            <View style={styles.categoriesSection}>
+                <Text style={styles.sectionTitle}>Categorias</Text>
+                <ScrollView horizontal contentContainerStyle={styles.categoriesContainer} ref={scrollViewRef}>
+                    {loadingCategories ? (
+                        <ActivityIndicator size="large" color={COLORS.primary} />
+                    ) : (
+                        categories.map((category, index) => (
                             <TouchableOpacity
-                                key={item.id}
+                                key={category.id}
                                 style={[
                                     styles.categoryButton,
-                                    item.id === categorySelected?.id && styles.selectedCategoryButton,
+                                    category.id === categorySelected?.id && styles.selectedCategoryButton,
                                 ]}
-                                onPress={() => handleChangeCategory(item, index)}
+                                onPress={() => {
+                                    if (category.id === 'all') {
+                                        loadCategories(); // Carrega todas as categorias ao clicar em "Todos"
+                                    }
+                                    setCategorySelected(category);
+                                    scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
+                                }}
                             >
-                                <Icon name={iconForCategory} style={styles.iconeCategorias} />
-                                <Text style={styles.categoryButtonText}>{item.name}</Text>
+                                <Icon name={category.name === 'Todos' ? 'fast-food-outline' : 'fast-food-outline'} style={styles.categoryIcon} />
+                                <Text style={styles.categoryText}>{category.name}</Text>
                             </TouchableOpacity>
-                        );
-                    })}
+                        ))
+                    )}
                 </ScrollView>
             </View>
 
-            {/* PRODUTOS */}
-            <View style={styles.foodListContainer}>
+
+            {/* Products */}
+            <View style={styles.productsSection}>
+                <View style={styles.productsHeader}>
+                    <Text style={styles.sectionTitle}>Produtos</Text>
+                    <TouchableOpacity style={styles.searchButton} onPress={() => navigation.navigate('Pesquisa')}>
+                        <Icon name="search-outline" size={20} color={COLORS.white} />
+                        <Text style={styles.buttonText}>Pesquisar</Text>
+                    </TouchableOpacity>
+                </View>
                 {loadingProducts ? (
-                    <ActivityIndicator size={60} color={COLORS.primary} />
+                    <ActivityIndicator size="large" color={COLORS.primary} />
                 ) : (
-                    products.map((item) => (
+                    products.map((product) => (
                         <TouchableOpacity
-                            key={item.id}
-                            style={styles.foodItem}
-                            onPress={() => handleProductPress(item)}
+                            key={product.id}
+                            style={styles.productItem}
+                            onPress={() => handleProductPress(product)}
                         >
-                            <View style={styles.imageContainer}>
-                                <Image
-                                    source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
-                                    style={styles.image}
-                                />
-                            </View>
-                            <View style={styles.infoContainer}>
-                                <Text style={styles.name}>{item.name}</Text>
-                                <Text style={styles.description}>{item.description}</Text>
-                                <Text style={styles.ingredients}>{item.ingredients}</Text>
-                                <Text style={styles.price}>R$ {item.price}</Text>
+                            <Image source={{ uri: `${api.defaults.baseURL}${product.banner}` }} style={styles.productImage} />
+                            <View style={styles.productDetails}>
+                                <Text style={styles.productName}>{product.name}</Text>
+                                <Text style={styles.productDescription}>{product.description}</Text>
+                                <Text style={styles.productPrice}>R$ {product.price}</Text>
                             </View>
                         </TouchableOpacity>
                     ))
                 )}
             </View>
+
         </ScrollView>
     );
 }

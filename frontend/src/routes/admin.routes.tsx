@@ -4,12 +4,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import EditarPerfil from "../screens/EditarPerfil";
 import AdminRoutes from "./drawer.routes";
+import MapScreen from "../screens/Mapa";
+import Endereco from "../screens/Endereco";
 import { COLORS } from "../styles/COLORS";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
     EditarPerfil: undefined;
     AdminRoutes: undefined;
+    MapScreen: { address: string; latitude: number; longitude: number };
+    Endereco: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -34,6 +38,26 @@ function AppRoutes() {
                     headerTintColor: COLORS.white,
                 }}
             />
+            <Stack.Screen
+                name="MapScreen"
+                component={MapScreen}
+                options={{
+                    title: "MapScreen",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
+            <Stack.Screen
+                name="Endereco"
+                component={Endereco}
+                options={{
+                    title: "Endereco",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
 
         </Stack.Navigator>
     );

@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { api } from "../../services/api";
-import { styles } from "./style";
+import styles from "./style"; // Certifique-se de que o caminho do estilo esteja correto
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from "../../styles/COLORS";
 
@@ -55,10 +55,18 @@ export default function Perfil() {
                     style={styles.profileImage}
                 />
                 <Text style={styles.name}>{user.name}</Text>
+                <Text style={styles.telefone}>{user.phone}</Text>
                 <Text style={styles.email}>{user.email}</Text>
-                {/* <Text style={{fontSize: 8}}>{user.profileImage}</Text> */}
             </View>
             <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    style={[styles.button, styles.editButton]}
+                    onPress={() => navigation.navigate('Endereco')}
+                >
+                    <Ionicons name="map" size={24} color={COLORS.white} />
+                    <Text style={[styles.buttonText, styles.editText]}>Endereços</Text>
+                </TouchableOpacity>
+                
                 <TouchableOpacity
                     style={[styles.button, styles.editButton]}
                     onPress={() => navigation.navigate('EditarPerfil')}

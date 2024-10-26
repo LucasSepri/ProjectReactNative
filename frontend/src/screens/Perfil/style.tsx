@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { COLORS } from "../../styles/COLORS";
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
@@ -23,6 +23,10 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
     color: COLORS.darkGrey,
+  },
+  telefone: {
+    fontSize: 18,
+    color: COLORS.grey,
   },
   email: {
     fontSize: 18,
@@ -64,3 +68,5 @@ export const styles = StyleSheet.create({
     color: COLORS.white,
   },
 });
+
+export default styles;

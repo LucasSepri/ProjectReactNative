@@ -4,226 +4,261 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.background,
     },
-    headerImagemDeFundo: {
-        flex: 1,
-    },
-    // Login/Informações do usuário
-    perfil: {
-        flexDirection: 'row',
+    headerImage: {
+        width: '100%',
+        height: 'auto',
+        justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: COLORS.grey,
+    },
+    headerIconsContainer: {
+        flexDirection: 'row',
         justifyContent: 'space-between',
-        padding: 10,
+        width: '100%',
+        // height: 50,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        // marginTop: 20,
+        backgroundColor: COLORS.primary,
     },
-    botaoPerfil: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    profileButton: {
         paddingHorizontal: 10,
         paddingVertical: 5,
-    },
-    perfilFoto: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        borderWidth: 1,
-        overflow: 'hidden', // Adiciona recorte para a imagem
-    },
-    textoNomePerfil: {
-        color: COLORS.white,
-        fontSize: 18,
-        marginLeft: 10,
-        fontWeight: '500',
-    },
-    botaoIcone: {
-        padding: 10,
-        borderRadius: 10,
-    },
-    botaoMesaSair: {
+        backgroundColor: COLORS.secondary,
         flexDirection: 'row',
-        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.primary,
-        padding: 16,
-        marginHorizontal: 20,
-        borderRadius: 8,
-        marginTop: 16,
+        borderRadius: 5,
     },
-    textoMesaSair: {
+
+    profileImage: {
+        width: 30,
+        height: 30,
+        borderRadius: 50,
+        marginRight: 10,
+    },
+    profileName: {
         color: COLORS.white,
         fontWeight: 'bold',
-        marginRight: 8,
+        fontSize: 18,
     },
-    iconeMesaSair: {
+    EntrarButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.secondary,
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+        borderRadius: 5,
+
+    },
+    loginText: {
+        color: COLORS.white,
+        fontWeight: 'bold',
+        fontSize: 18,
+    },
+    tableExitButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: COLORS.secondary,
+        padding: 5,
+        borderRadius: 5,
+    },
+    tableExitText: {
+        color: COLORS.white,
+        fontWeight: 'bold',
+        fontSize: 18,
+        marginRight: 5,
+    },
+    exitIcon: {
         color: COLORS.white,
         fontSize: 20,
-    },
-    icone: {
-        color: COLORS.white,
-        fontSize: 32,
-    },
-    // Header app
-    logoContainer: {
-        alignItems: 'center',
-        paddingBottom: 10,
+        fontFamily: 'bold',
     },
     logo: {
-        height: 200,
-        width: 200,
-        borderRadius: 100,
+        width: 150,
+        height: 150,
+        resizeMode: 'contain',
+        marginVertical: 20,
+        borderRadius: 20,
+        borderColor: COLORS.primary,
+        borderWidth: 5,
+        backgroundColor: COLORS.lightGrey,
+
+    },
+    title:{
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: COLORS.white,
+        marginBottom: 20,
+        textShadowColor: COLORS.black, 
+        textShadowOffset: {width: 1, height: 1},
+        textShadowRadius: 5,
+
     },
     buttonContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        marginBottom: 10,
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+        width: '80%',
     },
-    buttonWhatsApp: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        paddingVertical: 10,
-        paddingHorizontal: 30,
+    whatsAppButton: {
         backgroundColor: COLORS.green,
-        borderRadius: 5,
-        marginRight: 10,
+        borderRadius: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+
+    },
+    locationButton: {
+        backgroundColor: COLORS.dark,
+        borderRadius: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     buttonText: {
         color: COLORS.white,
         marginLeft: 5,
-        fontWeight: '500',
-    },
-    addressContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-        paddingVertical: 10,
-        borderRadius: 5,
-    },
-    buttonAddressContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 10,
-        backgroundColor: COLORS.dark,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-    },
-    addressText: {
-        color: COLORS.white,
         fontSize: 16,
-        marginLeft: 10,
-        fontWeight: '400',
+        padding: 2,
     },
-    /*************  MAIN SCREEN  ****************/
-    // Container produtos
-    tituloContainerProdutos: {
-        textAlign: 'center',
-        fontSize: 22,
+    categoriesSection: {
+        // paddingHorizontal: 20,
+        // paddingVertical: 10,
+        padding: 20,
+        // backgroundColor: COLORS.black,
+    },
+    sectionTitle: {
+        fontSize: 24,
         fontWeight: 'bold',
-        marginTop: 20,
         color: COLORS.primary,
+        // marginBottom: 10,
     },
-    // Categorias
-    categoriasContainer: {
-        paddingVertical: 5,
-    },
-    categoriesListContainer: {
-        paddingVertical: 8,
-        paddingHorizontal: 10,
+    categoriesContainer: {
+        paddingVertical: 10,
+
     },
     categoryButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
         backgroundColor: COLORS.secondary,
-        paddingHorizontal: 20,
+        borderRadius: 10,
         paddingVertical: 10,
-        borderRadius: 20,
-        marginHorizontal: 5,
+        paddingHorizontal: 15,
+        marginRight: 10,
+        alignItems: 'center',
+        flexDirection: 'row',
     },
     selectedCategoryButton: {
         backgroundColor: COLORS.primary,
     },
-    categoryButtonText: {
-        color: COLORS.white,
-        fontWeight: 'bold',
-        marginLeft: 10,
-    },
-    iconeCategorias: {
+    categoryIcon: {
+        marginRight: 5,
         color: COLORS.white,
         fontSize: 20,
+        marginBottom: 5,
     },
-    // Produtos
-    foodListContainer: {
-        padding: 10,
-        marginBottom: 80,
-    },
-    foodItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 20,
-        backgroundColor: COLORS.white,
-        borderRadius: 12,
-        padding: 16,
-        shadowColor: COLORS.black,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        elevation: 3,
-    },
-    imageContainer: {
-        marginRight: 16,
-    },
-    image: {
-        width: 120,
-        height: 120,
-        borderRadius: 12,
-        backgroundColor: COLORS.dark,
-        resizeMode: 'cover',
-    },
-    infoContainer: {
-        flex: 1,
-    },
-    name: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 8,
-        color: COLORS.dark, // Adiciona uma cor mais escura para o nome
-    },
-    description: {
-        fontSize: 16,
-        marginBottom: 8,
-        opacity: 0.8,
-    },
-    ingredients: {
+    categoryText: {
+        color: COLORS.white,
         fontSize: 14,
-        marginBottom: 8,
-        opacity: 0.6,
     },
-    price: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'right',
-        color: COLORS.primary, // Usa a cor primária para o preço
+    productsSection: {
+        padding: 20,
+        paddingBottom: '20%',
+        backgroundColor: COLORS.lightGrey,
     },
-    loadingContainer: {
-        height: 150,
-        width: '100%',
-        justifyContent: 'center',
+    productsHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 20,
-        backgroundColor: COLORS.white,
-        borderRadius: 12,
-        shadowColor: COLORS.black,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        elevation: 3,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.grey,
+        paddingBottom: 10,
     },
+    searchButton: {
+        flexDirection: 'row',
+        backgroundColor: COLORS.primary,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    productItem: {
+        flexDirection: 'row',
+        backgroundColor: COLORS.white,
+        borderRadius: 10,
+        marginBottom: 15,
+        elevation: 4, // Aumentando a sombra para destaque
+        overflow: 'hidden',
+        padding: 10, // Adicionando padding para um visual mais clean
+    },
+    productImage: {
+        width: 120, // Aumentando a imagem
+        height: 120,
+        borderRadius: 10,
+        marginRight: 10, // Adicionando espaço entre a imagem e os detalhes
+    },
+    productDetails: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    productName: {
+        fontSize: 20, // Aumentando o tamanho da fonte
+        fontWeight: 'bold',
+        color: COLORS.black,
+    },
+    productDescription: {
+        fontSize: 16, // Aumentando o tamanho da fonte
+        color: COLORS.grey,
+        marginVertical: 4, // Adicionando espaço vertical
+    },
+    productPrice: {
+        fontSize: 22, // Aumentando o tamanho da fonte
+        fontWeight: 'bold',
+        color: COLORS.primary,
+        alignSelf: 'flex-end',
+        marginTop: 8, // Espaço acima do preço
+    },
+    promotionsSection: {
+        marginBottom: 20,
+    },
+
+    promotionsCarousel: {
+        marginBottom: 20,
+    },
+
+    promotionItem: {
+        width: 250, // ajuste conforme necessário
+        marginRight: 15,
+        borderRadius: 10,
+        overflow: 'hidden',
+        backgroundColor: COLORS.white,
+        elevation: 2, // sombra para Android
+    },
+
+    promotionImage: {
+        width: '100%',
+        height: 150, // ajuste conforme necessário
+    },
+
+    promotionDetails: {
+        padding: 10,
+    },
+
+    promotionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: COLORS.black,
+    },
+
+    promotionDescription: {
+        fontSize: 14,
+        color: COLORS.grey,
+    },
+
 });
 
 export default styles;

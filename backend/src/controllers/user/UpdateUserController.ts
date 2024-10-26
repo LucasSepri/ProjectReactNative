@@ -5,7 +5,7 @@ import upload from '../../config/multer'; // Ajuste o caminho se necessário
 class UpdateUserController {
   async handle(req: Request, res: Response) {
     const { id } = req.params; // Assume que o ID do usuário a ser atualizado vem na URL
-    const { name, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
     const profileImagePath = req.file?.filename ? `/uploads/${req.file.filename}` : undefined;
 
     try {
@@ -14,6 +14,7 @@ class UpdateUserController {
         id,
         name,
         email,
+        phone,
         password,
         profileImage: profileImagePath,
       });

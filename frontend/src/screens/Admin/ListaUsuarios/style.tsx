@@ -38,9 +38,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     profileImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: 80,
+        height: 80,
+        borderRadius: 50,
         marginRight: 15,
     },
     userInfo: {
@@ -51,6 +51,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     email: {
+        fontSize: 16,
+        color: COLORS.darkGrey,
+    },
+    telefone:{
         fontSize: 16,
         color: COLORS.darkGrey,
     },

@@ -16,9 +16,10 @@ type UserProps = {
     id: string;
     name: string;
     email: string;
+    phone: string; 
     token: string;
     isAdmin: boolean;
-    profileImage: string; // Adicionar a propriedade profileImage
+    profileImage: string; 
 }
 
 type AuthProviderProps = {
@@ -37,6 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         id: '',
         name: '',
         email: '',
+        phone: '',
         token: '',
         isAdmin: null,
         profileImage: '', // Inicializar a propriedade profileImage
@@ -75,13 +77,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             // Desestruturando o token e os dados do usuário corretamente
             const { token, user } = response.data;
-            const { id, name, isAdmin, profileImage } = user;
+            const { id, name, phone, isAdmin, profileImage } = user;
 
             const data = {
                 id,
                 name,
                 email,
                 token,
+                phone,
                 isAdmin,
                 profileImage, // Incluindo a URL da imagem de perfil
             }
@@ -98,6 +101,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 name,
                 email,
                 token,
+                phone,
                 isAdmin,
                 profileImage, // Incluindo a URL da imagem de perfil
             });
@@ -119,6 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     name: '',
                     email: '',
                     token: '',
+                    phone: '',
                     isAdmin: null,
                     profileImage: '', // Limpar a URL da imagem de perfil
                 });

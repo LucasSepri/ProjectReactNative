@@ -3,7 +3,7 @@ import CreateUserService from '../../services/user/CreateUserService';
 
 class CreateUserController {
   async handle(req: Request, res: Response) {
-    const { name, email, password, profileImage } = req.body;
+    const { name, email, password, phone, profileImage } = req.body; // Adicione o telefone aqui
     const profileImagePath = req.file?.filename ? `/uploads/${req.file.filename}` : null;
 
     try {
@@ -12,6 +12,7 @@ class CreateUserController {
         name,
         email,
         password,
+        phone, // Passa o telefone para o serviço
         profileImage: profileImagePath,
       });
 

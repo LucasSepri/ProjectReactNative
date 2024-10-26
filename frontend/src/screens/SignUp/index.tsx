@@ -17,12 +17,14 @@ import { StackParamList } from '../../routes/app.routes';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
+import styles from './style';
 
 export default function SignUp() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
     const { signIn, user } = useContext(AuthContext);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -39,7 +41,6 @@ export default function SignUp() {
             quality: 1,
         });
 
-
         if (!result.canceled) {
             setSelectedImage(result.assets[0].uri);
         } else {
@@ -48,7 +49,7 @@ export default function SignUp() {
     };
 
     async function handleSignUp() {
-        if (name === '' || email === '' || password === '') {
+        if (name === '' || email === '' || phone === '' || password === '') {
             Alert.alert("Erro", "Por favor, preencha todos os campos.");
             return;
         }
@@ -57,6 +58,7 @@ export default function SignUp() {
         let formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
+        formData.append('phone', phone);
         formData.append('password', password);
 
         if (selectedImage) {
@@ -92,13 +94,8 @@ export default function SignUp() {
             });
             await signIn({ email, password });
             Alert.alert("Sucesso", "Conta criada e você está logado!");
-            // navigation.navigate('Home');
-            if (user.isAdmin == false) {
-                try {
-                    navigation.navigate('Home');
-                } catch (error) {
-                    console.log("Error");
-                }
+            if (user.isAdmin === false) {
+                navigation.navigate('Home');
             }
         } catch (error) {
             Alert.alert("Erro", "Erro ao criar conta. Por favor, tente novamente mais tarde.");
@@ -109,7 +106,8 @@ export default function SignUp() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Cadastro</Text>
+            <Text style={styles.title}>Crie sua Conta</Text>
+            <Text style={styles.subTitle}>Preencha os dados abaixo para se registrar</Text>
 
             <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
                 {selectedImage ? (
@@ -119,35 +117,43 @@ export default function SignUp() {
                 )}
             </TouchableOpacity>
 
-            <TextInput
-                placeholder='Nome Completo'
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-
-                placeholderTextColor={COLORS.white}
-            />
-            <TextInput
-                placeholder='Email'
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize='none'
-                placeholderTextColor={COLORS.white}
-            />
-            <TextInput
-                placeholder='Senha'
-                style={styles.input}
-                placeholderTextColor={COLORS.white}
-                secureTextEntry={true}
-                value={password}
-                autoCapitalize='none'
-                onChangeText={setPassword}
-            />
+            <View style={styles.inputContainer}>
+                <TextInput
+                    placeholder='Nome Completo'
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholderTextColor={COLORS.darkGrey}
+                />
+                <TextInput
+                    placeholder='Email'
+                    style={styles.input}
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize='none'
+                    placeholderTextColor={COLORS.darkGrey}
+                />
+                <TextInput
+                    placeholder='Telefone'
+                    style={styles.input}
+                    value={phone}
+                    onChangeText={setPhone}
+                    placeholderTextColor={COLORS.darkGrey}
+                />
+                <TextInput
+                    placeholder='Senha'
+                    style={styles.input}
+                    placeholderTextColor={COLORS.darkGrey}
+                    secureTextEntry={true}
+                    value={password}
+                    autoCapitalize='none'
+                    onChangeText={setPassword}
+                />
+            </View>
 
             <TouchableOpacity style={styles.button} onPress={handleSignUp} disabled={loading}>
                 {loading ? (
-                    <ActivityIndicator size="small" color={COLORS.white}  />
+                    <ActivityIndicator size="small" color={COLORS.white} />
                 ) : (
                     <Text style={styles.buttonText}>Cadastrar</Text>
                 )}
@@ -155,61 +161,3 @@ export default function SignUp() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.dark,
-        padding: 20,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        marginBottom: 20,
-    },
-    imagePicker: {
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderStyle: 'dashed',
-        borderRadius: 5,
-        width: 150,
-        height: 150,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 20,
-    },
-    uploadText: {
-        color: 'gray',
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-        borderRadius: 5,
-    },
-    input: {
-        width: '100%',
-        height: 50,
-        backgroundColor: COLORS.dark,
-        borderRadius: 4,
-        paddingHorizontal: 10,
-        color: COLORS.white,
-        marginBottom: 12,
-    },
-    button: {
-        width: '100%',
-        height: 50,
-        backgroundColor: COLORS.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 4,
-    },
-    buttonText: {
-        color: COLORS.white,
-        fontSize: 18,
-        fontWeight: 'bold',
-    }
-});

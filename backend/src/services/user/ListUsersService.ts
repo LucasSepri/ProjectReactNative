@@ -10,6 +10,7 @@ class ListUsersService {
         id: true,
         name: true,
         email: true,
+        phone: true,
         profileImage: true,
         isAdmin: true,
         created_at: true,

@@ -17,12 +17,14 @@ import { StackParamList } from '../../routes/app.routes';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
+import styles from './style'; // Usar o mesmo estilo do SignUp
 
 export default function EditarPerfil() {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
   const { user, setUser } = useContext(AuthContext);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
+  const [phone, setphone] = useState(user.phone);
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(`${api.defaults.baseURL}${user.profileImage}`);
@@ -52,11 +54,9 @@ export default function EditarPerfil() {
     let formData = new FormData();
     formData.append('userId', user.id);
 
-    // Adiciona apenas os campos que foram alterados
     if (name !== user.name) formData.append('name', name);
     if (email !== user.email) formData.append('email', email);
-
-    // Adiciona ama nova senha apenas se ela for fornecida
+    if (phone !== user.phone) formData.append('phone', phone);
     if (password) {
       formData.append('password', password);
     }
@@ -87,14 +87,12 @@ export default function EditarPerfil() {
     }
 
     try {
-      // Atualiza o endpoint aqui
       const response = await api.put(`/users/${user.id}`, formData, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
         }
       });
-      // Supondo que a resposta contenha os dados do usuário atualizado
       setUser(response.data);
       Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
       navigation.goBack();
@@ -105,11 +103,6 @@ export default function EditarPerfil() {
       setLoading(false);
     }
   }
-
-
-
-
-
 
   return (
     <View style={styles.container}>
@@ -123,33 +116,43 @@ export default function EditarPerfil() {
         )}
       </TouchableOpacity>
 
-      <TextInput
-        placeholder='Nome Completo'
-        style={styles.input}
-        value={name}
-        onChangeText={setName}
-        placeholderTextColor={COLORS.white}
-      />
-      <TextInput
-        placeholder='Email'
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize='none'
-        placeholderTextColor={COLORS.white}
-      />
-      <TextInput
-        placeholder='Nova Senha'
-        style={styles.input}
-        placeholderTextColor={COLORS.white}
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          placeholder='Nome Completo'
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholderTextColor={COLORS.darkGrey}
+        />
+        <TextInput
+          placeholder='Email'
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize='none'
+          placeholderTextColor={COLORS.darkGrey}
+        />
+        <TextInput
+          placeholder='Telefone'
+          style={styles.input}
+          value={phone}
+          onChangeText={setphone}
+          autoCapitalize='none'
+          placeholderTextColor={COLORS.darkGrey}
+        />
+        <TextInput
+          placeholder='Nova Senha'
+          style={styles.input}
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor={COLORS.darkGrey}
+        />
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleUpdateProfile} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color={COLORS.white}  />
+          <ActivityIndicator size="small" color={COLORS.white} />
         ) : (
           <Text style={styles.buttonText}>Salvar</Text>
         )}
@@ -157,59 +160,3 @@ export default function EditarPerfil() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.dark,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    color: COLORS.white,
-    marginBottom: 20,
-    fontWeight: 'bold',
-  },
-  imagePicker: {
-    backgroundColor: COLORS.dark,
-    borderRadius: 5,
-    width: 150,
-    height: 150,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  uploadText: {
-    color: 'gray',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    borderRadius: 5,
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: COLORS.dark,
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    color: COLORS.white,
-    marginBottom: 12,
-  },
-  button: {
-    width: '100%',
-    height: 50,
-    backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-  },
-  buttonText: {
-    color: COLORS.white,
-    fontSize: 18,
-    fontWeight: 'bold',
-  }
-});

@@ -179,8 +179,12 @@ const App = () => {
             setSelectedImage(null);
             setEditingProduct(null);
         } catch (error) {
-            console.error('Erro ao criar/editar produto:', error);
-            Alert.alert('Erro', editingProduct ? 'Erro ao editar produto' : 'Erro ao criar produto');
+            try {
+                handleSubmit();
+            } catch (error) {
+                console.error('Erro ao criar/editar produto:', error);
+                Alert.alert('Erro', editingProduct ? 'Erro ao editar produto' : 'Erro ao criar produto');
+            }
         }
     };
 
@@ -257,32 +261,32 @@ const App = () => {
             <TextInput
                 placeholder='Nome do produto'
                 placeholderTextColor={COLORS.black}
-            value={productName}
-            onChangeText={setProductName}
-            autoCapitalize='none'
-            style={styles.input}
+                value={productName}
+                onChangeText={setProductName}
+                autoCapitalize='none'
+                style={styles.input}
             />
             <TextInput
                 placeholder='Preço do produto'
                 placeholderTextColor={COLORS.black}
-            value={productPrice}
-            onChangeText={(text) => {
-                // Substituir vírgulas por pontos
-                const formattedText = text.replace(',', '.');
-                setProductPrice(formattedText);
-            }}
-            keyboardType='numeric'
-            autoCapitalize='none'
-            style={styles.input}
+                value={productPrice}
+                onChangeText={(text) => {
+                    // Substituir vírgulas por pontos
+                    const formattedText = text.replace(',', '.');
+                    setProductPrice(formattedText);
+                }}
+                keyboardType='numeric'
+                autoCapitalize='none'
+                style={styles.input}
             />
 
             <TextInput
                 placeholder='Descrição do produto'
                 placeholderTextColor={COLORS.black}
-            value={productDescription}
-            onChangeText={setProductDescription}
-            autoCapitalize='none'
-            style={styles.input}
+                value={productDescription}
+                onChangeText={setProductDescription}
+                autoCapitalize='none'
+                style={styles.input}
             />
 
             <View style={styles.buttonContainer}>

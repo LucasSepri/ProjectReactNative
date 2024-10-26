@@ -31,9 +31,11 @@ const ListUsers = () => {
             const lowercasedQuery = searchQuery.toLowerCase();
             const filtered = users.filter(user => {
                 const isAdminText = user.isAdmin ? 'admin' : 'usuario';
+                const phone = user.phone ? user.phone : '';
                 return user.name.toLowerCase().includes(lowercasedQuery) ||
                     user.email.toLowerCase().includes(lowercasedQuery) ||
-                    isAdminText.includes(lowercasedQuery);
+                    isAdminText.includes(lowercasedQuery) ||
+                    phone.includes(lowercasedQuery);
             });
             setFilteredUsers(filtered);
         } else {
@@ -186,6 +188,7 @@ const ListUsers = () => {
                 <View style={styles.userInfo}>
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.email}>{item.email}</Text>
+                    <Text style={styles.telefone}>{item.phone}</Text>
                     <Text>{item.isAdmin ? 'Admin' : 'Usuario'}</Text>
                 </View>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteUser(item.id)}>

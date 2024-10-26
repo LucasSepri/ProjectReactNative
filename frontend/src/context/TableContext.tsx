@@ -10,6 +10,7 @@ const TableContext = createContext<TableContextData | undefined>(undefined);
 
 export const TableProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [tableNumber, setTableNumber] = useState<string | null>(null);
+  // const [tableNumber, setTableNumber] = useState<string | null>('69');
 
   const clearTable = () => setTableNumber(null);
 

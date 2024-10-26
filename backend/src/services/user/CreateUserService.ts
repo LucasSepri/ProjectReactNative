@@ -7,11 +7,12 @@ interface UserRequest {
   name: string;
   email: string;
   password: string;
+  phone?: string; // Novo campo de telefone
   profileImage?: string; // Campo opcional para a imagem do perfil
 }
 
 class CreateUserService {
-  async execute({ name, email, password, profileImage }: UserRequest) {
+  async execute({ name, email, password, phone, profileImage }: UserRequest) {
     // Verifica se o e-mail já existe
     const userExists = await prisma.user.findUnique({
       where: {
@@ -32,7 +33,8 @@ class CreateUserService {
         name,
         email,
         password: hashedPassword,
-        profileImage, // Adiciona a imagem de perfil, se fornecida
+        phone,           // Adiciona o telefone ao banco de dados
+        profileImage,    // Adiciona a imagem de perfil, se fornecida
       },
     });
 
