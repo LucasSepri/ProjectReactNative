@@ -4,11 +4,12 @@ import prisma from '../../prisma'; // Importe seu cliente Prisma
 class ListAddressesService {
   async execute(userId: string) {
     try {
-      const addresses = await prisma.address.findMany({
-        where: {
-          user_id: userId, // Correção aplicada
+      const addresses = await prisma.address.findMany(
+        {
+          where: { user_id: userId },
         },
-      });
+        
+      );
       return addresses;
     } catch (error) {
       console.error('Erro ao buscar endereços:', error);

@@ -65,7 +65,7 @@ router.put('/users/revoke/:id', isAuthenticated, isAdmin, RevokeAdminController.
 // Rota para criar um endereço
 router.post('/addresses', isAuthenticated, CreateAddressController.handle);
 // Rota para listar todos os endereços
-router.get('/addresses', isAuthenticated, AddressController.handle);
+router.get('/addresses/:idUser', AddressController.handle);
 // Rota para deletar um endereço por ID
 router.delete('/addresses/:id', isAuthenticated, DeleteAddressController.handle);
 
