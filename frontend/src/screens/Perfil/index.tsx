@@ -40,11 +40,15 @@ const PerfilEnderecoScreen = () => {
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', fetchAddresses);
         return unsubscribe;
-      }, [navigator, user]);
+    }, [navigator, user]);
 
     const fetchAddresses = async () => {
         try {
-            const response = await api.get('/addresses');
+            const response = await api.get('/addresses', {
+                headers: {
+                    Authorization: `Bearer ${user.token}`
+                }
+            });
             setAddresses(response.data);
         } catch (error) {
             console.error('Erro ao buscar endereços:', error);
@@ -52,6 +56,8 @@ const PerfilEnderecoScreen = () => {
             setLoading(false);
         }
     };
+    
+
 
     const handleRemoveAddress = async (id: string) => {
         Alert.alert('Confirmar Remoção', 'Tem certeza que deseja remover este endereço?', [
@@ -133,7 +139,7 @@ const PerfilEnderecoScreen = () => {
             </View>
         );
     }
-    
+
 
     return (
         <View style={styles.screenContainer}>
