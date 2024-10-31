@@ -27,7 +27,7 @@ model User {
 
 // Tabela de Endereços
 model Address {
-  id             String   @id @default(uuid())
+  id             String  @id @default(uuid())
   zip            String
   street         String
   number         String
@@ -38,12 +38,13 @@ model Address {
   state          String
   latitude       Float // Coordenada de latitude
   longitude      Float // Coordenada de longitude
-  
-  user            User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id         String // FK do usuário
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String // FK do usuário
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
+
 // Tabela de Categorias de Produtos
 model Category {
   id         String   @id @default(uuid())
@@ -139,4 +140,3 @@ model Favorite {
   product    Product @relation(fields: [product_id], references: [id])
   product_id String // FK do produto
 }
-

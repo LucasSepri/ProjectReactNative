@@ -6,7 +6,7 @@ class ListAddressesService {
     // Obtém a lista de endereços do usuário
     const addresses = await prisma.address.findMany({
       where: {
-        user_id: userId, // Correção aplicada
+        userId: userId, // Correção aplicada
       },
     });
 
