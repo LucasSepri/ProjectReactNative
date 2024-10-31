@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { useNavigation } from '@react-navigation/native';
@@ -8,11 +8,12 @@ import { StackParamList } from '../../routes/app.routes';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../../styles/COLORS';
 import styles from './style';
+import axios from 'axios';
 
 type AddressProps = {
     zip: string;
-    referencePoint: string;
-    complement: string;
+    referencePoint?: string; // Campo opcional
+    complement?: string; // Campo opcional
     id: string;
     street: string;
     number: string;
@@ -29,35 +30,37 @@ const PerfilEnderecoScreen = () => {
     const [addresses, setAddresses] = useState<AddressProps[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!isAuthenticated) {
-            navigation.navigate('Home');
-        } else {
-            fetchAddresses();
-        }
-    }, [isAuthenticated, useNavigation, user.token]);
-
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', fetchAddresses);
-        return unsubscribe;
-    }, [navigator, user]);
-
     const fetchAddresses = async () => {
         try {
             const response = await api.get('/addresses', {
                 headers: {
-                    Authorization: `Bearer ${user.token}`
-                }
+                    Authorization: `Bearer ${user.token}`,
+                },
             });
             setAddresses(response.data);
         } catch (error) {
-            console.error('Erro ao buscar endereços:', error);
+            if (axios.isAxiosError(error)) {
+                console.error('Erro ao buscar endereços:', error.response?.data || error.message);
+            } else {
+                console.error('Erro inesperado:', error);
+            }
         } finally {
             setLoading(false);
         }
     };
-    
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchAddresses();
+        } else {
+            navigation.navigate('Home');
+        }
+    }, [isAuthenticated, navigation]);
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', fetchAddresses);
+        return unsubscribe;
+    }, [navigation]);
 
     const handleRemoveAddress = async (id: string) => {
         Alert.alert('Confirmar Remoção', 'Tem certeza que deseja remover este endereço?', [
@@ -70,9 +73,9 @@ const PerfilEnderecoScreen = () => {
                         await api.delete(`/addresses/${id}`, {
                             headers: { Authorization: `Bearer ${user.token}` },
                         });
-                        setAddresses(prevAddresses => prevAddresses.filter((address) => address.id !== id));
+                        setAddresses(prevAddresses => prevAddresses.filter(address => address.id !== id));
                     } catch (error) {
-                        console.error('Erro ao remover endereço:', error);
+                        console.error('Erro ao remover endereço:', error.response?.data || error.message);
                     }
                 },
             },
@@ -140,7 +143,6 @@ const PerfilEnderecoScreen = () => {
         );
     }
 
-
     return (
         <View style={styles.screenContainer}>
             <View style={styles.profileSection}>
@@ -171,7 +173,7 @@ const PerfilEnderecoScreen = () => {
                 </View>
             </View>
 
-            <View style={styles.divider} >
+            <View style={styles.divider}>
                 <View style={styles.addressHeader}>
                     <Text style={styles.addressHeaderText}>ENDEREÇOS</Text>
                     <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Endereco')}>
@@ -192,12 +194,9 @@ const PerfilEnderecoScreen = () => {
                         contentContainerStyle={styles.addressListContainer}
                     />
                 )}
-
             </View>
         </View>
     );
 };
-
-
 
 export default PerfilEnderecoScreen;
