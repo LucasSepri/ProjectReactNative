@@ -4,9 +4,9 @@ import prisma from '../../prisma'; // Importe seu cliente Prisma
 class ListAddressesService {
   async execute(userId: string) {
     try {
-      const addresses = await prisma.Endereco.findMany({
+      const addresses = await prisma.address.findMany({
         where: {
-          userId: userId, // Correção aplicada
+          user_id: userId, // Correção aplicada
         },
       });
       return addresses;
