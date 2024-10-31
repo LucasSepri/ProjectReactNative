@@ -3,14 +3,14 @@ import  prisma  from '../../prisma'; // Importe seu cliente Prisma
 
 class ListAddressesService {
   async execute(userId: string) {
+    // Obtém a lista de endereços do usuário
     const addresses = await prisma.address.findMany({
       where: {
         user_id: userId,
       },
     });
-
     return addresses;
   }
 }
+export default new ListAddressesService();
 
-export { ListAddressesService };

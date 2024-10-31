@@ -14,7 +14,7 @@ import PromoteUserController from './controllers/user/PromoteUserController';
 import RevokeAdminController from './controllers/user/RevokeAdminController';
 /* ---- Endereço Controller ---- */
 import CreateAddressController from './controllers/address/CreateAddressController';
-import ListAddressesController from './controllers/address/ListAddressesController';
+import AddressController from './controllers/address/ListAddressesController';
 import DeleteAddressController from './controllers/address/DeleteAddressController';
 /* ---- Categoria Controller ---- */
 import CategoryController from './controllers/category/CategoryController'
@@ -65,7 +65,7 @@ router.put('/users/revoke/:id', isAuthenticated, isAdmin, RevokeAdminController.
 // Rota para criar um endereço
 router.post('/addresses', isAuthenticated, CreateAddressController.handle);
 // Rota para listar todos os endereços
-router.get('/addresses', isAuthenticated, ListAddressesController.handle.bind(ListAddressesController));
+router.get('/addresses', isAuthenticated, AddressController.handle);
 // Rota para deletar um endereço por ID
 router.delete('/addresses/:id', isAuthenticated, DeleteAddressController.handle);
 
