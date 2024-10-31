@@ -25,6 +25,25 @@ model User {
   cart      Cart? // Relacionamento com carrinho
 }
 
+// Tabela de Endereços
+model Address {
+  id             String   @id @default(uuid())
+  zip            String
+  street         String
+  number         String
+  neighborhood   String
+  complement     String?
+  referencePoint String?
+  city           String
+  state          String
+  latitude       Float // Coordenada de latitude
+  longitude      Float // Coordenada de longitude
+  
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id        String // FK do usuário que o endereço pertence
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
 // Tabela de Categorias de Produtos
 model Category {
   id         String   @id @default(uuid())
@@ -121,22 +140,3 @@ model Favorite {
   product_id String // FK do produto
 }
 
-// Tabela de Endereços
-model Address {
-  id             String   @id @default(uuid())
-  zip            String
-  street         String
-  number         String
-  neighborhood   String
-  complement     String?
-  referencePoint String?
-  city           String
-  state          String
-  latitude       Float // Coordenada de latitude
-  longitude      Float // Coordenada de longitude
-  
-  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id        String // FK do usuário que o endereço pertence
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-}

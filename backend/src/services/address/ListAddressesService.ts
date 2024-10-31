@@ -2,12 +2,11 @@ import prismaClient from '../../prisma';
 
 class ListAddressesService {
   async execute(userId: string) {
-    // Busca os endereços do usuário específico no banco de dados
     const addresses = await prismaClient.address.findMany({
       where: {
-        user_id: userId, // Filtra endereços pelo ID do usuário
+        user_id: userId as any, // Usando `user_id` conforme a exigência do Prisma
       },
-      include: { user: true }, // Inclui informações do usuário se necessário
+      include: { user: true },
     });
     return addresses;
   }
