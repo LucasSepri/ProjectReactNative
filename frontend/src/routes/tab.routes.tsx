@@ -7,10 +7,11 @@ import { useTable } from '../context/TableContext';
 
 // Telas
 import Home from '../screens/Home';
-import Qrcode from '../screens/Qrcode';
 import Pedidos from '../screens/Orders';
 import Carrinho from '../screens/Carrinho';
 import Favoritos from '../screens/Favoritos';
+import Chat from '../screens/Chat';
+
 
 // Componente para Customizar a Barra de Navegação
 import CustomTabBar from '../components/CustomTabBar';
@@ -40,13 +41,6 @@ export default function TabRoutes() {
                 }}
             />
             <Tab.Screen
-                name="Qrcode"
-                component={Qrcode}
-                options={{
-                    tabBarIcon: ({ color, size }) => <Icon name="qr-code-outline" color={color} size={size} />,
-                }}
-            />
-            <Tab.Screen
                 name="Favoritos"
                 component={Favoritos}
                 options={{
@@ -57,7 +51,14 @@ export default function TabRoutes() {
                 name="Pedidos"
                 component={Pedidos}
                 options={{
-                    tabBarIcon: ({ color, size }) => <Icon name="list" color={color} size={size} />,
+                    tabBarIcon: ({ color, size }) => <Icon name="clipboard" color={color} size={size} />,
+                }}
+            />
+            <Tab.Screen
+                name="Chat"
+                component={Chat}
+                options={{
+                    tabBarIcon: ({ color, size }) => <Icon name="chatbubble-ellipses" color={color} size={size} />,
                 }}
             />
         </Tab.Navigator>

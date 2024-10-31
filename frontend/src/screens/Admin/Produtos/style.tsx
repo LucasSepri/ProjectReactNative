@@ -61,7 +61,8 @@ export default StyleSheet.create({
         resizeMode: 'cover',
     },
     input: {
-        height: 50,
+        padding: 10,
+        // height: 50,
         borderColor: COLORS.grey,
         borderWidth: 1,
         marginBottom: 20,

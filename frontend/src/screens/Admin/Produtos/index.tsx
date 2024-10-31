@@ -287,6 +287,9 @@ const App = () => {
                 onChangeText={setProductDescription}
                 autoCapitalize='none'
                 style={styles.input}
+                multiline={true} // Permite várias linhas
+                numberOfLines={5} // Número de linhas visíveis
+                maxLength={200} // Limite de caracteres
             />
 
             <View style={styles.buttonContainer}>

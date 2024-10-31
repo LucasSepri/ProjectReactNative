@@ -18,6 +18,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
 import styles from './style'; // Usar o mesmo estilo do SignUp
+import { TextInputMask } from 'react-native-masked-text';
 
 export default function EditarPerfil() {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
@@ -132,13 +133,18 @@ export default function EditarPerfil() {
           autoCapitalize='none'
           placeholderTextColor={COLORS.darkGrey}
         />
-        <TextInput
+        <TextInputMask
+          type={'custom'}
+          options={{
+            mask: '(99) 9999-99999', // Máscara do telefone
+          }}
           placeholder='Telefone'
           style={styles.input}
           value={phone}
-          onChangeText={setphone}
-          autoCapitalize='none'
+          onChangeText={text => setphone(text)}
           placeholderTextColor={COLORS.darkGrey}
+          keyboardType='phone-pad' // Define o teclado para números
+          maxLength={15} // Limita o tamanho do campo
         />
         <TextInput
           placeholder='Nova Senha'

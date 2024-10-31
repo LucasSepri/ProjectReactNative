@@ -13,10 +13,9 @@ import ListUsersController from './controllers/user/ListUsersController';
 import PromoteUserController from './controllers/user/PromoteUserController';
 import RevokeAdminController from './controllers/user/RevokeAdminController';
 /* ---- Endereço Controller ---- */
-import AddressController from './controllers/address/AddressController';
-import DeleteAddressController from './controllers/address/DeleteAddressController';
+import CreateAddressController from './controllers/address/CreateAddressController';
 import ListAddressesController from './controllers/address/ListAddressesController';
-import UpdateAddressController from './controllers/address/UpdateAddressController';
+import DeleteAddressController from './controllers/address/DeleteAddressController';
 /* ---- Categoria Controller ---- */
 import CategoryController from './controllers/category/CategoryController'
 /* ---- Produtos Controller ---- */
@@ -64,12 +63,10 @@ router.put('/users/revoke/:id', isAuthenticated, isAdmin, RevokeAdminController.
 
 /* --------- ENDEREÇOS --------- */
 // Rota para criar um endereço
-router.post('/addresses', isAuthenticated, AddressController.handle);
-// Rota para listar endereços
+router.post('/addresses', isAuthenticated, CreateAddressController.handle);
+// Rota para listar todos os endereços
 router.get('/addresses', isAuthenticated, ListAddressesController.handle);
-// Rota para atualizar um endereço
-router.put('/addresses/:id', isAuthenticated, UpdateAddressController.handle);
-// Rota para deletar um endereço
+// Rota para deletar um endereço por ID
 router.delete('/addresses/:id', isAuthenticated, DeleteAddressController.handle);
 
 /* --------- CATEGORIAS --------- */

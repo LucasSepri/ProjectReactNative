@@ -12,7 +12,20 @@ import { COLORS } from "../styles/COLORS";
 export type StackParamList = {
     EditarPerfil: undefined;
     AdminRoutes: undefined;
-    MapScreen: { address: string; latitude: number; longitude: number };
+    MapScreen: {
+        address: string;
+        latitude: number;
+        longitude: number;
+        complement: string;
+        referencePoint: string;
+        zip: string;
+        street: string;
+        number: string;
+        neighborhood: string;
+        city: string;
+        state: string;
+        isVisualize: boolean;
+    };
     Endereco: undefined;
 }
 
@@ -42,7 +55,7 @@ function AppRoutes() {
                 name="MapScreen"
                 component={MapScreen}
                 options={{
-                    title: "MapScreen",
+                    title: "Mapa",
                     headerStyle: {
                         backgroundColor: COLORS.primary,
                     },

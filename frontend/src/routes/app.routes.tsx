@@ -13,7 +13,9 @@ import ProductDetails from "../screens/ProductDetails";
 import MapScreen from "../screens/Mapa";
 import Endereco from "../screens/Endereco";
 
+
 import TabRouter from "./tab.routes";
+import Qrcode from "../screens/Qrcode";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
@@ -26,8 +28,22 @@ export type StackParamList = {
     SignUp: undefined;
     EditarPerfil: undefined;
     ProductDetails: { product: any, category: any };
-    MapScreen: { address: string; latitude: number; longitude: number };
+    MapScreen: {
+        address: string;
+        latitude: number;
+        longitude: number;
+        complement: string;
+        referencePoint: string;
+        zip: string;
+        street: string;
+        number: string;
+        neighborhood: string;
+        city: string;
+        state: string;
+        isVisualize: boolean;
+    };
     Endereco: undefined;
+    Qrcode: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -44,12 +60,24 @@ function AppRoutes() {
                 name="MapScreen"
                 component={MapScreen}
                 options={{
-                    title: "MapScreen",
+                    title: "Mapa",
                     headerStyle: {
                         backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }} />
+
+            <Stack.Screen
+                name="Qrcode"
+                component={Qrcode}
+                options={{
+                    title: "Qrcode",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
+
             <Stack.Screen
                 name="Endereco"
                 component={Endereco}
@@ -66,7 +94,7 @@ function AppRoutes() {
                 options={{
                     title: "Detalhes do Pedido",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }}
@@ -100,7 +128,7 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Pesquisar Produto",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.primary,
                     },
                     headerTintColor: COLORS.white,
                 }} />

@@ -2,17 +2,14 @@ import prismaClient from '../../prisma';
 
 class ListAddressesService {
   async execute(userId: string) {
-    try {
-      // Lista todos os endereços do usuário
-      const addresses = await prismaClient.address.findMany({
-        where: {
-          userId,
-        },
-      });
-      return addresses;
-    } catch (error) {
-      throw new Error('Erro ao listar endereços: ' + error.message);
-    }
+    // Busca os endereços do usuário específico no banco de dados
+    const addresses = await prismaClient.address.findMany({
+      where: {
+        user_id: userId, // Filtra endereços pelo ID do usuário
+      },
+      include: { user: true }, // Inclui informações do usuário se necessário
+    });
+    return addresses;
   }
 }
 

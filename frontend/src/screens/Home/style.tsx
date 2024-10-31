@@ -4,179 +4,121 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.white,
     },
     headerImage: {
-        width: '100%',
-        height: 'auto',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.grey,
     },
     headerIconsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        // height: 50,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        // marginTop: 20,
-        backgroundColor: COLORS.primary,
+        padding: 20,
     },
     profileButton: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        backgroundColor: COLORS.secondary,
         flexDirection: 'row',
         alignItems: 'center',
-        borderRadius: 5,
     },
-
     profileImage: {
-        width: 30,
-        height: 30,
-        borderRadius: 50,
-        marginRight: 10,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
     },
     profileName: {
-        color: COLORS.white,
-        fontWeight: 'bold',
         fontSize: 18,
+        fontWeight: 'bold',
+        color: COLORS.white,
+        marginLeft: 10,
     },
     EntrarButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.secondary,
-        paddingHorizontal: 5,
-        paddingVertical: 5,
-        borderRadius: 5,
-
     },
     loginText: {
-        color: COLORS.white,
-        fontWeight: 'bold',
         fontSize: 18,
+        fontWeight: 'bold',
+        color: COLORS.white,
     },
     tableExitButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.secondary,
-        padding: 5,
-        borderRadius: 5,
     },
     tableExitText: {
-        color: COLORS.white,
-        fontWeight: 'bold',
         fontSize: 18,
-        marginRight: 5,
+        fontWeight: 'bold',
+        color: COLORS.white,
     },
     exitIcon: {
-        color: COLORS.white,
         fontSize: 20,
-        fontFamily: 'bold',
+        fontWeight: 'bold',
+        color: COLORS.white,
+        marginLeft: 10,
     },
     logo: {
         width: 150,
         height: 150,
-        resizeMode: 'contain',
-        marginVertical: 20,
-        borderRadius: 20,
-        borderColor: COLORS.primary,
-        borderWidth: 5,
-        backgroundColor: COLORS.lightGrey,
-
+        marginBottom: 10,
+        borderRadius: 10,
+        borderColor: COLORS.white,
+        borderWidth: 2,
     },
-    title:{
+    title: {
         fontSize: 24,
         fontWeight: 'bold',
         color: COLORS.white,
-        marginBottom: 20,
-        textShadowColor: COLORS.black, 
-        textShadowOffset: {width: 1, height: 1},
+        marginBottom: 10,
+        textShadowColor: COLORS.black,
+        textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 5,
-
     },
     buttonContainer: {
         flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginBottom: 20,
+        marginVertical: 10,
+        alignItems: 'center',
+        justifyContent: 'space-around', 
         width: '80%',
     },
     whatsAppButton: {
-        backgroundColor: COLORS.green,
-        borderRadius: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
         flexDirection: 'row',
-        alignItems: 'center',
+        alignContent: 'center',
+        backgroundColor: COLORS.green,
+        padding: 10,
+        borderRadius: 5,
         marginBottom: 10,
-
+        flex: 1, 
+        marginHorizontal: 5, 
+        width: '100%',
     },
     locationButton: {
-        backgroundColor: COLORS.dark,
-        borderRadius: 8,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: COLORS.secondary,
+        padding: 10,
+        borderRadius: 5,
+        flex: 1, 
+        marginHorizontal: 5, 
+        marginBottom: 10,
     },
     buttonText: {
         color: COLORS.white,
-        marginLeft: 5,
-        fontSize: 16,
-        padding: 2,
-    },
-    categoriesSection: {
-        // paddingHorizontal: 20,
-        // paddingVertical: 10,
-        padding: 20,
-        // backgroundColor: COLORS.black,
-    },
-    sectionTitle: {
-        fontSize: 24,
         fontWeight: 'bold',
-        color: COLORS.primary,
-        // marginBottom: 10,
+        marginLeft: 10,
     },
-    categoriesContainer: {
-        paddingVertical: 10,
 
+    categoriesSection: {
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightGrey,
     },
-    categoryButton: {
-        backgroundColor: COLORS.secondary,
-        borderRadius: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        marginRight: 10,
-        alignItems: 'center',
-        flexDirection: 'row',
-    },
-    selectedCategoryButton: {
-        backgroundColor: COLORS.primary,
-    },
-    categoryIcon: {
-        marginRight: 5,
-        color: COLORS.white,
-        fontSize: 20,
-        marginBottom: 5,
-    },
-    categoryText: {
-        color: COLORS.white,
-        fontSize: 14,
-    },
-    productsSection: {
-        padding: 20,
-        paddingBottom: '20%',
-        backgroundColor: COLORS.lightGrey,
-    },
+    
     productsHeader: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: COLORS.grey,
-        paddingBottom: 10,
+        paddingHorizontal: 40,
+        paddingVertical: 20,
+        justifyContent: 'space-between', 
+        backgroundColor: COLORS.white,
+        elevation: 2,
     },
     searchButton: {
         flexDirection: 'row',
@@ -184,80 +126,98 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 8,
+        alignItems: 'center', 
+    },
+    sectionTitle: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: COLORS.black,
+        flex: 1, 
+        textTransform: 'uppercase',
+    },
+    categoryButton: {
+        padding: 10,
+        alignItems: 'center',
+        borderRadius: 5,
+        marginHorizontal: 10,
+        flexDirection: 'row',
+    },
+    selectedCategoryButton: {
+        borderBottomColor: COLORS.primary,
+        borderBottomWidth: 2,
+        borderRadius: 0,
+    },
+    categoryIcon: {
+        fontSize: 30,
+        color: COLORS.primary,
+    },
+    categoryText: {
+        color: COLORS.black,
+    },
+    productsSection: {
+        paddingTop: 20,
+        paddingBottom: 80,
+    },
+    categoryContainer: {
+        marginBottom: 15,
+        borderTopWidth: 4,
+        borderTopColor: COLORS.primary,
+        marginHorizontal: 20,
+        marginVertical: 10,
+        backgroundColor: COLORS.white,
+        elevation: 2,
+        borderRadius: 5,
+    },
+    categoriasProdutos:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+    },
+    categoryTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: COLORS.primary,
+        padding: 10,
+        borderRadius: 5,
+    },
+    productContainer: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        padding: 10,
+        backgroundColor: COLORS.white,
+        borderBottomColor: COLORS.lightGrey,
+        borderRadius: 5,
+        paddingBottom: 20,
+        borderBottomWidth: 2,
+        marginHorizontal: 10,
         alignItems: 'center',
     },
-    productItem: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.white,
-        borderRadius: 10,
-        marginBottom: 15,
-        elevation: 4, // Aumentando a sombra para destaque
-        overflow: 'hidden',
-        padding: 10, // Adicionando padding para um visual mais clean
-    },
     productImage: {
-        width: 120, // Aumentando a imagem
-        height: 120,
-        borderRadius: 10,
-        marginRight: 10, // Adicionando espaço entre a imagem e os detalhes
+        width: 100,
+        height: 100,
+        borderRadius: 5,
     },
     productDetails: {
+        marginLeft: 10,
         flex: 1,
-        justifyContent: 'center',
     },
     productName: {
-        fontSize: 20, // Aumentando o tamanho da fonte
-        fontWeight: 'bold',
-        color: COLORS.black,
+        fontSize: 18,
     },
     productDescription: {
-        fontSize: 16, // Aumentando o tamanho da fonte
         color: COLORS.grey,
-        marginVertical: 4, // Adicionando espaço vertical
     },
     productPrice: {
-        fontSize: 22, // Aumentando o tamanho da fonte
-        fontWeight: 'bold',
-        color: COLORS.primary,
-        alignSelf: 'flex-end',
-        marginTop: 8, // Espaço acima do preço
-    },
-    promotionsSection: {
-        marginBottom: 20,
-    },
-
-    promotionsCarousel: {
-        marginBottom: 20,
-    },
-
-    promotionItem: {
-        width: 250, // ajuste conforme necessário
-        marginRight: 15,
-        borderRadius: 10,
-        overflow: 'hidden',
-        backgroundColor: COLORS.white,
-        elevation: 2, // sombra para Android
-    },
-
-    promotionImage: {
-        width: '100%',
-        height: 150, // ajuste conforme necessário
-    },
-
-    promotionDetails: {
-        padding: 10,
-    },
-
-    promotionTitle: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: COLORS.black,
+        color: COLORS.darkGrey,
     },
-
-    promotionDescription: {
-        fontSize: 14,
-        color: COLORS.grey,
-    },
+    loader:{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
 
 });
 

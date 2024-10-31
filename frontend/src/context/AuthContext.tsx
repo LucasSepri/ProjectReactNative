@@ -16,10 +16,10 @@ type UserProps = {
     id: string;
     name: string;
     email: string;
-    phone: string; 
+    phone: string;
     token: string;
     isAdmin: boolean;
-    profileImage: string; 
+    profileImage: string;
 }
 
 type AuthProviderProps = {
@@ -68,14 +68,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     async function signIn({ email, password }: SignInProps) {
         setLoadingAuth(true);
-
         try {
-            const response = await api.post('/login', {
-                email,
-                password
-            });
+            const response = await api.post('/login', { email, password });
+            console.log('Login response:', response.data);
 
-            // Desestruturando o token e os dados do usuário corretamente
             const { token, user } = response.data;
             const { id, name, phone, isAdmin, profileImage } = user;
 
@@ -86,33 +82,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 token,
                 phone,
                 isAdmin,
-                profileImage, // Incluindo a URL da imagem de perfil
-            }
+                profileImage,
+            };
 
-            // Salvando o token no AsyncStorage
             await AsyncStorage.setItem('@token', JSON.stringify(data));
+            console.log('Stored user data:', data);
 
-            // Configurando o token no cabeçalho das requisições
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-            // Atualizando o estado do usuário
-            setUser({
-                id,
-                name,
-                email,
-                token,
-                phone,
-                isAdmin,
-                profileImage, // Incluindo a URL da imagem de perfil
-            });
+            setUser(data);
 
             setLoadingAuth(false);
-
         } catch (err) {
-            console.log('erro ao acessar', err);
+            console.log('Error during sign in:', err);
             setLoadingAuth(false);
         }
     }
+
+    async function getUser() {
+        const userInfo = await AsyncStorage.getItem('@token');
+        const hasUser: UserProps = JSON.parse(userInfo || '{}');
+
+        console.log('Retrieved user info from storage:', hasUser);
+
+        if (hasUser.token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
+            setUser(hasUser);
+        } else {
+            console.log('No token found, user is not authenticated');
+        }
+
+        setLoading(false);
+    }
+
 
 
     async function signOut() {

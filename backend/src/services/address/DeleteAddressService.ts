@@ -1,28 +1,19 @@
-import prismaClient from '../../prisma';
+// services/address/DeleteAddressService.ts
+import prisma from '../../prisma';
 
 class DeleteAddressService {
-  async execute(userId: string, addressId: string) {
+  async execute(id: string) {
     try {
-      // Verifica se o endereço pertence ao usuário
-      const address = await prismaClient.address.findFirst({
-        where: {
-          id: addressId,
-          userId,
-        },
-      });
-
+      const address = await prisma.address.findUnique({ where: { id } });
+      
       if (!address) {
-        throw new Error('Endereço não encontrado ou não pertence ao usuário.');
+        throw new Error("Endereço não encontrado");
       }
 
-      // Deleta o endereço
-      await prismaClient.address.delete({
-        where: { id: addressId },
-      });
-
-      return { message: 'Endereço excluído com sucesso.' };
+      await prisma.address.delete({ where: { id } });
+      return { message: "Endereço deletado com sucesso" };
     } catch (error) {
-      throw new Error('Erro ao excluir o endereço: ' + error.message);
+      throw new Error(`Erro ao deletar endereço: ${error.message}`);
     }
   }
 }

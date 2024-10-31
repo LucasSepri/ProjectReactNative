@@ -1,20 +1,54 @@
-import prismaClient from '../../prisma';
+// services/address/CreateAddressService.ts
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+interface AddressRequest {
+  user_id: string;
+  zip: string;
+  street: string;
+  number: string;
+  neighborhood: string;
+  complement?: string;
+  referencePoint?: string;
+  city: string;
+  state: string;
+  latitude: number;
+  longitude: number;
+}
 
 class CreateAddressService {
-  async execute(userId: string, addressData: { address: string, city: string, state: string, zipCode: string }) {
-    try {
-      // Cria um novo endereço para o usuário
-      const address = await prismaClient.address.create({
-        data: {
-          userId,
-          ...addressData,
-        },
-      });
-      return address;
-    } catch (error) {
-      throw new Error('Erro ao criar o endereço: ' + error.message);
-    }
+  async execute({
+    user_id,
+    zip,
+    street,
+    number,
+    neighborhood,
+    complement,
+    referencePoint,
+    city,
+    state,
+    latitude,
+    longitude,
+  }: AddressRequest) {
+    const address = await prisma.address.create({
+      data: {
+        user_id,
+        zip,
+        street,
+        number,
+        neighborhood,
+        complement,
+        referencePoint,
+        city,
+        state,
+        latitude,
+        longitude,
+      },
+    });
+
+    return address;
   }
 }
 
-export default new CreateAddressService();
+export default CreateAddressService;

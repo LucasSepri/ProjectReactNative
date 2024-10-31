@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, Pressable, Alert, SafeAreaView, TextInput, ActivityIndicator, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Alert,
+  SafeAreaView,
+  TextInput,
+  ActivityIndicator,
+  FlatList,
+} from 'react-native';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -9,42 +19,49 @@ import { PrimaryButton } from '../../components/Button';
 import { useTable } from '../../context/TableContext';
 import { Picker } from '@react-native-picker/picker';
 
+type AddressProps = {
+  zip: string;
+  referencePoint: string;
+  complement: string;
+  id: string;
+  street: string;
+  number: string;
+  neighborhood: string; // Bairro
+  city: string; // Cidade
+  state: string; // Estado
+  latitude: number;
+  longitude: number;
+};
+
 const Carrinho = ({ navigation }) => {
   const { isAuthenticated, user } = useContext(AuthContext);
   const { tableNumber, clearTable } = useTable();
-  const [addressSubmitted, setAddressSubmitted] = useState(false);
-  const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [deliveryOption, setDeliveryOption] = useState('');
+
   const [loading, setLoading] = useState(true);
-  const [totalPrice, setTotalPrice] = useState(0);
   const [cartItems, setCartItems] = useState([]);
-  const [observation, setObservation] = useState(''); // Novo estado para observação
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [observation, setObservation] = useState('');
+  const [userAddresses, setUserAddresses] = useState<AddressProps[]>([]);
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [addressVisible, setAddressVisible] = useState(true); // Controla a visibilidade do endereço
 
-  const handleOrderSubmit = async () => {
-    if (!deliveryOption) {
-      Alert.alert('Erro', 'Por favor, selecione uma forma de entrega.');
-      return;
+  useEffect(() => {
+    loadCartItems();
+    loadUserAddresses();
+    if (!user || !user.name) {
+      setUserAddresses([]);
     }
-
-    const orderData = {
-      deliveryType: deliveryOption === 'endereco' ? 'Endereço' : 'Mesa',
-      deliveryAddress: deliveryOption === 'endereco' ? deliveryAddress : undefined,
-      tableNumber: deliveryOption === 'mesa' ? tableNumber : undefined,
-      observation: observation.trim(), // Adiciona a observação ao enviar
-    };
-
-    try {
-      const response = await api.post('/orders', orderData);
-      Alert.alert('Sucesso', 'Pedido criado com sucesso!');
-      setObservation(''); // Limpa a observação após o pedido
-      navigation.navigate('Pedidos');
-    } catch (error) {
-      console.error('Erro ao criar o pedido:', error);
-      Alert.alert('Erro', 'Não foi possível criar o pedido. Tente novamente.');
-    }
-  };
+    const unsubscribe = navigation.addListener('focus', loadCartItems);
+    return unsubscribe;
+  }, [isAuthenticated, navigation]);
+ 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', loadUserAddresses);
+    return unsubscribe;
+  }, [navigator, user]);
 
   const loadCartItems = async () => {
+    // loadUserAddresses();
     setLoading(true);
     if (!user || !user.name) {
       setCartItems([]);
@@ -52,27 +69,57 @@ const Carrinho = ({ navigation }) => {
       setLoading(false);
       return;
     }
-
+    
     try {
+      // alert('loadCartItems');
       const response = await api.get('/cart');
       setCartItems(response.data.cart.items);
       setTotalPrice(response.data.totalPrice);
     } catch (error) {
-      if (cartItems.length === 0) {
-        setTotalPrice(0);
-        setCartItems([]);
-      } else {
-        console.error('Erro ao carregar o carrinho:', error);
-      }
+      console.error('Erro ao carregar o carrinho:', error);
+      setCartItems([]);
+      setTotalPrice(0);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', loadCartItems);
-    return unsubscribe;
-  }, [navigation, user]);
+  const loadUserAddresses = async () => {
+    if (!user || !user.id) return;
+
+    try {
+      const response = await api.get('/addresses');
+      setUserAddresses(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar endereços:', error);
+    }
+  };
+
+  
+
+  const handleOrderSubmit = async () => {
+    if (!selectedAddress && addressVisible) {
+      Alert.alert('Erro', 'Por favor, selecione um endereço.');
+      return;
+    }
+
+    const orderData = {
+      deliveryType: addressVisible ? 'Endereço' : 'Mesa',
+      deliveryAddress: addressVisible ? selectedAddress : undefined,
+      tableNumber: !addressVisible ? tableNumber : undefined,
+      observation: observation.trim(),
+    };
+
+    try {
+      await api.post('/orders', orderData);
+      Alert.alert('Sucesso', 'Pedido criado com sucesso!');
+      setObservation('');
+      navigation.navigate('Pedidos');
+    } catch (error) {
+      console.error('Erro ao criar o pedido:', error);
+      Alert.alert('Erro', 'Não foi possível criar o pedido. Tente novamente.');
+    }
+  };
 
   const handleRemove = async (product_id) => {
     try {
@@ -108,11 +155,9 @@ const Carrinho = ({ navigation }) => {
 
     return (
       <View style={styles.cartCard}>
-        <View style={styles.removeButtonContainer}>
-          <TouchableOpacity style={styles.removeButton} onPress={() => handleRemove(item.product_id)}>
-            <Icon name="trash" size={20} color={COLORS.white} />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.removeButton} onPress={() => handleRemove(item.product_id)}>
+          <Icon name="trash" size={20} color={COLORS.red} />
+        </TouchableOpacity>
         <Image source={{ uri: `${api.defaults.baseURL}${item.product.banner}` }} style={styles.image} />
         <View style={styles.cardInfo}>
           <Text style={styles.itemName}>{item.product.name}</Text>
@@ -138,56 +183,75 @@ const Carrinho = ({ navigation }) => {
     </View>
   );
 
-  const handleDeliveryOptionChange = (itemValue) => {
-    setDeliveryOption(itemValue);
-    if (itemValue === 'mesa') {
-      navigation.navigate('Qrcode');
-    }
-  };
+  const handleQRCodeScan = () => {
+    navigation.navigate('Qrcode');
+    // setAddressVisible(false);
 
-  const handleAddressSubmit = () => {
-    if (deliveryOption === 'endereco') {
-      setAddressSubmitted(true);
-    }
   };
+  const handleExitTable = () => {
+    setAddressVisible(true);
+    setSelectedAddress('');
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       {tableNumber ? (
-        <TouchableOpacity style={styles.botaoMesaSair} onPress={clearTable}>
+        <TouchableOpacity style={styles.botaoMesaSair} onPress={() => { clearTable(); handleExitTable(); }}>
           <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
           <Icon name="exit" size={20} style={styles.iconeMesaSair} />
         </TouchableOpacity>
-      ) : addressSubmitted ? (
-        <TouchableOpacity onPress={() => setAddressSubmitted(false)} style={styles.addressSubmittedContainer}>
-          <Text style={styles.addressSubmittedText}>{deliveryAddress}</Text>
-          <Icon name="create-outline" size={20} color={COLORS.white} />
-        </TouchableOpacity>
       ) : (
         <>
-          <Picker selectedValue={deliveryOption} onValueChange={handleDeliveryOptionChange} style={styles.picker}>
-            <Picker.Item label="Selecione a forma de entrega" value=""/>
-            <Picker.Item label="Selecionar Mesa" value="mesa" />
-            <Picker.Item label="Selecionar Endereço" value="endereco" />
-          </Picker>
-          {deliveryOption === 'endereco' && (
-            <>
-              <TextInput
-                placeholder="Digite seu endereço"
-                value={deliveryAddress}
-                onChangeText={setDeliveryAddress}
-                style={styles.addressInput}
-              />
-              <TouchableOpacity onPress={handleAddressSubmit} style={styles.sendButton}>
-                <Text style={styles.sendButtonText}>Confirmar</Text>
-              </TouchableOpacity>
-            </>
-          )}
+          <View style={styles.addressPickerContainer}>
+            {addressVisible && (
+              userAddresses.length > 0 ? (
+                <><Picker
+                    selectedValue={selectedAddress}
+                    onValueChange={(itemValue) => setSelectedAddress(itemValue)}
+                    style={styles.addressPicker}
+                  >
+                    <Picker.Item label="Selecione seu endereço" value="" />
+                    {userAddresses.map((address) => (
+                      <Picker.Item
+                        key={address.id}
+                        label={`${address.street}, ${address.number} - ${address.neighborhood}, ${address.city} - ${address.state}`}
+                        value={`${address.street}, ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}`} // Inclui bairro, cidade e estado
+                      />
+
+                    ))}
+                  </Picker><TouchableOpacity style={styles.qrCodeButton} onPress={handleQRCodeScan}>
+                      <Icon name="qr-code-outline" size={24} color={COLORS.white} />
+                    </TouchableOpacity></>
+              ) : !user || !user.name ? (
+                <></>
+              ) : (
+                <View 
+                  style={styles.enederecoContainer}
+                >
+                  <TouchableOpacity style={styles.adicionarEndereco} onPress={() => navigation.navigate('Endereco')}>
+                    <Text 
+                      style={styles.adicionarEnderecoText}
+                    >Adicionar endereço</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.qrCodeButton} onPress={handleQRCodeScan}>
+                    <Icon name="qr-code-outline" size={24} color={COLORS.white} />
+                  </TouchableOpacity>
+                </View>
+              )
+            )}
+          </View>
         </>
       )}
 
       {loading ? (
         <ActivityIndicator size={50} color={COLORS.secondary} style={styles.flatList} />
+      ) : cartItems.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyMessage}>Você ainda não tem produtos no Carrinho.</Text>
+          <Text style={styles.emptyInstruction}>Adicione produtos para vê-los aqui!
+          </Text>
+        </View>
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
@@ -197,6 +261,7 @@ const Carrinho = ({ navigation }) => {
           ListEmptyComponent={renderEmptyCart}
         />
       )}
+
       {cartItems.length > 0 && (
         <>
           <TextInput
@@ -204,17 +269,14 @@ const Carrinho = ({ navigation }) => {
             value={observation}
             onChangeText={setObservation}
             style={styles.observationInput}
-            multiline={true} // Permite várias linhas
-            numberOfLines={3} // Número de linhas visíveis
-            textAlignVertical="top" // Inicia o texto no topo do campo
-            maxLength={200} // Limite de caracteres
+            multiline={true}
+            numberOfLines={3}
+            textAlignVertical="top"
+            maxLength={100}
           />
-          <View style={styles.footer}>
-            <View style={styles.containerPreco}>
-              <Text style={styles.totalText}>Preço Total</Text>
-              <Text style={styles.totalPrice}>R$ {totalPrice.toFixed(2)}</Text>
-            </View>
-            <PrimaryButton title="PEDIR AGORA" onPress={handleOrderSubmit} />
+          <View style={styles.orderSummary}>
+            <Text style={styles.summaryText}>Total: R$ {totalPrice.toFixed(2)}</Text>
+            <PrimaryButton title="Finalizar Pedido" onPress={handleOrderSubmit} />
           </View>
         </>
       )}

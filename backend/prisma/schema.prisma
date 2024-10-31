@@ -123,16 +123,20 @@ model Favorite {
 
 // Tabela de Endereços
 model Address {
-  id         String   @id @default(uuid())
-  userId     String
-  address    String
-  city       String
-  state      String
-  zipCode    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("addresses")
+  id             String   @id @default(uuid())
+  zip            String
+  street         String
+  number         String
+  neighborhood   String
+  complement     String?
+  referencePoint String?
+  city           String
+  state          String
+  latitude       Float // Coordenada de latitude
+  longitude      Float // Coordenada de longitude
+  
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id        String // FK do usuário que o endereço pertence
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 }
