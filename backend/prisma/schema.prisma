@@ -39,8 +39,8 @@ model Address {
   latitude       Float // Coordenada de latitude
   longitude      Float // Coordenada de longitude
   
-  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id        String // FK do usuário que o endereço pertence
+  user            User?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  user_id         String? // FK do usuário
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 }

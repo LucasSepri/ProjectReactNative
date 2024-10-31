@@ -1,15 +1,20 @@
-import prismaClient from '../../prisma';
+// services/ListAddressesService.js
+import prisma from '../../prisma';
 
 class ListAddressesService {
-  async execute(userId: string) {
-    const addresses = await prismaClient.address.findMany({
+  async execute(user_id) {
+    const addresses = await prisma.address.findMany({
       where: {
-        user_id: userId as any, // Usando `user_id` conforme a exigência do Prisma
+        user_id,
       },
-      include: { user: true },
     });
+
+    if (!addresses) {
+      throw new Error("Endereços não encontrados para o usuário.");
+    }
+
     return addresses;
   }
 }
 
-export default new ListAddressesService();
+export default ListAddressesService;
