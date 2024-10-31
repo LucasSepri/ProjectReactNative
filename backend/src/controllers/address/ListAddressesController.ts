@@ -2,9 +2,10 @@
 import { Request, Response } from 'express';
 import { ListAddressesService } from '../../services/address/ListAddressesService';
 
+// src/controllers/ListAddressesController.ts
 class ListAddressesController {
   async handle(req: Request, res: Response) {
-    const userId = req.user.id; // Obter o ID do usuário a partir do middleware isAuthenticated
+    const userId = req.user.id;
     const listAddressesService = new ListAddressesService();
 
     try {
@@ -17,3 +18,5 @@ class ListAddressesController {
 }
 
 export { ListAddressesController };
+
+
