@@ -2,13 +2,13 @@
 import prisma from '../../prisma'; // Importe seu cliente Prisma
 
 class ListAddressesService {
-  async execute(userId: string) {
+  async execute(idUser: string) {
     try {
       const addresses = await prisma.address.findMany(
         {
-          where: { user_id: userId },
+          where: { user_id: idUser },
         },
-        
+
       );
       return addresses;
     } catch (error) {
