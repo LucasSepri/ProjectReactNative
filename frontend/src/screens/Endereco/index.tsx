@@ -86,6 +86,7 @@ const AddressForm = ({ route }) => {
       if (data.length > 0 && data[0].lat && data[0].lon) {
         const latitude = parseFloat(data[0].lat);
         const longitude = parseFloat(data[0].lon);
+        // Alert.alert('Endereço encontrado', `Latitude: ${latitude}, Longitude: ${longitude}`);
         navigation.navigate('MapScreen', { address, latitude, longitude, complement, referencePoint, zip, street, number, neighborhood, city, state, isVisualize: false });
       } else {
         Alert.alert('Aviso', 'Endereço não encontrado.');
@@ -122,20 +123,13 @@ const AddressForm = ({ route }) => {
       outputRange: [0.5, 1],
     }),
   };
-  
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Entregar em</Text>
 
       <View style={styles.zipContainer}>
-        {/* <TextInput
-          style={styles.zipInput}
-          value={zip}
-          onChangeText={setZip}
-          keyboardType="numeric"
-          placeholder="Informe o CEP"
-        /> */}
         <TextInputMask
           type={'custom'}
           options={{

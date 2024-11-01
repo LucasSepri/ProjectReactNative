@@ -44,6 +44,7 @@ const Carrinho = ({ navigation }) => {
   const [userAddresses, setUserAddresses] = useState<AddressProps[]>([]);
   const [selectedAddress, setSelectedAddress] = useState('');
   const [addressVisible, setAddressVisible] = useState(true); // Controla a visibilidade do endereço
+  const [imageError, setImageError] = useState({});
 
   useEffect(() => {
     loadCartItems();
@@ -54,7 +55,7 @@ const Carrinho = ({ navigation }) => {
     const unsubscribe = navigation.addListener('focus', loadCartItems);
     return unsubscribe;
   }, [isAuthenticated, navigation]);
- 
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', loadUserAddresses);
     return unsubscribe;
@@ -69,7 +70,7 @@ const Carrinho = ({ navigation }) => {
       setLoading(false);
       return;
     }
-    
+
     try {
       // alert('loadCartItems');
       const response = await api.get('/cart');
@@ -95,7 +96,7 @@ const Carrinho = ({ navigation }) => {
     }
   };
 
-  
+
 
   const handleOrderSubmit = async () => {
     if (!selectedAddress && addressVisible) {
@@ -158,7 +159,14 @@ const Carrinho = ({ navigation }) => {
         <TouchableOpacity style={styles.removeButton} onPress={() => handleRemove(item.product_id)}>
           <Icon name="trash" size={20} color={COLORS.red} />
         </TouchableOpacity>
-        <Image source={{ uri: `${api.defaults.baseURL}${item.product.banner}` }} style={styles.image} />
+        <Image
+          // source={{ uri: `${api.defaults.baseURL}${item.product.banner}` }}
+          source={imageError[item.product.id]
+            ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
+            : { uri: `${api.defaults.baseURL}${item.product.banner}` }}
+          onError={() => setImageError(prev => ({ ...prev, [item.product.id]: true }))} // Marca o erro para este produto
+
+          style={styles.image} />
         <View style={styles.cardInfo}>
           <Text style={styles.itemName}>{item.product.name}</Text>
           <Text style={styles.price}>R$ {totalPrice.toFixed(2)}</Text>
@@ -206,30 +214,30 @@ const Carrinho = ({ navigation }) => {
             {addressVisible && (
               userAddresses.length > 0 ? (
                 <><Picker
-                    selectedValue={selectedAddress}
-                    onValueChange={(itemValue) => setSelectedAddress(itemValue)}
-                    style={styles.addressPicker}
-                  >
-                    <Picker.Item label="Selecione seu endereço" value="" />
-                    {userAddresses.map((address) => (
-                      <Picker.Item
-                        key={address.id}
-                        label={`${address.street}, ${address.number} - ${address.neighborhood}, ${address.city} - ${address.state}`}
-                        value={`${address.street}, ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}`} // Inclui bairro, cidade e estado
-                      />
+                  selectedValue={selectedAddress}
+                  onValueChange={(itemValue) => setSelectedAddress(itemValue)}
+                  style={styles.addressPicker}
+                >
+                  <Picker.Item label="Selecione seu endereço" value="" />
+                  {userAddresses.map((address) => (
+                    <Picker.Item
+                      key={address.id}
+                      label={`${address.street}, ${address.number} - ${address.neighborhood}, ${address.city} - ${address.state}`}
+                      value={`${address.street}, ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}`} // Inclui bairro, cidade e estado
+                    />
 
-                    ))}
-                  </Picker><TouchableOpacity style={styles.qrCodeButton} onPress={handleQRCodeScan}>
-                      <Icon name="qr-code-outline" size={24} color={COLORS.white} />
-                    </TouchableOpacity></>
+                  ))}
+                </Picker><TouchableOpacity style={styles.qrCodeButton} onPress={handleQRCodeScan}>
+                    <Icon name="qr-code-outline" size={24} color={COLORS.white} />
+                  </TouchableOpacity></>
               ) : !user || !user.name ? (
                 <></>
               ) : (
-                <View 
+                <View
                   style={styles.enederecoContainer}
                 >
                   <TouchableOpacity style={styles.adicionarEndereco} onPress={() => navigation.navigate('Endereco')}>
-                    <Text 
+                    <Text
                       style={styles.adicionarEnderecoText}
                     >Adicionar endereço</Text>
                   </TouchableOpacity>

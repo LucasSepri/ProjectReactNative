@@ -44,6 +44,7 @@ export type StackParamList = {
     };
     Endereco: undefined;
     Qrcode: undefined;
+    MapScreen2: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -166,6 +167,7 @@ function AppRoutes() {
                     headerTintColor: COLORS.white,
                 }}
             />
+            
         </Stack.Navigator>
     );
 }

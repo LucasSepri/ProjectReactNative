@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import MapView, { Marker, Region } from 'react-native-maps';
 import { COLORS } from '../../styles/COLORS';
 import { api } from '../../services/api';
 import { useNavigation } from '@react-navigation/native';
@@ -36,25 +36,9 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
     latitude: initialLatitude,
     longitude: initialLongitude,
   });
-  const [tempCoordinate, setTempCoordinate] = useState({
-    latitude: initialLatitude,
-    longitude: initialLongitude,
-  });
-
+  const [tempCoordinate, setTempCoordinate] = useState(coordinate);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const mapRef = useRef<MapView | null>(null);
   const navigation = useNavigation<NavigationProp>();
-
-  const handleRegionChangeComplete = (region: Region) => {
-    setTempCoordinate({
-      latitude: region.latitude,
-      longitude: region.longitude,
-    });
-  };
-
-  const handleRedirect = () => {
-    setIsRedirecting(true);
-  };
 
   const handleConfirm = () => {
     setIsRedirecting(false);
@@ -106,7 +90,56 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
       ],
       { cancelable: false }
     );
+  };
 
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+        <style>
+          body, html, #map {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+          }
+          #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="map"></div>
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script>
+          let map, marker;
+          function initializeMap() {
+            map = L.map('map').setView([${coordinate.latitude}, ${coordinate.longitude}], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: 'Map data © OpenStreetMap contributors'
+            }).addTo(map);
+
+            marker = L.marker([${coordinate.latitude}, ${coordinate.longitude}], { draggable: ${isRedirecting} }).addTo(map);
+            marker.on('dragend', function(e) {
+              const { lat, lng } = e.target.getLatLng();
+              window.ReactNativeWebView.postMessage(JSON.stringify({ latitude: lat, longitude: lng }));
+            });
+          }
+          document.addEventListener('DOMContentLoaded', initializeMap);
+        </script>
+      </body>
+    </html>
+  `;
+
+  const handleWebViewMessage = (event) => {
+    const newCoordinate = JSON.parse(event.nativeEvent.data);
+    setTempCoordinate(newCoordinate);
   };
 
   return (
@@ -114,36 +147,18 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
       <View style={styles.header}>
         <Text style={styles.headerText}>
           {!route.params.isVisualize ? (
-            isRedirecting ? 'Arraste o mapa até o local correto' : 'Confirme o local do seu endereço'
+            isRedirecting ? 'Arraste o marcador até o local correto' : 'Confirme o local do seu endereço'
           ) : 'Local do Endereço'}
         </Text>
         <Text style={styles.addressText}>{address}</Text>
       </View>
 
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={{
-          latitude: initialLatitude,
-          longitude: initialLongitude,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
-        }}
-        onRegionChangeComplete={handleRegionChangeComplete}
-      >
-        <Marker coordinate={coordinate}>
-          <View style={styles.markerContainer}>
-            <Icon name="place" style={styles.fixedMarkerIcon} />
-            <View style={styles.markerShadow} />
-          </View>
-        </Marker>
-      </MapView>
-
-      {isRedirecting && (
-        <View style={styles.centerMarkerContainer}>
-          <Icon name="place" style={styles.movableMarkerIcon} />
-        </View>
-      )}
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: htmlContent }}
+        style={styles.webView}
+        onMessage={handleWebViewMessage}
+      />
 
       {!route.params.isVisualize && (
         <View style={styles.buttonContainer}>
@@ -153,7 +168,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
             </TouchableOpacity>
           ) : (
             <>
-              <TouchableOpacity style={styles.button} onPress={handleRedirect}>
+              <TouchableOpacity style={styles.button} onPress={() => setIsRedirecting(true)}>
                 <Text style={styles.buttonText}>Ajustar</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={handleSaveAddress}>
@@ -171,19 +186,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    padding: 16,
   },
   header: {
     paddingVertical: 20,
     backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.grey,
     alignItems: 'center',
-    shadowColor: COLORS.grey,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 4,
   },
   headerText: {
     fontSize: 20,
@@ -194,56 +201,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.darkGrey,
     textAlign: 'center',
-    marginTop: 4,
   },
-  map: {
+  webView: {
     flex: 1,
-    marginVertical: 10,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  centerMarkerContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginLeft: -4,
-    marginTop: -20,
-    alignItems: 'center',
-  },
-  markerContainer: {
-    alignItems: 'center',
-  },
-  fixedMarkerIcon: {
-    color: COLORS.primary,
-    fontSize: 40,
-    marginBottom: -8,
-    zIndex: 1,
-  },
-  markerShadow: {
-    height: 8,
-    width: 8,
-    backgroundColor: COLORS.black,
-    borderRadius: 100,
-    opacity: 0.4,
-  },
-  movableMarkerIcon: {
-    color: COLORS.blue,
-    fontSize: 40,
-    marginBottom: -8,
-    zIndex: 1,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 15,
     backgroundColor: COLORS.lightGrey,
-    borderRadius: 10,
-    marginTop: 10,
-    shadowColor: COLORS.grey,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   button: {
     flex: 1,
@@ -252,12 +218,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: 5,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   buttonText: {
     color: COLORS.white,
     fontWeight: 'bold',
-    fontSize: 16,
   },
 });
 

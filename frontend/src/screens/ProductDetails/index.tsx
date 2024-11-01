@@ -20,6 +20,7 @@ const ProductDetails = ({ route }) => {
     const [total, setTotal] = useState(0);
     const [size, setSize] = useState('broto');
     const [isFavorite, setIsFavorite] = useState(false);
+    const [imageError, setImageError] = useState({ [product.id]: false });
 
     const isPizza = category.name?.toLowerCase() === 'pizza';
 
@@ -107,7 +108,14 @@ const ProductDetails = ({ route }) => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.imageContainer}>
-                <Image source={{ uri: `${api.defaults.baseURL}${product.banner}` }} style={styles.image} />
+                <Image
+                    // source={{ uri: `${api.defaults.baseURL}${product.banner}` }} 
+                    source={imageError[product.id]
+                        ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
+                        : { uri: `${api.defaults.baseURL}${product.banner}` }}
+                    onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))} // Marca o erro para este produto
+
+                    style={styles.image} />
                 <TouchableOpacity
                     style={[styles.button, styles.favoriteButton]}
                     onPress={handleFavoriteToggle}

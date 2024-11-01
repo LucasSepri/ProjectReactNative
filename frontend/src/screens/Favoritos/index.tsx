@@ -32,6 +32,7 @@ const PizzaScreen = () => {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
 
   const navigation = useNavigation<NavigationProp>();
 
@@ -88,7 +89,13 @@ const PizzaScreen = () => {
   const renderProductItem = ({ item }: { item: ProductProps }) => (
     <TouchableOpacity style={styles.foodItem} onPress={() => handleProductPress(item)}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: `${api.defaults.baseURL}${item.banner}` }} style={styles.image} />
+        <Image 
+        source={imageError[item.id]
+          ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
+          : { uri: `${api.defaults.baseURL}${item.banner}` }}
+        onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))} // Marca o erro para este produto
+
+        style={styles.image} />
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
