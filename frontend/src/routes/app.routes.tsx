@@ -2,16 +2,16 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { COLORS } from "../styles/COLORS";
 
-import Perfil from "../screens/Perfil";
+import Perfil from "../screens/Profile";
 import SignIn from "../screens/SignIn";
-import Pesquisa from "../screens/Pesquisa";
+import Pesquisa from "../screens/Search";
 import SignUp from "../screens/SignUp";
 import EditarPerfil from "../screens/EditarPerfil";
 import Home from "../screens/Home";
 import OrderDetails from "../screens/OrderDetails";
 import ProductDetails from "../screens/ProductDetails";
-import MapScreen from "../screens/Mapa";
-import Endereco from "../screens/Endereco";
+import MapScreen from "../screens/Map";
+import Endereco from "../screens/Address";
 
 
 import TabRouter from "./tab.routes";
@@ -45,6 +45,7 @@ export type StackParamList = {
     Endereco: undefined;
     Qrcode: undefined;
     MapScreen2: undefined;
+    Carrinho: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -162,12 +163,12 @@ function AppRoutes() {
                     headerShown: false,
                     title: "Detalhes do Produto",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.black,
                     },
                     headerTintColor: COLORS.white,
                 }}
             />
-            
+
         </Stack.Navigator>
     );
 }

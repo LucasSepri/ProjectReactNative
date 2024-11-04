@@ -205,11 +205,11 @@ const ListUsers = () => {
         <View style={styles.container}>
             <View style={styles.searchContainerRefresh}>
                 <TouchableOpacity onPress={refreshList} style={styles.refreshList}>
-                    <Icon name="refresh" size={24} color={COLORS.grey} style={styles.refreshIcon} />
+                    <Icon name="refresh" size={24} color={COLORS.primary} style={styles.refreshIcon} />
                 </TouchableOpacity>
 
                 <View style={styles.searchContainer}>
-                    <Icon name="search" size={24} color={COLORS.grey} style={styles.searchIcon} />
+                    <Icon name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Pesquisar usuários..."

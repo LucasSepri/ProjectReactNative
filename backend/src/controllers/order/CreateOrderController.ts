@@ -9,13 +9,12 @@ class CreateOrderController {
       return res.status(401).json({ error: 'Usuário não autenticado.' });
     }
 
-    const { deliveryType, deliveryAddress, tableNumber, observation } = req.body;
+    const { deliveryType, deliveryAddress, tableNumber, observation, latitude, longitude } = req.body;
 
     // Validação dos dados
     if (!deliveryType) {
       return res.status(400).json({ error: 'Tipo de entrega não informado.' });
     }
-
     try {
       const order = await CreateOrderService.execute({
         user_id,
@@ -23,6 +22,8 @@ class CreateOrderController {
         deliveryAddress,
         tableNumber,
         observation, // Passa a observação ao serviço
+        latitude, // Passa latitude
+        longitude // Passa longitude
       });
 
       return res.status(201).json(order);

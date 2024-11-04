@@ -11,6 +11,16 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  cameraHeader:{
+    backgroundColor: COLORS.secondary,
+    width: '100%',
+  },
+  cameraHeaderText:{
+    textAlign: 'center',
+    padding: 10,
+    color: COLORS.white,
+    fontSize: 20,
+  },
   camera: {
     flex: 1,
     width: '100%',
@@ -19,7 +29,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.dark,
+    backgroundColor: COLORS.background,
   },
   squareButton: {
     position: 'absolute',

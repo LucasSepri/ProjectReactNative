@@ -50,7 +50,7 @@ const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigat
                         >
                             <View style={{ alignItems: 'center', padding: 4 }}>
                                 <View style={[styles.innerButton, { backgroundColor: isFocused ? COLORS.primary : "transparent" }]}>
-                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? COLORS.white : COLORS.darkGrey, size: 34 })}
+                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? COLORS.white : COLORS.black, size: 34 })}
                                 </View>
                             </View>
                         </TouchableOpacity>

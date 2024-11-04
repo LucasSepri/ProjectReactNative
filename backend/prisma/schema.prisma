@@ -1,4 +1,5 @@
 //criar uma migration: yarn prisma migrate dev 
+// Redefina o banco de dados: yarn prisma migrate reset
 generator client {
   provider = "prisma-client-js"
 }
@@ -59,12 +60,15 @@ model Order {
   id              String   @id @default(uuid())
   userName        String // Nome do usuário que fez o pedido
   userEmail       String // Email do usuário que fez o pedido
+  userPhone       String // Telefone do usuário que fez o pedido
   user            User?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
   user_id         String? // FK do usuário
   status          String // Status do pedido: "Entregue", "Em andamento", "Cancelado"
   totalPrice      Float // Preço total do pedido
   deliveryType    String // Tipo de entrega: "Endereço" ou "Mesa"
   deliveryAddress String? // Endereço de entrega, caso o cliente escolha essa opção
+  latitude        Float // Coordenada de latitude do endereço
+  longitude       Float // Coordenada de longitude do endereço
   tableNumber     String? // Número da mesa, caso seja no estabelecimento
   observation     String? // Campo opcional para observações do pedido
   created_at      DateTime @default(now())
@@ -124,7 +128,7 @@ model Favorite {
 
 // Tabela de Endereços
 model address {
-  id             String  @id @default(uuid())
+  id             String   @id @default(uuid())
   zip            String
   street         String
   number         String
@@ -138,6 +142,6 @@ model address {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String
 }

@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 14,
-    color: COLORS.darkGrey,
+    color: COLORS.text,
     marginBottom: 30,
   },
   imagePicker: {
@@ -44,15 +44,15 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    backgroundColor: COLORS.lightGrey,
+    backgroundColor: COLORS.background,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 8,
     fontSize: 16,
-    color: COLORS.dark,
+    color: COLORS.text,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: COLORS.grey,
+    borderColor: COLORS.border,
   },
   button: {
     width: '100%',

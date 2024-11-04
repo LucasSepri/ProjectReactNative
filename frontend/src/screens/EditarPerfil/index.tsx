@@ -19,6 +19,7 @@ import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
 import styles from './style'; // Usar o mesmo estilo do SignUp
 import { TextInputMask } from 'react-native-masked-text';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function EditarPerfil() {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
@@ -49,11 +50,15 @@ export default function EditarPerfil() {
     }
   };
 
-  async function handleUpdateProfile() {
+  async function handleUpdateProfile(attempt = 0) {
     setLoading(true);
-
     let formData = new FormData();
     formData.append('userId', user.id);
+
+    // Reseta o contador de tentativas se o perfil foi editado
+    if (name !== user.name || email !== user.email || phone !== user.phone || password || selectedImage) {
+      attempt = 0;
+    }
 
     if (name !== user.name) formData.append('name', name);
     if (email !== user.email) formData.append('email', email);
@@ -92,18 +97,40 @@ export default function EditarPerfil() {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
-        }
+        },
       });
-      setUser(response.data);
+
+      // Verifique se a resposta contém a nova imagem
+      const updatedUser = {
+        ...response.data,
+        token: user.token, // Mantenha o token existente
+        profileImage: response.data.profileImage || user.profileImage, // Atualize a imagem se houver
+      };
+
+      setUser(updatedUser);
+      await AsyncStorage.setItem('@token', JSON.stringify(updatedUser)); // Atualize o AsyncStorage
+
       Alert.alert("Sucesso", "Perfil atualizado com sucesso!");
       navigation.goBack();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      Alert.alert("Erro", "Erro ao atualizar perfil. Por favor, tente novamente mais tarde.");
+      if (error.isAxiosError) {
+        if (error.message === 'Network Error' && attempt < 2) {
+          handleUpdateProfile(attempt + 1);
+        } else {
+          console.error('Error updating profile:', error);
+          Alert.alert("Erro", "Erro ao atualizar perfil. Por favor, tente novamente mais tarde.");
+        }
+      } else {
+        Alert.alert("Erro", "Ocorreu um erro inesperado. Por favor, tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
   }
+
+
+
+
 
   return (
     <View style={styles.container}>
@@ -123,7 +150,7 @@ export default function EditarPerfil() {
           style={styles.input}
           value={name}
           onChangeText={setName}
-          placeholderTextColor={COLORS.darkGrey}
+          placeholderTextColor={COLORS.text}
         />
         <TextInput
           placeholder='Email'
@@ -131,7 +158,7 @@ export default function EditarPerfil() {
           value={email}
           onChangeText={setEmail}
           autoCapitalize='none'
-          placeholderTextColor={COLORS.darkGrey}
+          placeholderTextColor={COLORS.text}
         />
         <TextInputMask
           type={'custom'}
@@ -142,7 +169,7 @@ export default function EditarPerfil() {
           style={styles.input}
           value={phone}
           onChangeText={text => setphone(text)}
-          placeholderTextColor={COLORS.darkGrey}
+          placeholderTextColor={COLORS.text}
           keyboardType='phone-pad' // Define o teclado para números
           maxLength={15} // Limita o tamanho do campo
         />
@@ -152,11 +179,11 @@ export default function EditarPerfil() {
           secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
-          placeholderTextColor={COLORS.darkGrey}
+          placeholderTextColor={COLORS.text}
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleUpdateProfile} disabled={loading}>
+      <TouchableOpacity style={styles.button} onPress={() => handleUpdateProfile(0)} disabled={loading}>
         {loading ? (
           <ActivityIndicator size="small" color={COLORS.white} />
         ) : (

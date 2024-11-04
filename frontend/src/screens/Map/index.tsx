@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, Alert,  Text, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { COLORS } from '../../styles/COLORS';
 import { api } from '../../services/api';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
+import styles from './style';
 
 type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
@@ -181,48 +181,5 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    paddingVertical: 20,
-    backgroundColor: COLORS.white,
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: COLORS.dark,
-  },
-  addressText: {
-    fontSize: 16,
-    color: COLORS.darkGrey,
-    textAlign: 'center',
-  },
-  webView: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 15,
-    backgroundColor: COLORS.lightGrey,
-  },
-  button: {
-    flex: 1,
-    marginHorizontal: 5,
-    paddingVertical: 10,
-    backgroundColor: COLORS.primary,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: COLORS.white,
-    fontWeight: 'bold',
-  },
-});
 
 export default MapScreen;

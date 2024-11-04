@@ -38,9 +38,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     profileImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 50,
+        width: 100,
+        height: 100,
+        borderRadius: 10,
         marginRight: 15,
     },
     userInfo: {
@@ -51,22 +51,22 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     email: {
-        fontSize: 16,
-        color: COLORS.darkGrey,
+        fontSize: 14,
+        color: COLORS.text,
     },
     telefone:{
-        fontSize: 16,
-        color: COLORS.darkGrey,
+        fontSize: 14,
+        color: COLORS.text,
     },
     deleteButton: {
-        backgroundColor: COLORS.red,
+        backgroundColor: COLORS.danger,
         padding: 10,
         borderRadius: 8,
         alignSelf: 'flex-start',
         marginBottom: 10,
     },
     addAdminButton: {
-        backgroundColor: COLORS.blue,
+        backgroundColor: COLORS.success,
         borderRadius: 8,
         flexDirection: 'row',
         alignItems: 'center',
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     removeAdminButton: {
-        backgroundColor: COLORS.green,
+        backgroundColor: COLORS.secondary,
         paddingHorizontal: 40,
         paddingVertical: 10,
         borderRadius: 8,
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     },
     refreshIcon: {
         fontSize: 24,
-        color: COLORS.darkGrey,
+        color: COLORS.primary,
     },
 });
 

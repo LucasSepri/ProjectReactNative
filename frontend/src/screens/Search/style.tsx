@@ -4,16 +4,27 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
         backgroundColor: COLORS.white,
+    },
+    headerFilter: {
+        backgroundColor: COLORS.background,
+        margin: 16,
+        borderRadius: 10,
+        padding: 16,
+        borderColor: COLORS.primary,
+        borderWidth: 2,
+        elevation: 3,
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
         backgroundColor: COLORS.white,
+        borderColor: COLORS.primary,
+        borderWidth: 1,
         borderRadius: 8,
-        paddingLeft: 8,
+        paddingLeft: 12,
+        paddingRight: 12,
     },
     searchIcon: {
         marginRight: 8,
@@ -22,9 +33,10 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 40,
         fontSize: 16,
+        color: COLORS.black,
     },
     categoriasContainer: {
-        marginBottom: 16,
+        marginTop: 8,
     },
     categoriesListContainer: {
         paddingHorizontal: 8,
@@ -36,18 +48,24 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         marginRight: 8,
+        elevation: 2,
+        shadowColor: COLORS.black,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
     },
     selectedCategoryButton: {
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.primary,
     },
     iconeCategorias: {
         fontSize: 24,
-        color: COLORS.grey,
+        color: COLORS.black,
     },
     categoryButtonText: {
-        marginTop: 5,
+        marginLeft: 5,
         fontSize: 14,
-        color: COLORS.grey,
+        color: COLORS.black,
+        fontWeight: '600',
     },
     foodItem: {
         flexDirection: 'row',
@@ -63,7 +81,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        elevation: 5,
+        elevation: 3,
     },
     imageContainer: {
         marginRight: 16,
@@ -72,6 +90,8 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 8,
+        borderColor: COLORS.border,
+        borderWidth: 1,
     },
     infoContainer: {
         flex: 1,
@@ -80,13 +100,22 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 4,
+        color: COLORS.black,
+    },
+    category: {
+        fontSize: 14,
+        color: COLORS.secondary,
+        marginBottom: 4,
     },
     ingredients: {
-        opacity: 0.6,
+        opacity: 0.8,
+        fontSize: 14,
     },
     price: {
         fontWeight: 'bold',
         textAlign: 'right',
+        fontSize: 16,
+        color: COLORS.primary,
     },
 });
 

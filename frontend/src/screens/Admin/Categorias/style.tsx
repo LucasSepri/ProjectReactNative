@@ -5,22 +5,23 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.background,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: COLORS.text,
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly', // Distribui o espaço de maneira equilibrada
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         marginBottom: 15,
     },
     button: {
-        flex: 1, // Torna ambos os botões de tamanho igual
-        marginHorizontal: 5, // Dá espaço horizontal entre os botões
+        flex: 1,
+        marginHorizontal: 5,
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
@@ -28,13 +29,13 @@ export default StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 3,
-        elevation: 3, // Para sombra no Android
+        elevation: 3,
     },
     submitButton: {
-        backgroundColor: COLORS.primary, // Verde para criar/editar
+        backgroundColor: COLORS.primary,
     },
     cancelButton: {
-        backgroundColor: COLORS.red, // Vermelho para cancelar
+        backgroundColor: COLORS.secondary,
     },
     buttonText: {
         color: COLORS.white,
@@ -43,42 +44,45 @@ export default StyleSheet.create({
     },
     input: {
         height: 40,
-        borderColor: 'gray',
+        borderColor: COLORS.border,
         borderWidth: 1,
+        borderRadius: 5,
         marginBottom: 20,
         paddingHorizontal: 10,
+        backgroundColor: COLORS.white,
+        color: COLORS.text,
     },
     error: {
-        color: 'red',
+        color: COLORS.danger,
         marginBottom: 20,
     },
     categoryItem: {
+        marginHorizontal: 10,
+        marginBottom: 10,
         alignItems: 'center',
         padding: 10,
         backgroundColor: COLORS.white,
         borderRadius: 8,
-        elevation: 2,
-        marginBottom: 10,
-        borderColor: COLORS.lightGrey,
-        borderWidth: 1,
+        elevation: 3,
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
     textoCategorias: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: COLORS.text,
     },
     actions: {
         alignItems: 'center',
         flexDirection: 'row',
     },
     editButton: {
-        color: COLORS.blue,
+        color: COLORS.primary,
         marginRight: 10,
         fontSize: 16,
     },
     deleteButton: {
-        backgroundColor: COLORS.red,
+        backgroundColor: COLORS.danger,
         padding: 10,
         borderRadius: 8,
         alignSelf: 'flex-start',

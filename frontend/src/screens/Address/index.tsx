@@ -17,6 +17,7 @@ import { StackParamList } from '../../routes/app.routes';
 import { COLORS } from '../../styles/COLORS';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TextInputMask } from 'react-native-masked-text';
+import styles from './style';
 
 type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
@@ -32,7 +33,7 @@ const AddressForm = ({ route }) => {
   const [state, setState] = useState('');
   const [noComplement, setNoComplement] = useState(false);
   const [animation] = useState(new Animated.Value(0));
-  const [isCepSearched, setIsCepSearched] = useState(false); // Novo estado
+  const [isCepSearched, setIsCepSearched] = useState(false);
 
   const handleZipChange = async () => {
     if (zip.length === 8) {
@@ -43,7 +44,7 @@ const AddressForm = ({ route }) => {
           setCity(data.localidade);
           setState(data.uf);
           setNeighborhood(data.bairro || '');
-          setIsCepSearched(true); // Define como verdadeiro após a pesquisa
+          setIsCepSearched(true);
         } else {
           Alert.alert('Erro', 'CEP não encontrado.');
           clearFields();
@@ -63,7 +64,7 @@ const AddressForm = ({ route }) => {
     setNeighborhood('');
     setStreet('');
     setNumber('');
-    setIsCepSearched(false); // Reseta o estado ao limpar campos
+    setIsCepSearched(false);
     setNoComplement(false);
   };
 
@@ -86,7 +87,6 @@ const AddressForm = ({ route }) => {
       if (data.length > 0 && data[0].lat && data[0].lon) {
         const latitude = parseFloat(data[0].lat);
         const longitude = parseFloat(data[0].lon);
-        // Alert.alert('Endereço encontrado', `Latitude: ${latitude}, Longitude: ${longitude}`);
         navigation.navigate('MapScreen', { address, latitude, longitude, complement, referencePoint, zip, street, number, neighborhood, city, state, isVisualize: false });
       } else {
         Alert.alert('Aviso', 'Endereço não encontrado.');
@@ -133,22 +133,21 @@ const AddressForm = ({ route }) => {
         <TextInputMask
           type={'custom'}
           options={{
-            mask: '99999999', // Máscara do telefone
+            mask: '99999999',
           }}
           placeholder='Informe o CEP'
           style={styles.zipInput}
           value={zip}
           onChangeText={setZip}
-          placeholderTextColor={COLORS.darkGrey}
-          keyboardType='phone-pad' // Define o teclado para números
-          maxLength={8} // Limita o tamanho do campo
+          placeholderTextColor={COLORS.border}
+          keyboardType='phone-pad'
+          maxLength={8}
         />
         <TouchableOpacity style={styles.searchButton} onPress={handleZipChange}>
           <Icon name="search" size={20} color={COLORS.white} />
         </TouchableOpacity>
       </View>
 
-      {/* Condiciona a exibição dos campos de cidade e estado */}
       {isCepSearched && (
         <View style={styles.rowContainer}>
           <View style={styles.halfContainer}>
@@ -235,77 +234,6 @@ const AddressForm = ({ route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: COLORS.dark,
-  },
-  zipContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  zipInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: COLORS.grey,
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-    backgroundColor: COLORS.white,
-  },
-  searchButton: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: {
-    marginBottom: 5,
-    fontSize: 16,
-    color: COLORS.dark,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: COLORS.grey,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: COLORS.white,
-  },
-  rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  halfContainer: {
-    flex: 1,
-    marginRight: 10,
-  },
-  switch: {
-    alignSelf: 'center',
-  },
-  confirmButton: {
-    backgroundColor: COLORS.primary,
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  confirmButtonText: {
-    color: COLORS.white,
-    fontSize: 18,
-  },
-  disabledButton: {
-    backgroundColor: COLORS.grey,
-  },
-});
+
 
 export default AddressForm;

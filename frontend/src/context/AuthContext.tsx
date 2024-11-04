@@ -10,6 +10,7 @@ type AuthContextData = {
     loading: boolean;
     signOut: () => Promise<void>;
     setUser: (user: UserProps) => void;
+    verificarUser: () => Promise<void>;
 }
 
 type UserProps = {
@@ -40,38 +41,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email: '',
         phone: '',
         token: '',
-        isAdmin: null,
-        profileImage: '', // Inicializar a propriedade profileImage
+        isAdmin: false,
+        profileImage: '',
     });
 
     const [loadingAuth, setLoadingAuth] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const isAuthenticated = !!user.name;
+    const isAuthenticated = !!user.token; // Verifique se o token está presente
 
     useEffect(() => {
-        async function getUser() {
-            // Pegar os dados do usuário no storage
+        async function loadUserData() {
             const userInfo = await AsyncStorage.getItem('@token');
-            let hasUser: UserProps = JSON.parse(userInfo || '{}');
+            const hasUser: UserProps = JSON.parse(userInfo || '{}');
 
-            // Verificar se recebemos as informações
-            if (Object.keys(hasUser).length > 0) {
+            if (hasUser.token) {
                 api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
                 setUser(hasUser);
             }
+
             setLoading(false);
         }
 
-        getUser();
+        loadUserData();
     }, []);
 
     async function signIn({ email, password }: SignInProps) {
         setLoadingAuth(true);
         try {
             const response = await api.post('/login', { email, password });
-            console.log('Login response:', response.data);
-
             const { token, user } = response.data;
             const { id, name, phone, isAdmin, profileImage } = user;
 
@@ -86,49 +83,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
             };
 
             await AsyncStorage.setItem('@token', JSON.stringify(data));
-            console.log('Stored user data:', data);
-
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(data);
-
-            setLoadingAuth(false);
-        } catch (err) {
-            console.log('Error during sign in:', err);
+        } catch (error) {
+            console.error('Error during sign in:', error);
+        } finally {
             setLoadingAuth(false);
         }
     }
 
-    async function getUser() {
+    async function verificarUser() {
         const userInfo = await AsyncStorage.getItem('@token');
         const hasUser: UserProps = JSON.parse(userInfo || '{}');
 
-        console.log('Retrieved user info from storage:', hasUser);
-
         if (hasUser.token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
-            setUser(hasUser);
-        } else {
-            console.log('No token found, user is not authenticated');
-        }
 
-        setLoading(false);
+            try {
+                const response = await api.get('/user');
+                const userData = { ...response.data, token: hasUser.token }; // Mantenha o token
+                setUser(userData);
+                await AsyncStorage.setItem('@token', JSON.stringify(userData));
+            } catch (error) {
+                console.error('Error getting user data:', error);
+                // Aqui você pode querer tratar a expiração do token, se necessário
+            }
+        }
     }
 
-
-
     async function signOut() {
-        await AsyncStorage.clear()
-            .then(() => {
-                setUser({
-                    id: '',
-                    name: '',
-                    email: '',
-                    token: '',
-                    phone: '',
-                    isAdmin: null,
-                    profileImage: '', // Limpar a URL da imagem de perfil
-                });
-            });
+        await AsyncStorage.clear();
+        setUser({
+            id: '',
+            name: '',
+            email: '',
+            phone: '',
+            token: '',
+            isAdmin: false,
+            profileImage: '',
+        });
     }
 
     return (
@@ -140,7 +133,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 loading,
                 loadingAuth,
                 signOut,
-                setUser
+                setUser,
+                verificarUser,
             }}
         >
             {children}

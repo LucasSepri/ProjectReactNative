@@ -37,11 +37,11 @@ export default StyleSheet.create({
     orderText: {
         fontSize: 16,
         marginBottom: 8,
-        color: COLORS.grey,
+        color: COLORS.black,
     },
     label: {
         fontWeight: 'bold',
-        color: COLORS.darkGrey,
+        color: COLORS.text,
     },
     itemContainer: {
         backgroundColor: COLORS.white,
@@ -51,7 +51,7 @@ export default StyleSheet.create({
     },
     itemText: {
         fontSize: 16,
-        color: COLORS.grey,
+        color: COLORS.text,
     },
     button: {
         backgroundColor: COLORS.primary,

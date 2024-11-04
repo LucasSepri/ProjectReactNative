@@ -3,25 +3,23 @@ import prismaClient from '../../prisma';
 interface CreateOrderRequest {
   user_id: string;
   deliveryType: 'Endereço' | 'Mesa';
-  deliveryAddress?: string; // Se for "Endereço", precisaremos deste campo
-  tableNumber?: string; // Se for "Mesa", precisaremos deste campo
-  observation?: string; // Campo opcional para observações
+  deliveryAddress?: string; // Texto do endereço completo para o caso de "Endereço"
+  tableNumber?: string;
+  observation?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 class CreateOrderService {
-  async execute({ user_id, deliveryType, deliveryAddress, tableNumber, observation }: CreateOrderRequest) {
-    // Verifica se as informações de entrega estão corretas
+  async execute({ user_id, deliveryType, deliveryAddress, tableNumber, observation, latitude, longitude }: CreateOrderRequest) {
     if (deliveryType === 'Endereço' && !deliveryAddress) {
       throw new Error('Endereço de entrega não fornecido.');
     }
 
-    if (deliveryType === 'Mesa' && !tableNumber) {
-      throw new Error('Número da mesa não fornecido.');
-    }
-
-    // Recupera o usuário para pegar o nome e o e-mail
+    // Recupera o usuário para pegar o nome, e-mail e telefone
     const user = await prismaClient.user.findUnique({
       where: { id: user_id },
+      select: { name: true, email: true, phone: true },
     });
 
     if (!user) {
@@ -47,25 +45,28 @@ class CreateOrderService {
     const order = await prismaClient.order.create({
       data: {
         user_id,
-        userName: user.name, // Nome do cliente
-        userEmail: user.email, // Email do cliente
+        userName: user.name,
+        userEmail: user.email,
+        userPhone: user.phone,
         status: 'Criado',
         totalPrice,
         deliveryType,
-        deliveryAddress: deliveryType === 'Endereço' ? deliveryAddress : null, // Endereço de entrega
-        tableNumber: deliveryType === 'Mesa' ? tableNumber : null, // Número da mesa
-        observation, // Inclui a observação aqui
+        deliveryAddress: deliveryType === 'Endereço' ? deliveryAddress : null,
+        latitude: latitude, // Usa latitude fornecida no corpo da requisição
+        longitude: longitude, // Usa longitude fornecida no corpo da requisição
+        tableNumber: deliveryType === 'Mesa' ? tableNumber : null,
+        observation,
         items: {
           create: cart.items.map((cartItem) => ({
             product_id: cartItem.product_id,
             amount: cartItem.amount,
-            product_name: cartItem.product.name, // Nome do produto
-            product_price: cartItem.product.price, // Preço do produto
+            product_name: cartItem.product.name,
+            product_price: cartItem.product.price,
           })),
         },
       },
       include: {
-        items: true, // Inclui os itens no retorno
+        items: true,
       },
     });
 
@@ -77,5 +78,6 @@ class CreateOrderService {
     return order;
   }
 }
+
 
 export default new CreateOrderService();

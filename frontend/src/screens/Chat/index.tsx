@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     },
     messageList: {
         padding: 10,
-        backgroundColor: COLORS.lightGrey,
+        backgroundColor: COLORS.background,
     },
     messageContainer: {
         backgroundColor: '#fff',

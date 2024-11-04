@@ -5,6 +5,7 @@ import { isAdmin } from './middlewares/isAdmin';
 import upload from './config/multer';
 
 /* ---- Usuário Controller ---- */
+import userProtectController from './controllers/user/UserProtectController';
 import CreateUserController from './controllers/user/CreateUserController';
 import LoginUserController from './controllers/user/LoginUserController';
 import UpdateUserController from './controllers/user/UpdateUserController';
@@ -60,6 +61,10 @@ router.get('/users', isAuthenticated, isAdmin, ListUsersController.handle);
 router.put('/users/promote/:id', isAuthenticated, isAdmin, PromoteUserController.handle);
 // Rota para revogar status de administrador
 router.put('/users/revoke/:id', isAuthenticated, isAdmin, RevokeAdminController.handle);
+// Rota para obter os dados do usuário, protegida pelo middleware
+router.get('/user', isAuthenticated, userProtectController.getUserData.bind(userProtectController));
+
+
 
 /* --------- ENDEREÇOS --------- */
 // Rota para criar um endereço

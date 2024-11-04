@@ -7,7 +7,7 @@ import { COLORS } from "../styles/COLORS";
 
 // Telas
 import AdminCategorias from "../screens/Admin/Categorias";
-import Perfil from "../screens/Perfil";
+import Perfil from "../screens/Profile";
 import AdminProdutos from "../screens/Admin/Produtos";
 import ListUsers from "../screens/Admin/ListaUsuarios";
 

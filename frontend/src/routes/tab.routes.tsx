@@ -2,14 +2,11 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-// Contexto
-import { useTable } from '../context/TableContext';
-
 // Telas
 import Home from '../screens/Home';
 import Pedidos from '../screens/Orders';
-import Carrinho from '../screens/Carrinho';
-import Favoritos from '../screens/Favoritos';
+import Carrinho from '../screens/Cart';
+import Favoritos from '../screens/Favorites';
 import Chat from '../screens/Chat';
 
 
@@ -19,7 +16,6 @@ import CustomTabBar from '../components/CustomTabBar';
 const Tab = createBottomTabNavigator();
 
 export default function TabRoutes() {
-    // const { tableNumber, clearTable } = useTable();
 
     return (
         <Tab.Navigator

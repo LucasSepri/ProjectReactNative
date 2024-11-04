@@ -3,8 +3,8 @@ import prismaClient from '../../prisma';
 
 class ListCartItemsService {
   async execute(user_id: string) {
-    // Encontra o carrinho do usuário, incluindo os itens e os produtos
-    const cart = await prismaClient.cart.findUnique({
+    // Verifica se o carrinho do usuário existe
+    let cart = await prismaClient.cart.findUnique({
       where: {
         user_id,
       },
@@ -17,18 +17,33 @@ class ListCartItemsService {
       },
     });
 
+    // Se não encontrar o carrinho, cria um novo carrinho vazio
     if (!cart) {
-      throw new Error('Carrinho não encontrado.');
+      cart = await prismaClient.cart.create({
+        data: {
+          user_id,
+          items: {
+            create: [], // Ensure items are created as an empty array
+          },
+        },
+        include: {
+          items: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
     }
 
-    // Calcula o valor total
+    // Calcula o valor total (será zero se o carrinho estiver vazio)
     const totalPrice = cart.items.reduce((total, item) => {
-      return total + item.amount * item.product.price; // Multiplica a quantidade pelo preço do produto
+      return total + item.amount * item.product.price;
     }, 0);
 
     return {
       cart,
-      totalPrice, // Retorna o total calculado
+      totalPrice,
     };
   }
 }

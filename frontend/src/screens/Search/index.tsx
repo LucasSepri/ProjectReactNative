@@ -8,6 +8,11 @@ import { api } from '../../services/api';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
 
+type CategoryProps = {
+  id: string;
+  name: string;
+};
+
 type ProductProps = {
   price: string;
   ingredients: string;
@@ -15,12 +20,12 @@ type ProductProps = {
   banner: string;
   id: string;
   name: string;
+  category: {
+    name: string;
+  };
 };
 
-type CategoryProps = {
-  id: string;
-  name: string;
-};
+
 
 type NavigationProp = NativeStackNavigationProp<StackParamList, 'ProductDetails'>;
 
@@ -100,6 +105,13 @@ const PizzaScreen = () => {
     navigation.navigate('ProductDetails', { product, category: categorySelected });
   };
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    }
+    return text;
+  };
+
   const renderProductItem = ({ item }: { item: ProductProps }) => (
     <TouchableOpacity
       style={styles.foodItem}
@@ -107,17 +119,18 @@ const PizzaScreen = () => {
     >
       <View style={styles.imageContainer}>
         <Image
-          // source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
           source={imageError[item.id]
             ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
             : { uri: `${api.defaults.baseURL}${item.banner}` }}
           onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))} // Marca o erro para este produto
-
           style={styles.image} />
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.ingredients}>{item.description}</Text>
+        <Text style={styles.category}>{item.category.name}</Text>
+        <Text style={styles.ingredients} numberOfLines={2}>
+          {truncateText(item.description, 100)} {/* Limite de 100 caracteres */}
+        </Text>
         <Text style={styles.price}>R$ {item.price}</Text>
       </View>
     </TouchableOpacity>
@@ -125,40 +138,44 @@ const PizzaScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color={COLORS.grey} style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Procure..."
-          value={searchQuery}
-          onChangeText={handleSearch}
-        />
-      </View>
+      <View style={styles.headerFilter}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Procure..."
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
 
-      <View style={styles.categoriasContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesListContainer}
-          ref={scrollViewRef}
-        >
-          {categories.map((item, index) => {
-            const iconForCategory = categoryIcons[item.name] || 'fast-food';
-            return (
-              <TouchableOpacity
-                key={item.id}
-                style={[
-                  styles.categoryButton,
-                  item.id === categorySelected?.id && styles.selectedCategoryButton,
-                ]}
-                onPress={() => handleChangeCategory(item, index)}
-              >
-                <Ionicons name={iconForCategory} style={styles.iconeCategorias} />
-                <Text style={styles.categoryButtonText}>{item.name}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <View style={styles.categoriasContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoriesListContainer}
+            ref={scrollViewRef}
+          >
+            {categories.map((item, index) => {
+              const iconForCategory = categoryIcons[item.name] || 'fast-food';
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[
+                    styles.categoryButton,
+                    item.id === categorySelected?.id && styles.selectedCategoryButton,
+                  ]}
+                  onPress={() => handleChangeCategory(item, index)}
+                >
+                  <Ionicons name={iconForCategory} style={[
+                    styles.iconeCategorias, item.id === categorySelected?.id && { color: COLORS.white }
+                  ]} />
+                  <Text style={[styles.categoryButtonText, item.id === categorySelected?.id && { color: COLORS.white }]}>{item.name}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
       </View>
 
       {loadingProducts ? (
@@ -173,7 +190,5 @@ const PizzaScreen = () => {
     </View>
   );
 };
-
-
 
 export default PizzaScreen;

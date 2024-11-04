@@ -62,7 +62,7 @@ const OrdemScreen = ({ navigation }) => {
         <Text style={styles.orderText}>Ordem ID: {item.id}</Text>
         <Text style={styles.orderText}>Status: {item.status}</Text>
         <Text style={styles.orderText}>Preço Total: R$ {item.totalPrice.toFixed(2)}</Text>
-        <Text style={styles.orderText}>Data: {orderDate.toLocaleDateString()} {orderDate.toLocaleTimeString()}</Text>
+        <Text style={styles.orderText}>Data: {orderDate.toLocaleDateString('pt-BR')} {orderDate.toLocaleTimeString()}</Text>
 
         {item.status === 'Criado' && (
           <TouchableOpacity
@@ -75,6 +75,7 @@ const OrdemScreen = ({ navigation }) => {
       </TouchableOpacity>
     );
   };
+
 
   const filterOrdersByDate = () => {
     const filteredOrders = allOrders.filter(order => {
@@ -93,11 +94,12 @@ const OrdemScreen = ({ navigation }) => {
         <Text style={styles.filterTitle}>Filtrar por Data:</Text>
         <View style={styles.datePickerContainer}>
           <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartPicker(true)}>
-            <Text style={styles.dateButtonText}>Data de Início: {startDate.toLocaleDateString()}</Text>
+            <Text style={styles.dateButtonText}>Data de Início: {startDate.toLocaleDateString('pt-BR')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.dateButton} onPress={() => setShowEndPicker(true)}>
-            <Text style={styles.dateButtonText}>Data de Fim: {endDate.toLocaleDateString()}</Text>
+            <Text style={styles.dateButtonText}>Data de Fim: {endDate.toLocaleDateString('pt-BR')}</Text>
           </TouchableOpacity>
+
         </View>
 
         <TouchableOpacity style={styles.filterButton} onPress={filterOrdersByDate}>

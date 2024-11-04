@@ -10,10 +10,10 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
-
 import { AuthContext } from '../../context/AuthContext';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignIn() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
@@ -46,23 +46,31 @@ export default function SignIn() {
             <Text style={styles.subTitle}>Faça login para continuar</Text>
 
             <View style={styles.inputContainer}>
-                <TextInput
-                    placeholder="Email"
-                    style={styles.input}
-                    placeholderTextColor={COLORS.darkGrey}
-                    value={email}
-                    autoCapitalize="none"
-                    onChangeText={setEmail}
-                />
-                <TextInput
-                    placeholder="Senha"
-                    style={styles.input}
-                    placeholderTextColor={COLORS.darkGrey}
-                    secureTextEntry
-                    value={password}
-                    autoCapitalize="none"
-                    onChangeText={setPassword}
-                />
+                <View style={styles.inputWrapper}>
+                    <Ionicons name="mail-outline" size={24} color={COLORS.primary} style={styles.icon} />
+                    <TextInput
+                        placeholder="Email"
+                        style={styles.input}
+                        placeholderTextColor={COLORS.text}
+                        value={email}
+                        autoCapitalize="none"
+                        onChangeText={setEmail}
+                    />
+                </View>
+                <View style={styles.passwordContainer}>
+                    <View style={styles.inputWrapper}>
+                        <Ionicons name="lock-closed-outline" size={24} color={COLORS.primary} style={styles.icon} />
+                        <TextInput
+                            placeholder="Senha"
+                            style={styles.input}
+                            placeholderTextColor={COLORS.text}
+                            secureTextEntry
+                            value={password}
+                            autoCapitalize="none"
+                            onChangeText={setPassword}
+                        />
+                    </View>
+                </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
                     {loadingAuth ? (

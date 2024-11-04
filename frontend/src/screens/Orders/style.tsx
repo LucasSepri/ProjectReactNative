@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     marginBottom: 20,
     padding: 10,
-    backgroundColor: COLORS.lightGrey,
+    backgroundColor: COLORS.background,
     borderRadius: 8,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 1 },
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.darkGrey,
+    color: COLORS.text,
     marginBottom: 10,
   },
   datePickerContainer: {
@@ -75,11 +75,11 @@ const styles = StyleSheet.create({
   orderText: {
     fontSize: 16,
     marginBottom: 4,
-    color: COLORS.darkGrey,
+    color: COLORS.text,
   },
   cancelButton: {
     marginTop: 10,
-    backgroundColor: COLORS.red,
+    backgroundColor: COLORS.danger,
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginTop: 20,
-    color: COLORS.grey,
+    color: COLORS.text,
   },
 });
 

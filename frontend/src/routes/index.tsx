@@ -16,25 +16,16 @@ function Routes() {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: COLORS.dark,
+                    backgroundColor: COLORS.background,
                     justifyContent: "center",
                     alignItems: "center"
                 }}
             >
-                <ActivityIndicator size={60} color={COLORS.white} />
+                <ActivityIndicator size={60} color={COLORS.primary} />
             </View>
         );
     }
 
-    /* if (!isAuthenticated) {
-        return <AppRoutes />;
-    } else {
-        if (user.isAdmin == true) {
-            return <AdminRoutes />;
-        } else {
-            return <AppRoutes />;
-        }
-    } */
     if (!isAuthenticated) {
         return <AppRoutes />;
     }

@@ -130,18 +130,10 @@ const PerfilEnderecoScreen = () => {
                 </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleRemoveAddress(item.id)}>
-                <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                <MaterialIcons name="delete" size={24} color={COLORS.danger} />
             </TouchableOpacity>
         </View>
     );
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLORS.primary} />
-            </View>
-        );
-    }
 
     return (
         <View style={styles.screenContainer}>
@@ -176,12 +168,18 @@ const PerfilEnderecoScreen = () => {
             <View style={styles.divider}>
                 <View style={styles.addressHeader}>
                     <Text style={styles.addressHeaderText}>ENDEREÇOS</Text>
-                    <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Endereco')}>
-                        <Text style={styles.addButtonText}>Adicionar Endereço</Text>
-                    </TouchableOpacity>
+                    {loading ? null : (
+                        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Endereco')}>
+                            <Text style={styles.addButtonText}>Adicionar Endereço</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
-                {addresses.length === 0 ? (
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={COLORS.primary} />
+                    </View>
+                ) : addresses.length === 0 ? (
                     <View style={styles.emptyAddressContainer}>
                         <Text style={styles.emptyAddressTitle}>Nenhum endereço cadastrado.</Text>
                         <Text style={styles.emptyAddressText}>Toque no botão acima para adicionar um endereço.</Text>
@@ -194,6 +192,9 @@ const PerfilEnderecoScreen = () => {
                         contentContainerStyle={styles.addressListContainer}
                     />
                 )}
+
+
+
             </View>
         </View>
     );

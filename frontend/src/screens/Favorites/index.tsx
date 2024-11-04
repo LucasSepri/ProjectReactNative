@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, FlatList, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,19 +16,20 @@ type ProductProps = {
   banner: string;
   id: string;
   name: string;
-};
-
-type CategoryProps = {
-  id: string;
-  name: string;
+  category: {
+    name: string;
+  };
 };
 
 type NavigationProp = NativeStackNavigationProp<StackParamList, 'ProductDetails'>;
 
-const PizzaScreen = () => {
+const truncateText = (text: string, maxLength: number) => {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+};
+
+const FavoritesScreen = () => {
   const { isAuthenticated, user } = useContext(AuthContext);
-  const [categories, setCategories] = useState<CategoryProps[]>([]);
-  const [categorySelected, setCategorySelected] = useState<CategoryProps | null>(null);
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,40 +38,25 @@ const PizzaScreen = () => {
   const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', loadCategories);
+    const unsubscribe = navigation.addListener('focus', loadProducts);
     return unsubscribe;
   }, [navigation]);
-
-  useEffect(() => {
-    loadProducts();
-  }, [categorySelected]);
-
-  const loadCategories = async () => {
-    try {
-      const response = await api.get('/categories');
-      setCategories([{ id: 'all', name: 'Todos' }, ...response.data]);
-      setCategorySelected({ id: 'all', name: 'Todos' });
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const loadProducts = async () => {
     setLoadingProducts(true);
     if (JSON.stringify(user.name) === '""') {
       setProducts([]);
-      return setLoadingProducts(false);
-    } else {
-      try {
-        const response = await api.get(categorySelected && categorySelected.id !== 'all'
-          ? `/products/${categorySelected.id}`
-          : '/favorites');
-        setProducts(response.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoadingProducts(false);
-      }
+      setLoadingProducts(false);
+      return;
+    }
+    
+    try {
+      const response = await api.get('/favorites');
+      setProducts(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingProducts(false);
     }
   };
 
@@ -83,32 +69,39 @@ const PizzaScreen = () => {
   };
 
   const handleProductPress = (product: ProductProps) => {
-    navigation.navigate('ProductDetails', { product, category: categorySelected });
+    navigation.navigate('ProductDetails', { product, category: 'defaultCategory' });
   };
 
   const renderProductItem = ({ item }: { item: ProductProps }) => (
-    <TouchableOpacity style={styles.foodItem} onPress={() => handleProductPress(item)}>
+    <TouchableOpacity
+      style={styles.foodItem}
+      onPress={() => handleProductPress(item)}
+    >
       <View style={styles.imageContainer}>
-        <Image 
-        source={imageError[item.id]
-          ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
-          : { uri: `${api.defaults.baseURL}${item.banner}` }}
-        onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))} // Marca o erro para este produto
-
-        style={styles.image} />
+        <Image
+          source={imageError[item.id]
+            ? require('../../assets/logo.png')
+            : { uri: `${api.defaults.baseURL}${item.banner}` }}
+          onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
+          style={styles.image}
+        />
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.ingredients}>{item.description}</Text>
+        <Text style={styles.category}>{item.category.name}</Text>
+        <Text style={styles.ingredients} numberOfLines={2}>
+          {truncateText(item.description, 100)} {/* Limite de 100 caracteres */}
+        </Text>
         <Text style={styles.price}>R$ {item.price}</Text>
       </View>
     </TouchableOpacity>
-  );
+);
+
 
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color={COLORS.darkGrey} style={styles.searchIcon} />
+        <Ionicons name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Procure..."
@@ -137,6 +130,5 @@ const PizzaScreen = () => {
   );
 };
 
+export default FavoritesScreen;
 
-
-export default PizzaScreen;

@@ -36,7 +36,7 @@ export default StyleSheet.create({
     },
     reloadIcon: {
         fontSize: 24,
-        color: COLORS.darkGrey,
+        color: COLORS.primary,
     },
     picker: {
         flex: 1,
@@ -53,7 +53,7 @@ export default StyleSheet.create({
     },
     uploadText: {
         fontSize: 18,
-        color: COLORS.grey,
+        color: COLORS.text,
     },
     image: {
         width: '100%',
@@ -63,7 +63,7 @@ export default StyleSheet.create({
     input: {
         padding: 10,
         // height: 50,
-        borderColor: COLORS.grey,
+        borderColor: COLORS.border,
         borderWidth: 1,
         marginBottom: 20,
         paddingLeft: 10,
@@ -90,11 +90,11 @@ export default StyleSheet.create({
     },
 
     submitButton: {
-        backgroundColor: COLORS.green, // Verde para criar/editar
+        backgroundColor: COLORS.success, // Verde para criar/editar
     },
 
     cancelButton: {
-        backgroundColor: COLORS.red, // Vermelho para cancelar
+        backgroundColor: COLORS.danger, // Vermelho para cancelar
     },
 
     buttonText: {
@@ -155,13 +155,13 @@ export default StyleSheet.create({
     },
     editButton: {
         padding: 5,
-        backgroundColor: COLORS.blue,
+        backgroundColor: COLORS.secondary,
         borderRadius: 5,
         marginRight: 10,
     },
     deleteButton: {
         padding: 5,
-        backgroundColor: COLORS.red,
+        backgroundColor: COLORS.danger,
         borderRadius: 5,
     },
     editButtonText: {
@@ -177,16 +177,16 @@ export default StyleSheet.create({
     productName: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.darkGrey, // Torna a cor do texto um pouco mais escura para melhor leitura
+        color: COLORS.primary, // Torna a cor do texto um pouco mais escura para melhor leitura
     },
     productDescription: {
         fontSize: 16,
-        color: COLORS.grey, // Cor mais leve para o texto
+        color: COLORS.text, // Cor mais leve para o texto
         marginVertical: 4, // Adiciona margem vertical para separar do título e ingredientes
     },
     productIngredients: {
         fontSize: 14,
-        color: COLORS.lightGrey,
+        color: COLORS.text,
         fontStyle: 'italic', // Estilo itálico para diferenciar dos outros textos
     },
     productCategory: {
@@ -197,6 +197,6 @@ export default StyleSheet.create({
     productPrice: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.blue, // Uma cor diferente para destacar o preço
+        color: COLORS.secondary, // Uma cor diferente para destacar o preço
     },
 });

@@ -25,22 +25,28 @@ export default StyleSheet.create({
     },
     subTitle: {
         fontSize: 14,
-        color: COLORS.darkGrey,
+        color: COLORS.black,
         marginBottom: 30,
     },
     inputContainer: {
         width: '100%',
     },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 8,
+        backgroundColor: COLORS.background,
+        marginBottom: 14,
+        elevation: 1, // Sombra leve para os campos de entrada
+    },
     input: {
-        backgroundColor: COLORS.lightGrey,
+        flex: 1,
         paddingVertical: 14,
         paddingHorizontal: 16,
-        borderRadius: 8,
         fontSize: 16,
-        color: COLORS.dark,
-        marginBottom: 14,
-        borderWidth: 1,
-        borderColor: COLORS.grey,
+        color: COLORS.text,
     },
     button: {
         backgroundColor: COLORS.primary,
@@ -66,5 +72,13 @@ export default StyleSheet.create({
         fontSize: 15,
         textAlign: 'center',
         textDecorationLine: 'underline',
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    icon: {
+        paddingHorizontal: 10,
     },
 });

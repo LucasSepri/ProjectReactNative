@@ -4,8 +4,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import EditarPerfil from "../screens/EditarPerfil";
 import AdminRoutes from "./drawer.routes";
-import MapScreen from "../screens/Mapa";
-import Endereco from "../screens/Endereco";
+import MapScreen from "../screens/Map";
+import Endereco from "../screens/Address";
 import { COLORS } from "../styles/COLORS";
 
 // Definindo os tipos de rotas
@@ -46,7 +46,7 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Editar Perfil",
                     headerStyle: {
-                        backgroundColor: COLORS.dark,
+                        backgroundColor: COLORS.background,
                     },
                     headerTintColor: COLORS.white,
                 }}

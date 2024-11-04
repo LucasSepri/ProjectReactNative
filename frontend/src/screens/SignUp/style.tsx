@@ -4,10 +4,14 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'center',
+        backgroundColor: COLORS.background,
+    },
+    scrollContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLORS.white,
         padding: 20,
+        flexGrow: 1,
     },
     title: {
         fontSize: 28,
@@ -17,7 +21,7 @@ const styles = StyleSheet.create({
     },
     subTitle: {
         fontSize: 14,
-        color: COLORS.darkGrey,
+        color: COLORS.text,
         marginBottom: 30,
     },
     imagePicker: {
@@ -30,9 +34,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
-    },
-    uploadText: {
-        color: COLORS.primary,
+        backgroundColor: COLORS.white, // Adicionando um fundo branco para o seletor de imagem
     },
     image: {
         width: '100%',
@@ -44,15 +46,11 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     input: {
-        backgroundColor: COLORS.lightGrey,
-        paddingVertical: 14,
-        paddingHorizontal: 16,
-        borderRadius: 8,
+        flex: 1,
+        height: 50,
+        color: COLORS.text,
         fontSize: 16,
-        color: COLORS.dark,
-        marginBottom: 14,
-        borderWidth: 1,
-        borderColor: COLORS.grey,
+        paddingHorizontal: 10,
     },
     button: {
         width: '100%',
@@ -60,13 +58,37 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 4,
+        borderRadius: 8,
+        elevation: 3, // Sombra para o botão
+        marginTop: 20,
     },
     buttonText: {
         color: COLORS.white,
         fontSize: 18,
         fontWeight: 'bold',
-    }
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.border,
+        borderRadius: 8,
+        backgroundColor: COLORS.background,
+        marginBottom: 14,
+        elevation: 1, // Sombra leve para os campos de entrada
+    },
+    icon: {
+        paddingHorizontal: 10,
+    },
+    eyeIcon: {
+        paddingHorizontal: 10,
+    },
 });
 
 export default styles;
