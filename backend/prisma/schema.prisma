@@ -1,14 +1,18 @@
 //criar uma migration: yarn prisma migrate dev 
 // Redefina o banco de dados: yarn prisma migrate reset
+
+// Gerador do Cliente Prisma
 generator client {
   provider = "prisma-client-js"
 }
 
+// Fonte de Dados
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// Tabela de Usuários
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -20,10 +24,9 @@ model User {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  orders    Order[] // Remover `@relation(onDelete: SetNull)`
+  orders    Order[] // Relacionamento com pedidos
   favorites Favorite[] // Relacionamento com produtos favoritos
   cart      Cart? // Relacionamento com carrinho
-
   addresses address[] // Relacionamento com endereços
 }
 
@@ -41,7 +44,7 @@ model Category {
 model Product {
   id          String   @id @default(uuid())
   name        String
-  price       Float // Mudamos para Float, para evitar problemas de precisão com valores monetários
+  price       Float // Para valores monetários
   description String
   banner      String // URL da imagem do produto
   created_at  DateTime @default(now())
@@ -55,6 +58,7 @@ model Product {
   favorites  Favorite[] // Relacionamento com favoritos
 }
 
+// Tabela de Pedidos (Ordem)
 // Tabela de Pedidos (Ordem)
 model Order {
   id              String   @id @default(uuid())
@@ -71,10 +75,12 @@ model Order {
   longitude       Float // Coordenada de longitude do endereço
   tableNumber     String? // Número da mesa, caso seja no estabelecimento
   observation     String? // Campo opcional para observações do pedido
+  paymentMethod   String? // Nome do método de pagamento utilizado (ex: "Cartão de Crédito", "Pix")
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
-  items Item[] // Relacionamento com itens de pedidos
+  items    Item[] // Relacionamento com itens de pedidos
+  payments OrderPayment[] // Relacionamento com pagamentos do pedido
 }
 
 // Tabela de Itens de Pedidos
@@ -85,20 +91,20 @@ model Item {
   product_price Float // Preço do produto no momento da compra
 
   created_at DateTime @default(now())
-  updated_at DateTime @default(now()) @updatedAt
+  updated_at DateTime @updatedAt
 
-  order    Order  @relation(fields: [order_id], references: [id], onDelete: Cascade) // Adicione onDelete: Cascade aqui
+  order    Order  @relation(fields: [order_id], references: [id], onDelete: Cascade) // onDelete: Cascade
   order_id String // FK do pedido
 
   product    Product? @relation(fields: [product_id], references: [id], onDelete: SetNull)
-  product_id String? // FK do produto (opcional, pode ser null após exclusão do produto)
+  product_id String? // FK do produto (opcional)
 }
 
 // Tabela de Carrinho
 model Cart {
   id         String     @id @default(uuid())
   user       User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id    String     @unique // Garantir que cada usuário tenha apenas um carrinho
+  user_id    String     @unique // Cada usuário tem apenas um carrinho
   items      CartItem[] // Relacionamento com os itens do carrinho
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
@@ -144,4 +150,34 @@ model address {
 
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id String
+}
+
+// Tabela de Métodos de Pagamento
+model PaymentMethod {
+  id         String       @id @default(uuid())
+  name       String       @unique // Nome do método de pagamento (ex: Cartão de Crédito, Pix)
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  // Relacionamentos com a tabela OrderPayment
+  intendedPayments  OrderPayment[] @relation("IntendedPayment")  // Relacionamento com o pagamento pretendido
+  actualPayments    OrderPayment[] @relation("ActualPayment")    // Relacionamento com o pagamento efetivo
+}
+
+// Tabela de Pagamentos de Pedidos
+model OrderPayment {
+  id               String       @id @default(uuid())
+  order            Order        @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id         String       // FK do pedido
+
+  // Método de pagamento pretendido (opcional)
+  intendedPayment  PaymentMethod? @relation("IntendedPayment", fields: [intended_payment_id], references: [id], onDelete: SetNull)
+  intended_payment_id String?    // FK do método de pagamento pretendido
+
+  // Método de pagamento efetivo (opcional)
+  actualPayment    PaymentMethod? @relation("ActualPayment", fields: [actual_payment_id], references: [id], onDelete: SetNull)
+  actual_payment_id String?     // FK do método de pagamento efetivo
+
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
 }

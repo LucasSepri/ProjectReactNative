@@ -54,6 +54,11 @@ export default StyleSheet.create({
         fontSize: 16,
         color: COLORS.text,
     },
+    errorText:{
+        color: COLORS.danger,
+        fontSize: 14,
+        textAlign: 'center',
+    },
     button: {
         backgroundColor: COLORS.primary,
         paddingVertical: 16,

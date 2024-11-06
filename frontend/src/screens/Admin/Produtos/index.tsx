@@ -279,18 +279,21 @@ const App = () => {
                 autoCapitalize='none'
                 style={styles.input}
             />
-
-            <TextInput
-                placeholder='Descrição do produto'
-                placeholderTextColor={COLORS.black}
-                value={productDescription}
-                onChangeText={setProductDescription}
-                autoCapitalize='none'
-                style={styles.input}
-                multiline={true} // Permite várias linhas
-                numberOfLines={5} // Número de linhas visíveis
-                maxLength={200} // Limite de caracteres
-            />
+            <View style={styles.inpultContainer}>
+                <TextInput
+                    placeholder="Observações (opcional)"
+                    value={productDescription}
+                    onChangeText={setProductDescription}
+                    style={styles.inputDescription}
+                    multiline={true}
+                    numberOfLines={3}
+                    textAlignVertical="top"
+                    maxLength={400}
+                />
+                <Text style={styles.charCountText}>
+                    {400 - productDescription.length} caracteres restantes
+                </Text>
+            </View>
 
             <View style={styles.buttonContainer}>
                 {/* Botão de Criar/Editar Produto */}

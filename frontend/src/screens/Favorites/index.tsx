@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, TextInput, FlatList, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
-import { api } from '../../services/api';
-import { AuthContext } from '../../context/AuthContext';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
 import DefaultLogoImage from '../../components/Logo';
+import { api } from '../../services/api';
+import { AuthContext } from '../../context/AuthContext';
 
 type ProductProps = {
   price: string;
@@ -25,57 +25,62 @@ type ProductProps = {
 type NavigationProp = NativeStackNavigationProp<StackParamList, 'ProductDetails'>;
 
 const truncateText = (text: string, maxLength: number) => {
-  if (text.length <= maxLength) return text;
+  if (text.length <= maxLength) {
+    return text;
+  }
   return text.substring(0, maxLength) + '...';
 };
 
 const FavoritesScreen = () => {
   const { isAuthenticated, user } = useContext(AuthContext);
-  const [products, setProducts] = useState<ProductProps[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<ProductProps[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState<ProductProps[]>([]);
+  const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
 
   const navigation = useNavigation<NavigationProp>();
 
-  useEffect(() => {
-    loadProducts();
-    const unsubscribe = navigation.addListener('focus', loadProducts);
-    return unsubscribe;
-  }, [navigation]);
+  // useFocusEffect busca favoritos toda vez que a tela ganha foco
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFavorites = async () => {
+        setLoading(true);
+        try {
+          const response = await api.get('/favorites', {
+            headers: {
+              'Authorization': `Bearer ${user.token}`, // Substitua `userToken` pelo token de autenticação
+            },
+          });
 
+          const data = response.data;
+          setFavorites(data);
+        } catch (error) {
+          console.error('Erro ao buscar favoritos:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-  const loadProducts = async () => {
-    setLoadingProducts(true);
-    if (!isAuthenticated || !user.name) {
-      setProducts([]);
-      setFilteredProducts([]);
-      setLoadingProducts(false);
-      return;
-    }
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      } else {
+        fetchFavorites();
+      }
+    }, [user.token]) // Atualiza caso o token do usuário mude
+  );
 
-    try {
-      const response = await api.get('/favorites');
-      setProducts(response.data);
-      setFilteredProducts(response.data); // Atualiza o estado de produtos filtrados
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
+  const filteredProducts = favorites.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(text.toLowerCase())
-    );
-    setFilteredProducts(filtered);
   };
 
   const handleProductPress = (product: ProductProps) => {
-    navigation.navigate('ProductDetails', { product, category: 'defaultCategory' });
+    navigation.navigate('ProductDetails', { product, category: product.category });
   };
 
   const renderProductItem = ({ item }: { item: ProductProps }) => (
@@ -88,7 +93,7 @@ const FavoritesScreen = () => {
           <DefaultLogoImage style={styles.image} />
         ) : (
           <Image
-            source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
+            source={{ uri: `${api.defaults.baseURL}` + item.banner }}
             onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
             style={styles.image}
           />
@@ -98,18 +103,19 @@ const FavoritesScreen = () => {
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.category}>{item.category.name}</Text>
         <Text style={styles.ingredients} numberOfLines={2}>
-          {truncateText(item.description, 100)} {/* Limite de 100 caracteres */}
+          {truncateText(item.description, 100)}
         </Text>
         <Text style={styles.price}>R$ {item.price}</Text>
       </View>
     </TouchableOpacity>
   );
 
+
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>
-        Favoritos
-      </Text>
+      <Text style={styles.header}>Favoritos</Text>
+
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
         <TextInput
@@ -119,23 +125,27 @@ const FavoritesScreen = () => {
           onChangeText={handleSearch}
         />
       </View>
-
-      {loadingProducts ? (
-        <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
-      ) : filteredProducts.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyMessage}>Você ainda não tem produtos favoritados.</Text>
-          <Text style={styles.emptyInstruction}>Favorite produtos para vê-los aqui!</Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
         </View>
       ) : (
-        <FlatList
-          data={filteredProducts}
-          renderItem={renderProductItem}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.productList}
-          showsVerticalScrollIndicator={false}
-        />
+        filteredProducts.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyMessage}>Você ainda não tem produtos favoritados.</Text>
+            <Text style={styles.emptyInstruction}>Favorite produtos para vê-los aqui!</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredProducts}
+            renderItem={renderProductItem}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.productList}
+            showsVerticalScrollIndicator={false}
+          />
+        )
       )}
+
     </View>
   );
 };

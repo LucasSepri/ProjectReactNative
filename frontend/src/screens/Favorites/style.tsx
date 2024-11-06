@@ -4,7 +4,13 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background,
+    paddingBottom: 90,
+  },
+  loadingContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     paddingVertical: 16,
@@ -83,9 +89,10 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   price: {
+    fontSize: 16,
     fontWeight: 'bold',
-    // textAlign: 'right',
     marginTop: 8,
+    color: COLORS.primary,
   },
   emptyContainer: {
     flex: 1,

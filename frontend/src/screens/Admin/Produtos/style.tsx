@@ -69,6 +69,25 @@ export default StyleSheet.create({
         paddingLeft: 10,
         backgroundColor: COLORS.white,
     },
+    inpultContainer: {
+        padding: 10,
+        borderColor: COLORS.border,
+        borderWidth: 1,
+        marginBottom: 20,
+        paddingLeft: 10,
+        backgroundColor: COLORS.white,
+    },
+    inputDescription: {
+        borderRadius: 5,
+        color: COLORS.text,
+    },
+
+    charCountText: {
+        color: COLORS.danger,
+        fontSize: 12,
+        marginTop: 5,
+        textAlign: 'right', // opcional, ajuste conforme necessário
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly', // Distribui o espaço de maneira equilibrada

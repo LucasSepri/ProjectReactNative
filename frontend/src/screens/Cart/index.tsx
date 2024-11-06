@@ -18,7 +18,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useTable } from '../../context/TableContext';
-import { set } from 'react-hook-form';
 import { useFocusEffect } from '@react-navigation/native';
 import DefaultLogoImage from '../../components/Logo';
 
@@ -312,16 +311,22 @@ const Carrinho = ({ navigation }) => {
 
       {cartItems.length > 0 && (
         <>
-          <TextInput
-            placeholder="Observações (opcional)"
-            value={observation}
-            onChangeText={setObservation}
-            style={styles.observationInput}
-            multiline={true}
-            numberOfLines={3}
-            textAlignVertical="top"
-            maxLength={100}
-          />
+          <View style={styles.observationContainer}>
+            <TextInput
+              placeholder="Observações (opcional)"
+              value={observation}
+              onChangeText={(text) => setObservation(text)}
+              style={styles.observationInput}
+              multiline={true}
+              numberOfLines={3}
+              textAlignVertical="top"
+              maxLength={400}
+            />
+            <Text style={styles.charCountText}>
+              {400 - observation.length} caracteres restantes
+            </Text> 
+          </View>
+
           <View style={styles.orderSummary}>
             {!loading ? (
               <TouchableOpacity onPress={handleOrderSubmit} style={styles.orderButton}>
@@ -333,10 +338,10 @@ const Carrinho = ({ navigation }) => {
                 <ActivityIndicator size={40} color={COLORS.white} style={styles.flatList} />
               </TouchableOpacity>
             )}
-
           </View>
         </>
       )}
+
     </SafeAreaView>
   );
 };

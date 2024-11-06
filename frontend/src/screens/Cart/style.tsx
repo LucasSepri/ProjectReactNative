@@ -161,19 +161,31 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  observationInput: {
+  observationContainer:{
     marginHorizontal: 16,
-    padding: 10,
     borderColor: COLORS.border,
     borderWidth: 1,
     borderRadius: 5,
     backgroundColor: COLORS.background,
+    padding: 10,
+  },
+  observationInput: {
+    borderRadius: 5,
     color: COLORS.text,
   },
+
+  charCountText: {
+    color: COLORS.danger,
+    fontSize: 12,
+    marginTop: 5,
+    textAlign: 'right', // opcional, ajuste conforme necessário
+  },
+
+
   flatList: {
     flexGrow: 1,
   },
-  textLoading:{
+  textLoading: {
     color: COLORS.primary,
     fontSize: 26,
     fontWeight: 'bold',

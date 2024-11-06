@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 400,
         aspectRatio: 1,
-        resizeMode: 'stretch',
+        resizeMode: 'cover',
     },
     button: {
         position: 'absolute',

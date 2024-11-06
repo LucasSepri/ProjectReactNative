@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import {
     View,
     Text,
-    Image,
     TextInput,
     TouchableOpacity,
     ActivityIndicator
@@ -23,12 +22,24 @@ export default function SignIn() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
 
     async function handleLogin() {
         if (email === '' || password === '') {
+            setErrorMessage('Por favor, preencha ambos os campos.');
             return;
         }
-        await signIn({ email, password });
+
+        try {
+            await signIn({ email, password });
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.error) {
+                setErrorMessage(error.response.data.error);
+            } else {
+                setErrorMessage('Erro ao tentar login. Por favor, tente novamente mais tarde.');
+                console.error('Error during sign in:', error);  // Log detalhado no console
+            }
+        }
     }
 
     useEffect(() => {
@@ -56,7 +67,10 @@ export default function SignIn() {
                         placeholderTextColor={COLORS.text}
                         value={email}
                         autoCapitalize="none"
-                        onChangeText={setEmail}
+                        onChangeText={(text) => {
+                            setEmail(text);
+                            setErrorMessage('');
+                        }}
                     />
                 </View>
                 <View style={styles.passwordContainer}>
@@ -69,13 +83,20 @@ export default function SignIn() {
                             secureTextEntry={showPassword}
                             value={password}
                             autoCapitalize='none'
-                            onChangeText={setPassword}
+                            onChangeText={(text) => {
+                                setPassword(text);
+                                setErrorMessage('');
+                            }}
                         />
                         <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
                             <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={COLORS.text} />
                         </TouchableOpacity>
                     </View>
                 </View>
+
+                {errorMessage ? (
+                    <Text style={styles.errorText}>{errorMessage}</Text>
+                ) : null}
 
                 <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
                     {loadingAuth ? (

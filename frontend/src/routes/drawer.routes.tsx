@@ -12,6 +12,7 @@ import AdminProdutos from "../screens/Admin/Produtos";
 import ListUsers from "../screens/Admin/ListaUsuarios";
 import QRCodeGenerator from "../screens/Admin/QrcodeGeneretor";
 import config from "../screens/Admin/Config";
+import PaymentMethods from "../screens/Admin/PaymentMethods";
 
 export type StackParamListAdmin = {
     AdminProdutos: undefined;
@@ -20,6 +21,7 @@ export type StackParamListAdmin = {
     ListUsers: undefined;
     QRCodeGenerator: undefined;
     Config: undefined;
+    PaymentMethods: undefined;
 }
 
 const Drawer = createDrawerNavigator<StackParamListAdmin>();
@@ -45,6 +47,9 @@ function AdminRoutes() {
                             break;
                         case 'AdminProdutos':
                             iconName = focused ? 'cube' : 'cube-outline';
+                            break;
+                        case 'PaymentMethods':
+                            iconName = focused ? 'card' : 'card-outline';
                             break;
                         case 'Perfil':
                             iconName = focused ? 'person' : 'person-outline';
@@ -82,6 +87,13 @@ function AdminRoutes() {
                 component={AdminProdutos}
                 options={{
                     title: "Controle de Produtos",
+                }}
+            />
+            <Drawer.Screen
+                name="PaymentMethods"
+                component={PaymentMethods}
+                options={{
+                    title: "Métodos de Pagamento",
                 }}
             />
             <Drawer.Screen

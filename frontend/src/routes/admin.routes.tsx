@@ -9,6 +9,7 @@ import MapScreen from "../screens/Map";
 import Endereco from "../screens/Address";
 import QrcodeGerneretor from "../screens/Admin/QrcodeGeneretor";
 import Config from "../screens/Admin/Config";
+import PaymentMethods from "../screens/Admin/PaymentMethods";
 
 
 // Definindo os tipos de rotas
@@ -32,6 +33,7 @@ export type StackParamList = {
     Endereco: undefined;
     QrcodeGerneretor: undefined;
     Config: undefined;
+    PaymentMethods: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -96,6 +98,17 @@ function AppRoutes() {
                     },
                     headerTintColor: COLORS.white,
                 }} />
+            <Stack.Screen
+                name="PaymentMethods"
+                component={PaymentMethods}
+                options={{
+                    title: "Métodos de Pagamento",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
+
 
         </Stack.Navigator>
     );

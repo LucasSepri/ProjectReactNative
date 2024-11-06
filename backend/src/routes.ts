@@ -40,7 +40,16 @@ import ListOrdersController from './controllers/order/ListOrdersController';
 import CancelOrderController from './controllers/order/CancelOrderController';
 import UpdateOrderStatusController from './controllers/order/UpdateOrderStatusController';
 import CheckFavoriteController from './controllers/favorite/CheckFavoriteController';
-import FindOrderController  from './controllers/order/FindOrderController';
+import FindOrderController from './controllers/order/FindOrderController';
+/* ---- Payment Methods Controller ---- */
+import {
+    createPaymentMethodController,
+    deletePaymentMethodController,
+    getPaymentMethodsController,
+    updatePaymentMethodController
+} from './controllers/paymentMethod/paymentMethodController';
+/* ---- Order Payment Controller ---- */
+import OrderPaymentController from './controllers/orderPayment/orderPaymentController';
 
 
 
@@ -96,7 +105,7 @@ router.post('/favorites', isAuthenticated, AddFavoriteController.handle);
 // Remover produto dos favoritos
 router.delete('/favorites/:productId', isAuthenticated, RemoveFavoriteController.handle);
 // Adicione a rota para verificar se um produto é favorito
-router.get('/favorites/:productId', isAuthenticated,CheckFavoriteController.handle);
+router.get('/favorites/:productId', isAuthenticated, CheckFavoriteController.handle);
 
 /* --------- CARRINHO --------- */
 // Adicionar item ao carrinho
@@ -115,13 +124,24 @@ router.get('/orders', isAuthenticated, ListOrdersController.handle);
 router.get('/orders/:id', FindOrderController.handle);
 router.delete('/orders/:order_id/cancel', isAuthenticated, CancelOrderController.handle);
 router.put('/orders/:order_id/status', isAuthenticated, isAdmin, UpdateOrderStatusController.handle);
-/* 
-crie:
-AddToCartController.ts
-ListCartItemsController.ts
-RemoveFromCartController.ts
 
-AddToCartService.ts
-ListCartItemsService.ts
-RemoveFromCartService.ts */
+/* -------- payment-methods --------- */
+// Criar um novo método de pagamento
+router.post('/payment-methods', isAuthenticated, isAdmin, createPaymentMethodController);
+// Buscar todos os métodos de pagamento
+router.get('/payment-methods', isAuthenticated, getPaymentMethodsController);
+// Atualizar um método de pagamento
+router.put('/payment-methods/:id', isAuthenticated, isAdmin,updatePaymentMethodController);
+// Excluir um método de pagamento
+router.delete('/payment-methods/:id', isAuthenticated, isAdmin,deletePaymentMethodController);
+
+
+/* -------- Order Payment --------  */
+// Rotas para criar, atualizar, buscar e deletar pagamentos
+router.put('/orderPayments/:id', isAuthenticated, OrderPaymentController.update);
+router.delete('/orderPayments/:id', isAuthenticated, OrderPaymentController.delete);
+router.post('/orderPayments', isAuthenticated, OrderPaymentController.create);
+router.get('/orderPayments', isAuthenticated, OrderPaymentController.getAll);
+router.get('/orderPayments/:id', isAuthenticated, OrderPaymentController.getById);
+
 export default router;

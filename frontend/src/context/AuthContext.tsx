@@ -71,7 +71,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const response = await api.post('/login', { email, password });
             const { token, user } = response.data;
             const { id, name, phone, isAdmin, profileImage } = user;
-
+    
             const data = {
                 id,
                 name,
@@ -81,16 +81,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 isAdmin,
                 profileImage,
             };
-
+    
             await AsyncStorage.setItem('@token', JSON.stringify(data));
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             setUser(data);
         } catch (error) {
-            console.error('Error during sign in:', error);
+            // console.error('Error during sign in:', error);
+            throw error;  
         } finally {
             setLoadingAuth(false);
         }
     }
+    
 
     async function verificarUser() {
         const userInfo = await AsyncStorage.getItem('@token');

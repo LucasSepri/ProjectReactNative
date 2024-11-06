@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         color: COLORS.primary,
         textAlign: 'center',
     },
-    noProductsTextSub:{
+    noProductsTextSub: {
         fontSize: 16,
         color: COLORS.secondary,
         textAlign: 'center',
@@ -118,11 +118,10 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 4,
-        color: COLORS.black,
     },
     category: {
         fontSize: 14,
-        color: COLORS.secondary,
+        color: COLORS.primary,
         marginBottom: 4,
     },
     ingredients: {
@@ -131,9 +130,9 @@ const styles = StyleSheet.create({
     },
     price: {
         fontWeight: 'bold',
-        textAlign: 'right',
         fontSize: 16,
         color: COLORS.primary,
+        marginTop: 8,
     },
 });
 

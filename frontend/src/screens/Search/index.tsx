@@ -32,6 +32,7 @@ const PizzaScreen = () => {
   const [categories, setCategories] = useState<CategoryProps[]>([]);
   const [categorySelected, setCategorySelected] = useState<CategoryProps | null>(null);
   const [products, setProducts] = useState<ProductProps[]>([]);
+  const [originalProducts, setOriginalProducts] = useState<ProductProps[]>([]); // Estado para armazenar os produtos originais
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [productSelected, setProductSelected] = useState<ProductProps | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,8 +79,16 @@ const PizzaScreen = () => {
             ? `/products/${categorySelected.id}`
             : '/products'
         );
-        setProducts(response.data);
-        setProductSelected(response.data[0]);
+
+        // Atualiza os produtos
+        const updatedProducts = response.data.map((product: ProductProps) => ({
+          ...product,
+          category: product.category || categorySelected,
+        }));
+
+        setProducts(updatedProducts);
+        setOriginalProducts(updatedProducts); // Salva os produtos originais
+        setProductSelected(updatedProducts[0]);  // Defina o primeiro produto como selecionado, se necessário
       } catch (error) {
         console.error(error);
       } finally {
@@ -92,10 +101,15 @@ const PizzaScreen = () => {
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
-    const filtered = products.filter(product =>
-      product.name.toLowerCase().includes(text.toLowerCase())
-    );
-    setProducts(filtered);
+    if (text === '') {
+      setProducts(originalProducts); // Restaura os produtos originais quando o campo de pesquisa estiver vazio
+    } else {
+      const filtered = originalProducts.filter(product =>
+        product.name.toLowerCase().includes(text.toLowerCase())||
+        product.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setProducts(filtered); // Aplica o filtro
+    }
   };
 
   function handleChangeCategory(item: CategoryProps | null, index?: number) {
@@ -134,7 +148,7 @@ const PizzaScreen = () => {
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.category}>{item.category?.name || 'Sem categoria'}</Text>
+        <Text style={styles.category}>{item.category.name}</Text>
         <Text style={styles.ingredients} numberOfLines={2}>
           {truncateText(item.description, 100)}
         </Text>
@@ -142,7 +156,6 @@ const PizzaScreen = () => {
       </View>
     </TouchableOpacity>
   );
-
 
   return (
     <View style={styles.container}>
