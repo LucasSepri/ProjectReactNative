@@ -113,7 +113,7 @@ const ProductDetails = ({ route }) => {
         <View style={styles.container}>
             <ScrollView >
                 <View style={styles.imageContainer}>
-                    {imageError[product.id] || !product.banner  ? (
+                    {imageError[product.id] || !product.banner ? (
                         <DefaultLogoImage style={styles.image} />
                     ) : (
                         <Image

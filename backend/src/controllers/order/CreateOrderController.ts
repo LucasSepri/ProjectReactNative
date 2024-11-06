@@ -2,33 +2,27 @@ import { Request, Response } from 'express';
 import CreateOrderService from '../../services/order/CreateOrderService';
 
 class CreateOrderController {
-  async handle(req: Request, res: Response) {
-    const user_id = req.user?.id; // ID do usuário autenticado
+  async handle(request: Request, response: Response) {
+    const { deliveryType, deliveryAddress, latitude, longitude, tableNumber, observation } = request.body;
+    const { id: userId } = request.user; // Supondo que o userId é extraído do token de autenticação
 
-    if (!user_id) {
-      return res.status(401).json({ error: 'Usuário não autenticado.' });
-    }
+    const createOrderService = new CreateOrderService();
 
-    const { deliveryType, deliveryAddress, tableNumber, observation, latitude, longitude } = req.body;
-
-    // Validação dos dados
-    if (!deliveryType) {
-      return res.status(400).json({ error: 'Tipo de entrega não informado.' });
-    }
     try {
-      const order = await CreateOrderService.execute({
-        user_id,
+      const order = await createOrderService.execute({
+        userId,
         deliveryType,
         deliveryAddress,
+        latitude,
+        longitude,
         tableNumber,
-        observation, // Passa a observação ao serviço
-        latitude, // Passa latitude
-        longitude // Passa longitude
+        observation,
       });
 
-      return res.status(201).json(order);
+      return response.status(201).json(order);
     } catch (error) {
-      return res.status(400).json({ error: error.message });
+      console.error('Erro ao criar o pedido:', error);
+      return response.status(400).json({ message: 'Erro ao criar o pedido', error: error.message });
     }
   }
 }

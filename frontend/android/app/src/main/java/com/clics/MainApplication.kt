@@ -1,4 +1,4 @@
-package com.sistem.clics
+package com.clics
 
 import android.app.Application
 import android.content.res.Configuration

@@ -74,7 +74,7 @@ const AddressForm = ({ route }) => {
     try {
       const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1&limit=1`, {
         headers: {
-          'User-Agent': 'SystemFood/1.0 (https://projectreactnative-yxas.onrender.com)',
+          'User-Agent': 'CLICS/1.0 (https://projectreactnative-yxas.onrender.com)',
         },
       });
 

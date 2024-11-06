@@ -1,77 +1,72 @@
-import prismaClient from '../../prisma';
+import prisma from '../../prisma';
+import { CartItem, Order } from '@prisma/client';
 
-interface CreateOrderRequest {
-  user_id: string;
+interface CreateOrderServiceData {
+  userId: string;
   deliveryType: 'Endereço' | 'Mesa';
-  deliveryAddress?: string; // Texto do endereço completo para o caso de "Endereço"
-  tableNumber?: string;
-  observation?: string;
+  deliveryAddress?: string;
   latitude?: number;
   longitude?: number;
+  tableNumber?: string;
+  observation?: string;
 }
 
 class CreateOrderService {
-  async execute({ user_id, deliveryType, deliveryAddress, tableNumber, observation, latitude, longitude }: CreateOrderRequest) {
-    if (deliveryType === 'Endereço' && !deliveryAddress) {
-      throw new Error('Endereço de entrega não fornecido.');
-    }
-
-    // Recupera o usuário para pegar o nome, e-mail e telefone
-    const user = await prismaClient.user.findUnique({
-      where: { id: user_id },
-      select: { name: true, email: true, phone: true },
-    });
-
-    if (!user) {
-      throw new Error('Usuário não encontrado.');
-    }
-
-    // Recupera o carrinho do usuário com os itens
-    const cart = await prismaClient.cart.findUnique({
-      where: { user_id },
-      include: { items: { include: { product: true } } },
+  async execute({
+    userId,
+    deliveryType,
+    deliveryAddress,
+    latitude,
+    longitude,
+    tableNumber,
+    observation,
+  }: CreateOrderServiceData): Promise<Order> {
+    // Buscamos os itens do carrinho do usuário
+    const cart = await prisma.cart.findUnique({
+      where: { user_id: userId },
+      include: { 
+        items: { include: { product: true } },
+        user: true,
+      },
     });
 
     if (!cart || cart.items.length === 0) {
-      throw new Error('Carrinho vazio ou não encontrado.');
+      throw new Error('Carrinho vazio');
     }
 
-    // Calcula o total do pedido
-    const totalPrice = cart.items.reduce((acc, item) => {
-      return acc + item.product.price * item.amount;
+    // Calcula o total do pedido somando o preço de cada item do carrinho
+    const totalPrice = cart.items.reduce((total, item) => {
+      return total + item.product.price * item.amount;
     }, 0);
 
-    // Cria a nova ordem
-    const order = await prismaClient.order.create({
+    // Criamos o pedido
+    const order = await prisma.order.create({
       data: {
-        user_id,
-        userName: user.name,
-        userEmail: user.email,
-        userPhone: user.phone,
-        status: 'Criado',
-        totalPrice,
+        user_id: userId,
+        userName: cart.user.name,
+        userEmail: cart.user.email,
+        userPhone: cart.user.phone,
         deliveryType,
-        deliveryAddress: deliveryType === 'Endereço' ? deliveryAddress : null,
-        latitude: latitude, // Usa latitude fornecida no corpo da requisição
-        longitude: longitude, // Usa longitude fornecida no corpo da requisição
-        tableNumber: deliveryType === 'Mesa' ? tableNumber : null,
+        deliveryAddress,
+        latitude,
+        longitude,
+        tableNumber,
         observation,
+        totalPrice,
+        status: 'Criado', // Status inicial do pedido
         items: {
-          create: cart.items.map((cartItem) => ({
-            product_id: cartItem.product_id,
-            amount: cartItem.amount,
-            product_name: cartItem.product.name,
-            product_price: cartItem.product.price,
+          create: cart.items.map((item) => ({
+            product_name: item.product.name,
+            product_price: item.product.price,
+            amount: item.amount,
+            product_id: item.product.id,
           })),
         },
       },
-      include: {
-        items: true,
-      },
     });
 
-    // Remove os itens do carrinho após criar a ordem
-    await prismaClient.cartItem.deleteMany({
+    // Após criar o pedido, limpa o carrinho do usuário
+    await prisma.cartItem.deleteMany({
       where: { cart_id: cart.id },
     });
 
@@ -79,5 +74,4 @@ class CreateOrderService {
   }
 }
 
-
-export default new CreateOrderService();
+export default CreateOrderService;

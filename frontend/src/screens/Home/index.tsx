@@ -157,11 +157,11 @@ export default function Home() {
                     {isAuthenticated ? (
                         <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Perfil')}>
                             {user.profileImage && !imageError[user.id] ? (
-                                <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} 
-                                onError={() => setImageError(prev => ({ ...prev, [user.id]: true }))}
-                                style={styles.profileImage} />
+                                <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }}
+                                    onError={() => setImageError(prev => ({ ...prev, [user.id]: true }))}
+                                    style={styles.profileImage} />
                             ) : (
-                                    <DefaultProfileImage style={styles.profileImage} />
+                                <DefaultProfileImage style={styles.profileImage} />
                             )}
                             <Text style={styles.profileName}>
                                 {user.name.split(' ')[0].toUpperCase()}
@@ -261,7 +261,7 @@ export default function Home() {
                                         style={styles.productContainer}
                                         onPress={() => handleProductPress(product)}
                                     >
-                                       {imageError[product.id] || !product.banner ? (
+                                        {imageError[product.id] || !product.banner ? (
                                             <DefaultLogoImage style={styles.productImage} />
                                         ) : (
                                             <Image

@@ -297,7 +297,7 @@ const Carrinho = ({ navigation }) => {
       </Modal>
 
       {loading ? (
-        <Text style={styles.textLoading}/>
+        <Text style={styles.textLoading} />
       ) : cartItems.length === 0 ? (
         renderEmptyCart()
       ) : (
