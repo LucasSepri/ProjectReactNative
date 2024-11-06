@@ -188,9 +188,28 @@ const styles = StyleSheet.create({
         color: COLORS.white,
     },
     productsSection: {
-        paddingTop: 20,
+    
         paddingBottom: 80,
+        paddingTop: 20,
+        // flex: 1,
     },
+    emptyMessageContainer: {
+        paddingTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 20,
+        backgroundColor: COLORS.primary,
+        elevation: 5,
+        margin: 30,
+        borderRadius: 10,
+    },
+    emptyMessageText: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: COLORS.white,
+        textAlign: 'center',
+    },
+
     categoryContainer: {
         marginBottom: 15,
         borderTopWidth: 4,

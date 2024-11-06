@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
   },
   emptyMessage: {
     fontSize: 18,
-    color: COLORS.text,
+    color: COLORS.primary,
     textAlign: 'center',
     marginBottom: 8,
   },
   emptyInstruction: {
     fontSize: 16,
-    color: COLORS.text,
+    color: COLORS.secondary,
     textAlign: 'center',
   },
 });

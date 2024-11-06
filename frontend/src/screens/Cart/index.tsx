@@ -99,36 +99,35 @@ const Carrinho = ({ navigation }) => {
   };
 
   const handleOrderSubmit = async () => {
-    if (!selectedAddress && addressVisible) {
-      Alert.alert('Erro', 'Por favor, selecione um endereço.');
+    if (!selectedAddress) {
+      Alert.alert('Endereço não selecionado', 'Por favor, selecione um endereço para entrega.');
       return;
     }
 
-    const selectedAddressDetails = userAddresses.find(address =>
-      `${address.street}, ${address.number}, ${address.neighborhood}, ${address.city}, ${address.state}` === selectedAddress
-    );
-
-    const address = `${selectedAddressDetails?.street}, ${selectedAddressDetails?.number}, ${selectedAddressDetails?.neighborhood}, ${selectedAddressDetails?.city}, ${selectedAddressDetails?.state}`;
-
-    const orderData = {
-      deliveryType: addressVisible ? 'Endereço' : 'Mesa',
-      deliveryAddress: addressVisible ? address : undefined,
-      tableNumber: !addressVisible ? tableNumber : undefined,
-      observation: observation.trim(),
-      latitude: addressVisible ? selectedAddressDetails?.latitude : undefined,
-      longitude: addressVisible ? selectedAddressDetails?.longitude : undefined,
-    };
-
+    setLoading(true);
     try {
-      await api.post('/orders', orderData);
-      Alert.alert('Sucesso', 'Pedido criado com sucesso!');
-      setObservation('');
+      const response = await api.post('/orders', {
+        deliveryType: 'Endereço', // ou 'Mesa', conforme necessário
+        deliveryAddress: selectedAddress,
+        observation,
+        latitude: userAddresses.find(addr => addr.street === selectedAddress.split(',')[0])?.latitude, // obter latitude
+        longitude: userAddresses.find(addr => addr.street === selectedAddress.split(',')[0])?.longitude, // obter longitude
+      });
+
       navigation.navigate('Pedidos');
+      Alert.alert('Pedido Finalizado', 'Seu pedido foi realizado com sucesso!');
+      // Aqui, você pode redirecionar o usuário para outra tela ou limpar o carrinho
+      clearTable(); // Se você quiser limpar a mesa após a finalização do pedido
+      setCartItems([]); // Limpa os itens do carrinho
     } catch (error) {
-      console.error('Erro ao criar o pedido:', error);
-      Alert.alert('Erro', 'Não foi possível criar o pedido. Tente novamente.');
+      console.error('Erro ao finalizar o pedido:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao finalizar o pedido. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   const handleRemove = async (product_id) => {
     setLoading(true);

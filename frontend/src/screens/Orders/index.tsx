@@ -43,7 +43,6 @@ const OrdemScreen = ({ navigation }) => {
   }, [navigation, user]);
 
   const handleCancelOrder = async (orderId) => {
-    console.log('Cancelando ordem com ID:', orderId);
     try {
       await api.delete(`/orders/${orderId}/cancel/`);
       Alert.alert('Sucesso', 'Ordem cancelada com sucesso.');

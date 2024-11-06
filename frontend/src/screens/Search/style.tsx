@@ -67,6 +67,24 @@ const styles = StyleSheet.create({
         color: COLORS.black,
         fontWeight: '600',
     },
+    noProductsContainer: {
+        flex: 1,
+        paddingTop: 46,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    noProductsText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: COLORS.primary,
+        textAlign: 'center',
+    },
+    noProductsTextSub:{
+        fontSize: 16,
+        color: COLORS.secondary,
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
     foodItem: {
         flexDirection: 'row',
         alignItems: 'center',

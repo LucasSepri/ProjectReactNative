@@ -295,7 +295,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.SystemFood;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.sistem.clics";
 				PRODUCT_NAME = SystemFood;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -319,7 +319,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.SystemFood;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.sistem.clics";
 				PRODUCT_NAME = SystemFood;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

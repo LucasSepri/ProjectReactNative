@@ -25,8 +25,6 @@ type ProductProps = {
   };
 };
 
-
-
 type NavigationProp = NativeStackNavigationProp<StackParamList, 'ProductDetails'>;
 
 const PizzaScreen = () => {
@@ -37,7 +35,6 @@ const PizzaScreen = () => {
   const [productSelected, setProductSelected] = useState<ProductProps | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
-
   const navigation = useNavigation<NavigationProp>();
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -51,7 +48,17 @@ const PizzaScreen = () => {
     async function loadCategories() {
       try {
         const response = await api.get('/categories');
-        setCategories([{ id: 'all', name: 'Todos' }, ...response.data]);
+        const categoriesWithProducts = await Promise.all(response.data.map(async (category: CategoryProps) => {
+          const productResponse = await api.get(`/products/${category.id}`);
+          return {
+            ...category,
+            hasProducts: productResponse.data.length > 0, // Adiciona uma propriedade para verificar se há produtos
+          };
+        }));
+
+        // Filtra categorias que têm produtos
+        const filteredCategories = categoriesWithProducts.filter(category => category.hasProducts);
+        setCategories([{ id: 'all', name: 'Todos' }, ...filteredCategories]); // Adiciona a categoria "Todos" no início
         setCategorySelected({ id: 'all', name: 'Todos' });
       } catch (error) {
         console.error(error);
@@ -69,11 +76,7 @@ const PizzaScreen = () => {
           categorySelected && categorySelected.id !== 'all'
             ? `/products/${categorySelected.id}`
             : '/products'
-          , {
-            params: {
-              category_id: categorySelected && categorySelected.id !== 'all' ? categorySelected.id : undefined
-            }
-          });
+        );
         setProducts(response.data);
         setProductSelected(response.data[0]);
       } catch (error) {
@@ -180,6 +183,11 @@ const PizzaScreen = () => {
 
       {loadingProducts ? (
         <ActivityIndicator size="large" color={COLORS.black} />
+      ) : products.length === 0 ? ( // Verifica se não há produtos
+        <View style={styles.noProductsContainer}>
+          <Text style={styles.noProductsText}>Não há produtos disponíveis</Text>
+          <Text style={styles.noProductsTextSub}>Tente Novamente Mais Tarde.</Text>
+        </View>
       ) : (
         <FlatList
           data={products}

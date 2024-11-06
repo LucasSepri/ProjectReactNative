@@ -83,9 +83,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.systemfood"
+    namespace "com.sistem.clics"
     defaultConfig {
-        applicationId "com.systemfood"
+        applicationId "com.sistem.clics"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

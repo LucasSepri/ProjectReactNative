@@ -1,12 +1,14 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
+import { COLORS } from "../styles/COLORS";
 
 
 import EditarPerfil from "../screens/EditarPerfil";
 import AdminRoutes from "./drawer.routes";
 import MapScreen from "../screens/Map";
 import Endereco from "../screens/Address";
-import { COLORS } from "../styles/COLORS";
+import QrcodeGerneretor from "../screens/Admin/QrcodeGeneretor";
+
 
 // Definindo os tipos de rotas
 export type StackParamList = {
@@ -27,6 +29,7 @@ export type StackParamList = {
         isVisualize: boolean;
     };
     Endereco: undefined;
+    QrcodeGerneretor: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -66,6 +69,16 @@ function AppRoutes() {
                 component={Endereco}
                 options={{
                     title: "Endereco",
+                    headerStyle: {
+                        backgroundColor: COLORS.primary,
+                    },
+                    headerTintColor: COLORS.white,
+                }} />
+            <Stack.Screen
+                name="QrcodeGerneretor"
+                component={QrcodeGerneretor}
+                options={{
+                    title: "Gerador de QrCode",
                     headerStyle: {
                         backgroundColor: COLORS.primary,
                     },

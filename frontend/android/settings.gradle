@@ -1,4 +1,4 @@
-rootProject.name = 'SystemFood'
+rootProject.name = 'CLICS'
 
 dependencyResolutionManagement {
   versionCatalogs {

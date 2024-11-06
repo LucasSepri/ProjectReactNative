@@ -41,6 +41,12 @@ export default StyleSheet.create({
         marginBottom: 14,
         elevation: 1, // Sombra leve para os campos de entrada
     },
+    icon: {
+        paddingHorizontal: 10,
+    },
+    eyeIcon: {
+        paddingHorizontal: 10,
+    },
     input: {
         flex: 1,
         paddingVertical: 14,
@@ -77,8 +83,5 @@ export default StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-    },
-    icon: {
-        paddingHorizontal: 10,
     },
 });

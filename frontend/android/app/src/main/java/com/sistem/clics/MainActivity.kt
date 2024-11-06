@@ -1,4 +1,4 @@
-package com.systemfood
+package com.sistem.clics
 
 import android.os.Build
 import android.os.Bundle

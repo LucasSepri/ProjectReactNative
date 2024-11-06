@@ -205,11 +205,7 @@ export default function Home() {
                         <Text style={styles.buttonText}>Pesquisar</Text>
                     </TouchableOpacity>
                 </View>
-                {loadingCategories ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={COLORS.primary} />
-                    </View>
-                ) : (
+                {loadingCategories && categories.length === 0 || !categories.some(category => category.products && category.products.length > 0) ? null : (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categories}>
                         {categories.filter(category => category.products && category.products.length > 0).map((category) => (
                             <TouchableOpacity
@@ -229,42 +225,55 @@ export default function Home() {
             </View>
 
             <View style={styles.productsSection}>
-                {categories.filter(category => category.products && category.products.length > 0).map((category) => (
-                    <View
-                        key={category.id}
-                        style={styles.categoryContainer}
-                        ref={(ref) => (categoryRefs.current[category.id] = ref)} // Salva a referência de cada categoria
-                    >
-                        <TouchableOpacity onPress={() => { scrollToCategory(category.id); toggleCategory(category.id); }} style={styles.categoriasProdutos}>
-                            <Text style={styles.categoryTitle}>{category.name}</Text>
-                            <Icon name={expandedCategory === category.id ? 'chevron-up-outline' : 'chevron-down-outline'} style={styles.categoryIcon} />
-                        </TouchableOpacity>
-                        {expandedCategory === category.id && category.products?.map(product => (
-                            <TouchableOpacity
-                                key={product.id}
-                                style={styles.productContainer}
-                                onPress={() => handleProductPress(product)}
-                            >
-                                <Image
-                                    source={imageError[product.id]
-                                        ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
-                                        : { uri: `${api.defaults.baseURL}${product.banner}` }}
-                                    onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))} // Marca o erro para este produto
-                                    style={styles.productImage}
-                                />
-                                <View style={styles.productDetails}>
-                                    <Text style={styles.productName}>{product.name}</Text>
-                                    <Text style={styles.productDescription} numberOfLines={2}>
-                                        {product.description}
-                                    </Text>
-                                    <Text style={styles.productPrice}>R$ {product.price}</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                        ))}
+                {loadingCategories ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={COLORS.primary} />
                     </View>
-                ))}
+                ) : (
+                    categories.length === 0 || !categories.some(category => category.products && category.products.length > 0) ? (
+                        <View style={styles.emptyMessageContainer}>
+                            <Text style={styles.emptyMessageText}>Nenhum produto ou categoria disponível no momento.</Text>
+                            {/* <Text style={styles.emptyMessageTextSub}>Por favor, tente novamente mais tarde.</Text> */}
+                        </View>
+                    ) : (
+                        categories.map((category) => (
+                            <View
+                                key={category.id}
+                                style={styles.categoryContainer}
+                                ref={(ref) => (categoryRefs.current[category.id] = ref)}
+                            >
+                                <TouchableOpacity onPress={() => { scrollToCategory(category.id); toggleCategory(category.id); }} style={styles.categoriasProdutos}>
+                                    <Text style={styles.categoryTitle}>{category.name}</Text>
+                                    <Icon name={expandedCategory === category.id ? 'chevron-up-outline' : 'chevron-down-outline'} style={styles.categoryIcon} />
+                                </TouchableOpacity>
+                                {expandedCategory === category.id && category.products?.map(product => (
+                                    <TouchableOpacity
+                                        key={product.id}
+                                        style={styles.productContainer}
+                                        onPress={() => handleProductPress(product)}
+                                    >
+                                        <Image
+                                            source={imageError[product.id]
+                                                ? require('../../assets/logo.png')
+                                                : { uri: `${api.defaults.baseURL}${product.banner}` }}
+                                            onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))}
+                                            style={styles.productImage}
+                                        />
+                                        <View style={styles.productDetails}>
+                                            <Text style={styles.productName}>{product.name}</Text>
+                                            <Text style={styles.productDescription} numberOfLines={2}>
+                                                {product.description}
+                                            </Text>
+                                            <Text style={styles.productPrice}>R$ {product.price}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        ))
+                    )
+                )}
             </View>
+
 
         </ScrollView>
     );

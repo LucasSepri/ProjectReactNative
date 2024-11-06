@@ -21,6 +21,7 @@ export default function SignIn() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(true);
 
     async function handleLogin() {
         if (email === '' || password === '') {
@@ -61,14 +62,17 @@ export default function SignIn() {
                     <View style={styles.inputWrapper}>
                         <Ionicons name="lock-closed-outline" size={24} color={COLORS.primary} style={styles.icon} />
                         <TextInput
-                            placeholder="Senha"
+                            placeholder='Senha'
                             style={styles.input}
                             placeholderTextColor={COLORS.text}
-                            secureTextEntry
+                            secureTextEntry={showPassword}
                             value={password}
-                            autoCapitalize="none"
+                            autoCapitalize='none'
                             onChangeText={setPassword}
                         />
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                            <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={COLORS.text} />
+                        </TouchableOpacity>
                     </View>
                 </View>
 
