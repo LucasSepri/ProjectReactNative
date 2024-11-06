@@ -4,17 +4,29 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: COLORS.white,
   },
+  header: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: COLORS.white,
+    backgroundColor: COLORS.primary,
+    textTransform: 'uppercase',
+  },
   searchContainer: {
+    margin: 16,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
     backgroundColor: COLORS.white,
     borderRadius: 8,
-    elevation: 3,
+    elevation: 5,
     paddingHorizontal: 12,
+    borderColor: COLORS.primary,
+    borderWidth: 1,
   },
   searchIcon: {
     marginRight: 8,
@@ -29,6 +41,7 @@ const styles = StyleSheet.create({
   },
   productList: {
     paddingBottom: 16,
+    paddingHorizontal: 16,
   },
   foodItem: {
     flexDirection: 'row',
@@ -36,12 +49,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: COLORS.white,
     borderRadius: 8,
+    borderBottomColor: COLORS.border,
+    borderBottomWidth: 1,
     padding: 16,
     shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 2,
   },
   imageContainer: {
     marginRight: 16,
@@ -59,9 +74,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
   },
-  category:{
+  category: {
     fontSize: 14,
-    color: COLORS.secondary,
+    color: COLORS.primary,
     marginBottom: 4,
   },
   ingredients: {
@@ -69,7 +84,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontWeight: 'bold',
-    textAlign: 'right',
+    // textAlign: 'right',
     marginTop: 8,
   },
   emptyContainer: {
@@ -78,10 +93,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyMessage: {
-    fontSize: 18,
+    fontSize: 16,
     color: COLORS.primary,
     textAlign: 'center',
     marginBottom: 8,
+    fontWeight: 'bold',
   },
   emptyInstruction: {
     fontSize: 16,

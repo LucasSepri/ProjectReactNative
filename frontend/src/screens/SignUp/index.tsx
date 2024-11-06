@@ -22,11 +22,13 @@ import { api } from '../../services/api';
 import { COLORS } from '../../styles/COLORS';
 import { TextInputMask } from 'react-native-masked-text';
 import { Ionicons } from '@expo/vector-icons';
-import  styles  from './style';
+import styles from './style';
+import { DefaultProfileAddImage } from '../../components/Profile';
+
 
 export default function SignUp() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
-    const { signIn, user } = useContext(AuthContext);
+    const { signIn } = useContext(AuthContext);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -57,7 +59,7 @@ export default function SignUp() {
     };
 
     async function handleSignUp() {
-        if (name === '' || email === '' || phone === '' || password === '' || confirmPassword === '') {
+        if (!name || !email || !phone || !password || !confirmPassword) {
             Alert.alert("Erro", "Por favor, preencha todos os campos.");
             return;
         }
@@ -68,7 +70,6 @@ export default function SignUp() {
         }
 
         setLoading(true);
-
         let formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
@@ -78,7 +79,6 @@ export default function SignUp() {
         if (selectedImage) {
             try {
                 const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-
                 if (!fileInfo.exists) {
                     throw new Error('File does not exist');
                 }
@@ -106,43 +106,46 @@ export default function SignUp() {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-            // navigation.navigate('Endereco');
             await signIn({ email, password });
             Alert.alert("Sucesso", "Conta criada e você está logado!");
-            if (user.isAdmin === false) {
-                navigation.navigate('Home');
-            }
+            navigation.navigate('Home');
         } catch (error) {
-            Alert.alert("Erro", "Erro ao criar conta. Por favor, tente novamente mais tarde.");
+            // Check if the error message indicates an email duplication
+            if (error.response && error.response.data && error.response.data.error === 'E-mail já cadastrado.') {
+                Alert.alert("Erro", "O e-mail informado já está cadastrado. Tente outro.");
+            } else {
+                Alert.alert("Erro", "Erro ao criar conta. Por favor, tente novamente mais tarde.");
+            }
         } finally {
             setLoading(false);
         }
     }
 
+
     return (
-        <KeyboardAvoidingView 
-            style={styles.container} 
+        <KeyboardAvoidingView
+            style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >
-            <ScrollView 
-                contentContainerStyle={styles.scrollContainer} 
-                keyboardShouldPersistTaps='handled' 
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                keyboardShouldPersistTaps='handled'
                 showsVerticalScrollIndicator={false}
             >
                 <Text style={styles.title}>Crie sua Conta</Text>
                 <Text style={styles.subTitle}>Preencha os dados abaixo para se registrar</Text>
 
-                <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
-                    {selectedImage ? (
+                {selectedImage ? (
+                    <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
                         <Image source={{ uri: selectedImage }} style={styles.image} />
-                    ) : (
-                        <Image
-                            source={require('../../assets/img/escolherImagem.png')}
-                            style={styles.image}
-                        />
-                    )}
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                ) : (
+                    <TouchableOpacity onPress={pickImageAsync} style={[styles.imagePicker, styles.imagePlaceholder]}>
+                        <DefaultProfileAddImage style={styles.defaultProfileIcon} />
+                        <Text style={styles.imageText}>Adicionar Foto</Text>
+                    </TouchableOpacity>
+                )}
 
                 <View style={styles.inputContainer}>
                     <View style={styles.inputWrapper}>

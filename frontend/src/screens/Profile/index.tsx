@@ -9,6 +9,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../../styles/COLORS';
 import styles from './style';
 import axios from 'axios';
+import { DefaultProfileImage } from '../../components/Profile';
 
 type AddressProps = {
     zip: string;
@@ -29,6 +30,7 @@ const PerfilEnderecoScreen = () => {
     const { user, signOut, isAuthenticated } = useContext(AuthContext);
     const [addresses, setAddresses] = useState<AddressProps[]>([]);
     const [loading, setLoading] = useState(true);
+    const [imageError, setImageError] = useState({});
 
     const fetchAddresses = async () => {
         try {
@@ -139,7 +141,13 @@ const PerfilEnderecoScreen = () => {
         <View style={styles.screenContainer}>
             <View style={styles.profileSection}>
                 <View style={styles.headerSection}>
-                    <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} style={styles.profileImage} />
+                    {user.profileImage && !imageError[user.id] ? (
+                        <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} 
+                        onError={() => setImageError(prevState => ({ ...prevState, [user.id]: true }))}
+                        style={styles.profileImage} />
+                    ) : (
+                        <DefaultProfileImage style={styles.profileImage} />
+                    )}
                     <View style={styles.userInfo}>
                         <Text style={styles.userName}>{user.name}</Text>
                         <Text style={styles.userPhone}>{user.phone}</Text>

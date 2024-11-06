@@ -20,6 +20,7 @@ import { COLORS } from '../../styles/COLORS';
 import styles from './style'; // Usar o mesmo estilo do SignUp
 import { TextInputMask } from 'react-native-masked-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DefaultProfileAddImage } from '../../components/Profile';
 
 export default function EditarPerfil() {
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
@@ -136,13 +137,16 @@ export default function EditarPerfil() {
     <View style={styles.container}>
       <Text style={styles.title}>Editar Perfil</Text>
 
-      <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
-        {selectedImage ? (
+      {selectedImage && selectedImage !== `${api.defaults.baseURL}${user.profileImage}` ? (
+        <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
           <Image source={{ uri: selectedImage }} style={styles.image} />
-        ) : (
-          <Text style={styles.uploadText}>Upload sua foto</Text>
-        )}
-      </TouchableOpacity>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={pickImageAsync} style={[styles.imagePicker, styles.imagePlaceholder]}>
+          <DefaultProfileAddImage style={styles.defaultProfileIcon} />
+          <Text style={styles.imageText}>Adicionar Foto</Text>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.inputContainer}>
         <TextInput

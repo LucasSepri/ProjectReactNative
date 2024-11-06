@@ -14,6 +14,7 @@ import { AuthContext } from '../../context/AuthContext';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
 import { Ionicons } from '@expo/vector-icons';
+import DefaultLogoImage from '../../components/Logo';
 
 export default function SignIn() {
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
@@ -42,7 +43,7 @@ export default function SignIn() {
 
     return (
         <View style={styles.container}>
-            <Image style={styles.logo} source={require('../../assets/logo.png')} />
+            <DefaultLogoImage style={styles.logo} />
             <Text style={styles.title}>Bem-vindo de volta!</Text>
             <Text style={styles.subTitle}>Faça login para continuar</Text>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     View,
     Text,
@@ -6,15 +6,36 @@ import {
     TouchableOpacity,
     FlatList,
     StyleSheet,
+    Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../../styles/COLORS';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackParamList } from '../../routes/app.routes';
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../../context/AuthContext';
+
+type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
 const ChatScreen = () => {
+    const navigation = useNavigation<NavigationProp>();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
+    const { isAuthenticated } = useContext(AuthContext);
+
 
     const sendMessage = () => {
+        // if (!isAuthenticated) {
+        //     Alert.alert(
+        //         "Atenção",
+        //         "Para adicionar enviar uma mensagem, você precisa estar logado.",
+        //         [
+        //             { text: "Cancelar", style: "cancel" },
+        //             { text: "Login", onPress: () => navigation.navigate('SignIn') }
+        //         ]
+        //     );
+        //     return;
+        // }
         if (input.trim()) {
             setMessages([...messages, { id: Date.now().toString(), text: input }]);
             setInput(''); // Limpa o campo de entrada
@@ -61,7 +82,7 @@ const styles = StyleSheet.create({
         flex: 1,
         // backgroundColor: COLORS.white,
         // paddingBottom: 90,
-        
+
     },
     tituloScreen: {
         textAlign: 'center',

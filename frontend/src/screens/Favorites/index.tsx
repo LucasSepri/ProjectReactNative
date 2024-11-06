@@ -8,6 +8,7 @@ import { api } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
+import DefaultLogoImage from '../../components/Logo';
 
 type ProductProps = {
   price: string;
@@ -31,6 +32,7 @@ const truncateText = (text: string, maxLength: number) => {
 const FavoritesScreen = () => {
   const { isAuthenticated, user } = useContext(AuthContext);
   const [products, setProducts] = useState<ProductProps[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<ProductProps[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
@@ -38,21 +40,25 @@ const FavoritesScreen = () => {
   const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
+    loadProducts();
     const unsubscribe = navigation.addListener('focus', loadProducts);
     return unsubscribe;
   }, [navigation]);
 
+
   const loadProducts = async () => {
     setLoadingProducts(true);
-    if (JSON.stringify(user.name) === '""') {
+    if (!isAuthenticated || !user.name) {
       setProducts([]);
+      setFilteredProducts([]);
       setLoadingProducts(false);
       return;
     }
-    
+
     try {
       const response = await api.get('/favorites');
       setProducts(response.data);
+      setFilteredProducts(response.data); // Atualiza o estado de produtos filtrados
     } catch (error) {
       console.error(error);
     } finally {
@@ -65,7 +71,7 @@ const FavoritesScreen = () => {
     const filtered = products.filter(product =>
       product.name.toLowerCase().includes(text.toLowerCase())
     );
-    setProducts(filtered);
+    setFilteredProducts(filtered);
   };
 
   const handleProductPress = (product: ProductProps) => {
@@ -78,13 +84,15 @@ const FavoritesScreen = () => {
       onPress={() => handleProductPress(item)}
     >
       <View style={styles.imageContainer}>
-        <Image
-          source={imageError[item.id]
-            ? require('../../assets/logo.png')
-            : { uri: `${api.defaults.baseURL}${item.banner}` }}
-          onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
-          style={styles.image}
-        />
+        {imageError[item.id] || !item.banner ? (
+          <DefaultLogoImage style={styles.image} />
+        ) : (
+          <Image
+            source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
+            onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
+            style={styles.image}
+          />
+        )}
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
@@ -95,11 +103,13 @@ const FavoritesScreen = () => {
         <Text style={styles.price}>R$ {item.price}</Text>
       </View>
     </TouchableOpacity>
-);
-
+  );
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>
+        Favoritos
+      </Text>
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
         <TextInput
@@ -111,15 +121,15 @@ const FavoritesScreen = () => {
       </View>
 
       {loadingProducts ? (
-        <ActivityIndicator size="large" color={COLORS.black} style={styles.loader} />
-      ) : products.length === 0 ? (
+        <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
+      ) : filteredProducts.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyMessage}>Você ainda não tem produtos favoritados.</Text>
           <Text style={styles.emptyInstruction}>Favorite produtos para vê-los aqui!</Text>
         </View>
       ) : (
         <FlatList
-          data={products}
+          data={filteredProducts}
           renderItem={renderProductItem}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.productList}
@@ -131,4 +141,3 @@ const FavoritesScreen = () => {
 };
 
 export default FavoritesScreen;
-

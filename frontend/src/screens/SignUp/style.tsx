@@ -28,19 +28,38 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.primary,
         borderStyle: 'dashed',
-        borderRadius: 5,
+        borderRadius: 8,
         width: 150,
         height: 150,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
-        backgroundColor: COLORS.white, // Adicionando um fundo branco para o seletor de imagem
+        backgroundColor: COLORS.white,
     },
     image: {
         width: '100%',
         height: '100%',
         resizeMode: 'cover',
-        borderRadius: 5,
+        borderRadius: 8,
+    },
+    imagePlaceholder: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column', // Coloca o ícone e o texto em coluna
+    },
+    imageText: {
+        color: COLORS.white,
+        fontSize: 12,
+        backgroundColor: COLORS.primary,
+        paddingVertical: 4,
+        borderRadius: 4,
+        textAlign: 'center',
+        width: '100%',
+        flex: 1,
+    },
+    defaultProfileIcon: {
+        width: 120, // Defina um tamanho explícito para o ícone
+        height: 120,
     },
     inputContainer: {
         width: '100%',

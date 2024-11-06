@@ -1,6 +1,6 @@
 export const COLORS = {
-    primary: "#f7b257",       // Cor principal: laranja para elementos principais.
-    secondary: "#f8754a",     // Azul para botões secundários e links.
+    primary: "#6974d7",       // Cor principal: laranja para elementos principais.
+    secondary: "#0d1988",     // Azul para botões secundários e links.
     success: "#04C059",       // Verde para feedback positivo.
     danger: "#EF476F",        // Vermelho para mensagens de erro.
     text: "#073B4C",          // Azul escuro para texto principal.

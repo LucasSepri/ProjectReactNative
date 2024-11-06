@@ -106,10 +106,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 await AsyncStorage.setItem('@token', JSON.stringify(userData));
             } catch (error) {
                 console.error('Error getting user data:', error);
-                // Aqui você pode querer tratar a expiração do token, se necessário
+                // Remover dados do AsyncStorage se não houver conexão com a API
+                await AsyncStorage.removeItem('@token');
+                // Resetar o estado do usuário
+                setUser({
+                    id: '',
+                    name: '',
+                    email: '',
+                    phone: '',
+                    token: '',
+                    isAdmin: false,
+                    profileImage: '',
+                });
             }
         }
     }
+
 
     async function signOut() {
         await AsyncStorage.clear();

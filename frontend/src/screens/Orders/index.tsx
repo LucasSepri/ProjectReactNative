@@ -43,6 +43,7 @@ const OrdemScreen = ({ navigation }) => {
   }, [navigation, user]);
 
   const handleCancelOrder = async (orderId) => {
+    setLoading(true);
     try {
       await api.delete(`/orders/${orderId}/cancel/`);
       Alert.alert('Sucesso', 'Ordem cancelada com sucesso.');
@@ -51,6 +52,7 @@ const OrdemScreen = ({ navigation }) => {
       console.error('Erro ao cancelar a ordem:', error);
       Alert.alert('Erro', 'Não foi possível cancelar a ordem.');
     }
+    setLoading(false);
   };
 
   const renderOrderItem = ({ item }) => {
@@ -86,11 +88,11 @@ const OrdemScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Aqui você verá suas Ordens</Text>
+      <Text style={styles.header}>Ordens</Text>
 
       {/* Filtro de datas */}
       <View style={styles.filterContainer}>
-        <Text style={styles.filterTitle}>Filtrar por Data:</Text>
+        <Text style={styles.filterTitle}>Filtrar</Text>
         <View style={styles.datePickerContainer}>
           <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartPicker(true)}>
             <Text style={styles.dateButtonText}>Data de Início: {startDate.toLocaleDateString('pt-BR')}</Text>
@@ -132,11 +134,14 @@ const OrdemScreen = ({ navigation }) => {
 
       {/* Lista de ordens */}
       {loading ? (
-        <ActivityIndicator size={50} color={COLORS.secondary} />
+        <ActivityIndicator size={50} color={COLORS.primary} />
       ) : (
         <>
           {orders.length === 0 ? (
-            <Text style={styles.noOrdersText}>Você não tem ordens no momento.</Text>
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyMessage}>Nenhuma Ordem Encontrada</Text>
+              <Text style={styles.emptyInstruction}>Tente novamente mais tarde.</Text>
+            </View>
           ) : (
             <FlatList
               data={orders}

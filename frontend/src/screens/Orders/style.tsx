@@ -4,16 +4,18 @@ import { COLORS } from '../../styles/COLORS';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: COLORS.white,
     marginBottom: '22%',
   },
   header: {
-    fontSize: 24,
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
     textAlign: 'center',
-    color: COLORS.primary,
+    color: COLORS.white,
+    backgroundColor: COLORS.primary,
+    textTransform: 'uppercase',
   },
   filterContainer: {
     marginBottom: 20,
@@ -25,12 +27,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    margin: 16,
+    borderColor: COLORS.primary,
+    borderWidth: 1,
   },
   filterTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text,
     marginBottom: 10,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+
   },
   datePickerContainer: {
     flexDirection: 'row',
@@ -67,10 +75,13 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 8,
     shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
     elevation: 2,
+    borderBottomColor: COLORS.border,
+    borderBottomWidth: 1,
+    margin: 16,
   },
   orderText: {
     fontSize: 16,
@@ -88,11 +99,22 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: 'bold',
   },
-  noOrdersText: {
-    fontSize: 18,
+  emptyContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyMessage:{
+    fontSize: 16,
+    color: COLORS.primary,
     textAlign: 'center',
-    marginTop: 20,
-    color: COLORS.text,
+    marginBottom: 8,
+    fontWeight: 'bold',
+  },
+  emptyInstruction:{
+    fontSize: 16,
+    color: COLORS.secondary,
+    textAlign: 'center',
   },
 });
 

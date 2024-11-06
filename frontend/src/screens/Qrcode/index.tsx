@@ -88,7 +88,7 @@ export default function Qrcode() {
         <View style={styles.cameraContainer}>
           <View style={styles.cameraHeader}>
             <Text style={styles.cameraHeaderText}>
-              Aproxime a câmera do QRCode para escanear a mesa
+              Aproxime a câmera do QRCode para escanear
             </Text>
           </View>
           <CameraView

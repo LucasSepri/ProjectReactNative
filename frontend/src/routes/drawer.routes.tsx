@@ -11,6 +11,7 @@ import Perfil from "../screens/Profile";
 import AdminProdutos from "../screens/Admin/Produtos";
 import ListUsers from "../screens/Admin/ListaUsuarios";
 import QRCodeGenerator from "../screens/Admin/QrcodeGeneretor";
+import config from "../screens/Admin/Config";
 
 export type StackParamListAdmin = {
     AdminProdutos: undefined;
@@ -18,7 +19,7 @@ export type StackParamListAdmin = {
     Perfil: undefined;
     ListUsers: undefined;
     QRCodeGenerator: undefined;
-
+    Config: undefined;
 }
 
 const Drawer = createDrawerNavigator<StackParamListAdmin>();
@@ -50,6 +51,9 @@ function AdminRoutes() {
                             break;
                         case 'QRCodeGenerator':
                             iconName = focused ? 'qr-code' : 'qr-code-outline';
+                            break;
+                        case 'Config':
+                            iconName = focused ? 'settings' : 'settings-outline';
                             break;
                         default:
                             iconName = 'menu';
@@ -85,6 +89,13 @@ function AdminRoutes() {
                 component={QRCodeGenerator}
                 options={{
                     title: "Gerador de QR Code",
+                }}
+            />
+            <Drawer.Screen
+                name="Config"
+                component={config}
+                options={{
+                    title: "Configurações",
                 }}
             />
             <Drawer.Screen

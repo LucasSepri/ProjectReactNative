@@ -7,6 +7,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     paddingBottom: 90,
   },
+  header: {
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: COLORS.white,
+    backgroundColor: COLORS.primary,
+    textTransform: 'uppercase',
+  },
   addressPickerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -163,6 +173,14 @@ const styles = StyleSheet.create({
   flatList: {
     flexGrow: 1,
   },
+  textLoading:{
+    color: COLORS.primary,
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flexGrow: 1,
+    textAlignVertical: 'center',
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -172,7 +190,7 @@ const styles = StyleSheet.create({
   emptyMessage: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.text,
+    color: COLORS.primary,
     textAlign: 'center',
   },
   emptyInstruction: {

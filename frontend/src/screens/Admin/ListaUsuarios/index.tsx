@@ -5,12 +5,14 @@ import styles from './style';
 import { AuthContext } from '../../../context/AuthContext';
 import { api } from '../../../services/api';
 import { COLORS } from '../../../styles/COLORS';
+import { DefaultProfileImage } from '../../../components/Profile';
 
 const ListUsers = () => {
     const { signOut, user } = useContext(AuthContext);
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [imageError, setImageError] = useState({});
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -178,13 +180,19 @@ const ListUsers = () => {
 
     useEffect(() => {
         refreshList();
-    }, [ navigator]);
+    }, [navigator]);
 
 
     const renderItem = ({ item }) => (
         <View style={styles.userContainer}>
             <View style={styles.userInfoContainer}>
-                <Image source={{ uri: `${api.defaults.baseURL}${item.profileImage}` }} style={styles.profileImage} />
+                {item.profileImage && !imageError[item.id] && user.profileImage ? (
+                    <Image source={{ uri: `${api.defaults.baseURL}${item.profileImage}` }}
+                        onError={() => setImageError(prevState => ({ ...prevState, [item.id]: true }))}
+                        style={styles.profileImage} />
+                ) : (
+                    <DefaultProfileImage style={styles.profileImage} />
+                )}
                 <View style={styles.userInfo}>
                     <Text style={styles.name}>{item.name}</Text>
                     <Text style={styles.email}>{item.email}</Text>

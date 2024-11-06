@@ -7,6 +7,7 @@ import { StackParamList } from '../../routes/app.routes';
 import { api } from '../../services/api';
 import styles from './style';
 import { COLORS } from '../../styles/COLORS';
+import DefaultLogoImage from '../../components/Logo';
 
 type CategoryProps = {
   id: string;
@@ -121,23 +122,27 @@ const PizzaScreen = () => {
       onPress={() => handleProductPress(item)}
     >
       <View style={styles.imageContainer}>
-        <Image
-          source={imageError[item.id]
-            ? require('../../assets/logo.png') // Exibe a imagem padrão se houver erro
-            : { uri: `${api.defaults.baseURL}${item.banner}` }}
-          onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))} // Marca o erro para este produto
-          style={styles.image} />
+        {imageError[item.id] || !item.banner ? (
+          <DefaultLogoImage style={styles.image} />
+        ) : (
+          <Image
+            source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
+            onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
+            style={styles.image}
+          />
+        )}
       </View>
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.category}>{item.category.name}</Text>
+        <Text style={styles.category}>{item.category?.name || 'Sem categoria'}</Text>
         <Text style={styles.ingredients} numberOfLines={2}>
-          {truncateText(item.description, 100)} {/* Limite de 100 caracteres */}
+          {truncateText(item.description, 100)}
         </Text>
         <Text style={styles.price}>R$ {item.price}</Text>
       </View>
     </TouchableOpacity>
   );
+
 
   return (
     <View style={styles.container}>

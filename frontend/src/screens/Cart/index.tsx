@@ -20,6 +20,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useTable } from '../../context/TableContext';
 import { set } from 'react-hook-form';
 import { useFocusEffect } from '@react-navigation/native';
+import DefaultLogoImage from '../../components/Logo';
 
 type AddressProps = {
   zip: string;
@@ -106,7 +107,7 @@ const Carrinho = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const response = await api.post('/orders', {
+      await api.post('/orders', {
         deliveryType: 'Endereço', // ou 'Mesa', conforme necessário
         deliveryAddress: selectedAddress,
         observation,
@@ -172,12 +173,16 @@ const Carrinho = ({ navigation }) => {
         <TouchableOpacity style={styles.removeButton} onPress={() => handleRemove(item.product_id)}>
           <Icon name="trash" size={20} color={COLORS.danger} />
         </TouchableOpacity>
-        <Image
-          source={imageError[item.product.id]
-            ? require('../../assets/logo.png')
-            : { uri: `${api.defaults.baseURL}${item.product.banner}` }}
-          onError={() => setImageError(prev => ({ ...prev, [item.product.id]: true }))}
-          style={styles.image} />
+        {imageError[item.product.id] ? (
+          <DefaultLogoImage style={styles.image} />
+        ) : (
+          <Image
+            source={{ uri: `${api.defaults.baseURL}${item.product.banner}` }}
+            onError={() => setImageError(prev => ({ ...prev, [item.product.id]: true }))}
+            style={styles.image}
+          />
+        )}
+
         <View style={styles.cardInfo}>
           <Text style={styles.itemName}>{item.product.name}</Text>
           <Text style={styles.price}>R$ {totalPrice.toFixed(2)}</Text>
@@ -215,8 +220,12 @@ const Carrinho = ({ navigation }) => {
     }, [])
   );
 
+
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>
+        Carrinho
+      </Text>
       {tableNumber ? (
         <TouchableOpacity style={styles.botaoMesaSair} onPress={() => { clearTable(); }}>
           <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
@@ -288,7 +297,7 @@ const Carrinho = ({ navigation }) => {
       </Modal>
 
       {loading ? (
-        <ActivityIndicator size={50} color={COLORS.primary} style={styles.flatList} />
+        <Text style={styles.textLoading}/>
       ) : cartItems.length === 0 ? (
         renderEmptyCart()
       ) : (
@@ -314,10 +323,17 @@ const Carrinho = ({ navigation }) => {
             maxLength={100}
           />
           <View style={styles.orderSummary}>
-            <TouchableOpacity onPress={handleOrderSubmit} style={styles.orderButton}>
-              <Text style={styles.orderTextButton}>Finalizar Pedido</Text>
-              <Text style={styles.summaryText}>R$ {totalPrice.toFixed(2)}</Text>
-            </TouchableOpacity>
+            {!loading ? (
+              <TouchableOpacity onPress={handleOrderSubmit} style={styles.orderButton}>
+                <Text style={styles.orderTextButton}>Finalizar Pedido</Text>
+                <Text style={styles.summaryText}>R$ {totalPrice.toFixed(2)}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.orderButton}>
+                <ActivityIndicator size={40} color={COLORS.white} style={styles.flatList} />
+              </TouchableOpacity>
+            )}
+
           </View>
         </>
       )}

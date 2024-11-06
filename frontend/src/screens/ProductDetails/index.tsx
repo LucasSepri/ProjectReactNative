@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackParamList } from '../../routes/app.routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { set } from 'react-hook-form';
+import DefaultLogoImage from '../../components/Logo';
 
 type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
@@ -63,7 +64,7 @@ const ProductDetails = ({ route }) => {
         try {
             const response = await api.post('/cart', payload);
             if (response.status === 201) {
-               Alert.alert("Adicionado com Sucesso", `Adicionado ${quantity} de ${product.name} ao carrinho`);
+                Alert.alert("Adicionado com Sucesso", `Adicionado ${quantity} de ${product.name} ao carrinho`);
                 navigation.navigate('Carrinho');
             }
             setLoading(false);
@@ -112,12 +113,15 @@ const ProductDetails = ({ route }) => {
         <View style={styles.container}>
             <ScrollView >
                 <View style={styles.imageContainer}>
-                    <Image
-                        source={imageError[product.id]
-                            ? require('../../assets/logo.png')
-                            : { uri: `${api.defaults.baseURL}${product.banner}` }}
-                        onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))}
-                        style={styles.image} />
+                    {imageError[product.id] || !product.banner  ? (
+                        <DefaultLogoImage style={styles.image} />
+                    ) : (
+                        <Image
+                            source={{ uri: `${api.defaults.baseURL}${product.banner}` }}
+                            onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))}
+                            style={styles.image}
+                        />
+                    )}
                     <TouchableOpacity
                         style={[styles.button, styles.favoriteButton]}
                         onPress={handleFavoriteToggle}

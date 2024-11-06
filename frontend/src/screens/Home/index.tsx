@@ -20,7 +20,8 @@ import { COLORS } from '../../styles/COLORS';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { StackParamList } from '../../routes/app.routes';
 import styles from './style';
-import { set } from 'react-hook-form';
+import { DefaultProfileImage } from '../../components/Profile';
+import DefaultLogoImage from '../../components/Logo';
 
 type CategoryProps = {
     id: string;
@@ -58,19 +59,26 @@ export default function Home() {
     const pizzariaAddress = 'Rua Dona Veridiana, 661, Higienópolis, São Paulo - SP';
     const nomeEstabelecimento = 'Pizzaria Super Pizza';
 
+
+
     const loadCategories = async () => {
         try {
             const response = await api.get('/categories');
             const categoriesWithProducts = await Promise.all(response.data.map(async (category: CategoryProps) => {
                 const productResponse = await api.get(`/products/${category.id}`);
-                return { ...category, hasProducts: productResponse.data.length > 0, products: productResponse.data };
+                return { ...category, products: productResponse.data };
             }));
 
-            setCategories(categoriesWithProducts);
+            // Filtra categorias que não têm produtos
+            const filteredCategories = categoriesWithProducts.filter(category => category.products.length > 0);
 
-            // Define a primeira categoria como aberta automaticamente
-            setCategorySelected(categoriesWithProducts[0]);
-            setExpandedCategory(categoriesWithProducts[0]?.id); // Define a primeira categoria como expandida
+            setCategories(filteredCategories);
+
+            // Define a primeira categoria como aberta automaticamente, se existir
+            if (filteredCategories.length > 0) {
+                setCategorySelected(filteredCategories[0]);
+                setExpandedCategory(filteredCategories[0]?.id);
+            }
         } catch (error) {
             console.error(error);
         } finally {
@@ -83,7 +91,6 @@ export default function Home() {
         loadCategories();
     }, []);
 
-    // Função para o pull-to-refresh
     const onRefresh = () => {
         setInitialLoad(true);
         setRefreshing(true);
@@ -104,11 +111,10 @@ export default function Home() {
                 categoryView.measureLayout(
                     findNodeHandle(scrollViewRef.current),
                     (x, y) => {
-                        const offset = 160; // ajuste o valor para o deslocamento desejado
+                        const offset = 160;
                         setTimeout(() => {
                             scrollViewRef.current?.scrollTo({ y: y - offset, animated: true });
-                        }, 0); // Usando setTimeout para garantir que o layout esteja atualizado
-                        // console.log(`Scrolling to category ${categoryId} at position: ${y}`);
+                        }, 0);
                         setCategorySelected(categories.find(category => category.id === categoryId));
                     },
                     () => console.error('Erro ao medir a posição da categoria')
@@ -116,44 +122,47 @@ export default function Home() {
             }
         }
         setExpandedCategory(categoryId);
-
     };
 
     useFocusEffect(
         React.useCallback(() => {
-            // Quando a tela ganha foco, você pode definir o estado de initialLoad como true
             setInitialLoad(true);
-
-            // Função para limpar o estado quando a tela perde o foco
             return () => {
                 setInitialLoad(false);
             };
         }, [])
     );
+
     useEffect(() => {
         if (categorySelected && !initialLoad) {
             scrollToCategory(categorySelected.id);
         }
     }, [categorySelected]);
 
-    const toggleCategory = (id) => {
+    const toggleCategory = (id: string) => {
         if (expandedCategory === id) {
             setExpandedCategory(null);
             setInitialLoad(true);
         } else {
             setInitialLoad(false);
         }
-    }
+    };
 
     return (
         <ScrollView ref={scrollViewRef} style={styles.container} stickyHeaderIndices={[1]} refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />
         }>
-            <ImageBackground source={require('../../assets/background.jpg')} style={styles.headerImage} blurRadius={4}>
+            <ImageBackground source={require('../../assets/img/background.jpg')} style={styles.headerImage} blurRadius={2}>
                 <View style={styles.headerIconsContainer}>
                     {isAuthenticated ? (
                         <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('Perfil')}>
-                            <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} style={styles.profileImage} />
+                            {user.profileImage && !imageError[user.id] ? (
+                                <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} 
+                                onError={() => setImageError(prev => ({ ...prev, [user.id]: true }))}
+                                style={styles.profileImage} />
+                            ) : (
+                                    <DefaultProfileImage style={styles.profileImage} />
+                            )}
                             <Text style={styles.profileName}>
                                 {user.name.split(' ')[0].toUpperCase()}
                             </Text>
@@ -164,6 +173,7 @@ export default function Home() {
                             <Text style={styles.loginText}>ENTRAR</Text>
                         </TouchableOpacity>
                     )}
+
 
                     {tableNumber ? (
                         <TouchableOpacity style={styles.tableExitButton} onPress={clearTable}>
@@ -176,10 +186,10 @@ export default function Home() {
                         </TouchableOpacity>
                     )}
                 </View>
-                <Image source={require('../../assets/logo.png')} style={styles.logo} />
+                <DefaultLogoImage style={styles.logo} />
                 <Text style={styles.title}>{nomeEstabelecimento}</Text>
                 <View style={styles.buttonContainer}>
-                    <View style={styles.buttonSeparator} >
+                    <View style={styles.buttonSeparator}>
                         <TouchableOpacity style={styles.whatsAppButton} onPress={() => Linking.openURL(`whatsapp://send?phone=${pizzariaPhoneNumber}`)}>
                             <Icon name="logo-whatsapp" size={22} color={COLORS.white} />
                             <Text style={styles.buttonText}>{pizzariaPhoneNumber}</Text>
@@ -197,24 +207,24 @@ export default function Home() {
                 </View>
             </ImageBackground>
 
-            <View style={styles.categoriesSection} >
+            <View style={styles.categoriesSection}>
                 <View style={styles.productsHeader}>
-                    <Text style={styles.sectionTitle}>Cardapio</Text>
+                    <Text style={styles.sectionTitle}>Produtos</Text>
                     <TouchableOpacity style={styles.searchButton} onPress={() => navigation.navigate('Pesquisa')}>
                         <Icon name="search-outline" size={20} color={COLORS.white} />
                         <Text style={styles.buttonText}>Pesquisar</Text>
                     </TouchableOpacity>
                 </View>
-                {loadingCategories && categories.length === 0 || !categories.some(category => category.products && category.products.length > 0) ? null : (
+                {loadingCategories && categories.length === 0 || categories.length === 0 ? null : (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categories}>
-                        {categories.filter(category => category.products && category.products.length > 0).map((category) => (
+                        {categories.map((category) => (
                             <TouchableOpacity
                                 key={category.id}
                                 style={[
                                     styles.categoryButton,
                                     category.id === categorySelected?.id && styles.selectedCategoryButton,
                                 ]}
-                                onPress={() => { scrollToCategory(category.id); toggleCategory(category.id); }} // Remove a seleção da categoria aqui
+                                onPress={() => { scrollToCategory(category.id); toggleCategory(category.id); }}
                             >
                                 <Icon name="fast-food-outline" style={styles.categoryHorizontalIcon} />
                                 <Text style={styles.categoryText}>{category.name}</Text>
@@ -230,10 +240,9 @@ export default function Home() {
                         <ActivityIndicator size="large" color={COLORS.primary} />
                     </View>
                 ) : (
-                    categories.length === 0 || !categories.some(category => category.products && category.products.length > 0) ? (
+                    categories.length === 0 ? (
                         <View style={styles.emptyMessageContainer}>
                             <Text style={styles.emptyMessageText}>Nenhum produto ou categoria disponível no momento.</Text>
-                            {/* <Text style={styles.emptyMessageTextSub}>Por favor, tente novamente mais tarde.</Text> */}
                         </View>
                     ) : (
                         categories.map((category) => (
@@ -252,13 +261,15 @@ export default function Home() {
                                         style={styles.productContainer}
                                         onPress={() => handleProductPress(product)}
                                     >
-                                        <Image
-                                            source={imageError[product.id]
-                                                ? require('../../assets/logo.png')
-                                                : { uri: `${api.defaults.baseURL}${product.banner}` }}
-                                            onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))}
-                                            style={styles.productImage}
-                                        />
+                                       {imageError[product.id] || !product.banner ? (
+                                            <DefaultLogoImage style={styles.productImage} />
+                                        ) : (
+                                            <Image
+                                                source={{ uri: `${api.defaults.baseURL}${product.banner}` }}
+                                                onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))}
+                                                style={styles.productImage}
+                                            />
+                                        )}
                                         <View style={styles.productDetails}>
                                             <Text style={styles.productName}>{product.name}</Text>
                                             <Text style={styles.productDescription} numberOfLines={2}>
@@ -273,8 +284,6 @@ export default function Home() {
                     )
                 )}
             </View>
-
-
         </ScrollView>
     );
 }
