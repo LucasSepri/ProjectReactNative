@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../../services/api';
 
 import styles from './style';
-import { COLORS } from '../../../styles/COLORS';
+import { ThemeContext } from 'styled-components';
 
 export default function AdminCategorias() {
+    const theme = useContext(ThemeContext);
     const [name, setName] = useState('');
     const [categories, setCategories] = useState([]);
     const [editingCategory, setEditingCategory] = useState(null);
@@ -73,47 +74,47 @@ export default function AdminCategorias() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Adicionar Categorias</Text>
+        <View style={styles(theme).container}>
+            <Text style={styles(theme).title}>Adicionar Categorias</Text>
             <TextInput
-                style={styles.input}
+                style={styles(theme).input}
                 placeholder="Nome da Categoria"
                 value={name}
                 onChangeText={setName}
             />
 
-            <View style={styles.buttonContainer}>
+            <View style={styles(theme).buttonContainer}>
                 {/* Botão de Criar/Editar Produto */}
-                <TouchableOpacity onPress={handleAddCategory} style={[styles.button, styles.submitButton]}>
-                    <Text style={styles.buttonText}>
+                <TouchableOpacity onPress={handleAddCategory} style={[styles(theme).button, styles(theme).submitButton]}>
+                    <Text style={styles(theme).buttonText}>
                         {editingCategory ? "Editar" : "Adicionar"}
                     </Text>
                 </TouchableOpacity>
 
 
                 {editingCategory && (
-                    <TouchableOpacity onPress={handleCancelEdit} style={[styles.button, styles.cancelButton]}>
-                        <Text style={styles.buttonText}>Cancelar</Text>
+                    <TouchableOpacity onPress={handleCancelEdit} style={[styles(theme).button, styles(theme).cancelButton]}>
+                        <Text style={styles(theme).buttonText}>Cancelar</Text>
                     </TouchableOpacity>
                 )}
             </View>
 
 
-            {error && <Text style={styles.error}>{error}</Text>}
+            {error && <Text style={styles(theme).error}>{error}</Text>}
 
-            <Text style={styles.title}>Categorias</Text>
+            <Text style={styles(theme).title}>Categorias</Text>
             <FlatList
                 data={categories}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={styles.categoryItem}>
-                        <Text style={styles.textoCategorias}>{item.name}</Text>
-                        <View style={styles.actions}>
+                    <View style={styles(theme).categoryItem}>
+                        <Text style={styles(theme).textoCategorias}>{item.name}</Text>
+                        <View style={styles(theme).actions}>
                             <TouchableOpacity onPress={() => handleEditCategory(item)}>
-                                <Text style={styles.editButton}>Editar</Text>
+                                <Text style={styles(theme).editButton}>Editar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteCategory(item.id)}>
-                                <Icon name="trash" size={20} style={{ color: COLORS.white }} />
+                            <TouchableOpacity style={styles(theme).deleteButton} onPress={() => handleDeleteCategory(item.id)}>
+                                <Icon name="trash" size={20} style={{ color: theme.white }} />
                             </TouchableOpacity>
                         </View>
                     </View>

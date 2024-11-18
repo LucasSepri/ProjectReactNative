@@ -1,374 +1,285 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, Platform, TextInput, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { Picker } from '@react-native-picker/picker';
-import { api } from '../../../services/api';
-import * as FileSystem from 'expo-file-system';
-import styles from './style';
+import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
+import { View, Text, TextInput, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../../styles/COLORS';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { StackParamList } from '../../../routes/admin.routes';
+import { api } from '../../../services/api';
+import styles from './style';
+import { DefaultLogoImage } from '../../../components/Logo';
+import { ThemeContext } from 'styled-components';
 
-const App = () => {
-    const [productName, setProductName] = useState('');
-    const [productPrice, setProductPrice] = useState('');
-    const [productDescription, setProductDescription] = useState('');
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [products, setProducts] = useState([]);
-    const [selectedCategoryView, setSelectedCategoryView] = useState(null);
-    const [loadingProducts, setLoadingProducts] = useState(false);
-    const [error, setError] = useState(null);
-    const [editingProduct, setEditingProduct] = useState(false);
-    const [productId, setProductId] = useState(null);
-    const scrollRef = useRef();
-
-    const loadCategories = async () => {
-        try {
-            const response = await api.get('/categories');
-            setCategories(response.data);
-            if (response.data.length > 0) {
-                setSelectedCategory(response.data[0].id);
-            }
-        } catch (err) {
-            setError('Erro ao carregar categorias.');
-        }
-    };
-
-    useEffect(() => {
-        loadCategories();
-    }, []);
-
-    const loadProducts = async () => {
-        try {
-            const response = await api.get('/products');
-            setProducts(response.data);
-        } catch (err) {
-            console.error('Erro ao buscar produtos:', err);
-            setError('Erro ao carregar produtos.');
-        }
-    };
-
-    useEffect(() => {
-        loadProducts();
-    }, []);
-
-    useEffect(() => {
-        (async () => {
-            const response = await api.get('/categories');
-            setCategories(response.data);
-            if (response.data.length > 0) {
-                setSelectedCategory(response.data[0].id);
-                setSelectedCategoryView('all');  // Default to viewing all products
-            }
-        })();
-    }, []);
-
-    useEffect(() => {
-        if (selectedCategoryView !== null) {
-            fetchProducts();
-        }
-    }, [selectedCategoryView]);
-
-    const fetchProducts = async () => {
-        setLoadingProducts(true);
-        try {
-            let response;
-            if (selectedCategoryView === 'all') {
-                response = await api.get('/products');
-            } else {
-                response = await api.get(`/products/${selectedCategoryView}`);
-            }
-            setProducts(response.data);
-        } catch (err) {
-            setError('Erro ao buscar produtos.');
-            console.error(err);
-        } finally {
-            setLoadingProducts(false);
-        }
-    };
-
-    const pickImageAsync = async () => {
-        let { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            alert('É necessário conceder permissão para acessar a galeria de imagens.');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
-        } else {
-            alert('Você não selecionou nenhuma imagem.');
-        }
-    };
-
-    useEffect(() => {
-        (async () => {
-            const response = await api.get('/categories');
-            setCategories(response.data);
-            if (response.data.length > 0) {
-                setSelectedCategory(response.data[0].id);
-            }
-        })();
-    }, []);
-
-    const handleSubmit = async () => {
-        let formData = new FormData();
-        formData.append('name', productName);
-        formData.append('price', productPrice);
-        formData.append('description', productDescription);
-        formData.append('category_id', selectedCategory);
-
-        if (selectedImage) {
-            try {
-                let fileUri;
-                if (editingProduct) {
-                    fileUri = selectedImage;
-                } else {
-                    const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-
-                    if (!fileInfo.exists) {
-                        throw new Error('File does not exist');
-                    }
-
-                    fileUri = fileInfo.uri;
-                }
-                const fileType = 'image/jpeg'; // or derive from fileInfo if available
-                const fileName = fileUri.split('/').pop();
-
-                formData.append('banner', { uri: fileUri, name: fileName, type: fileType } as any);
-
-            } catch (error) {
-                console.error('Error getting file info:', error);
-                Alert.alert('Erro', 'Erro ao obter informações do arquivo');
-                return;
-            }
-        }
-
-        try {
-            let response;
-            if (editingProduct) {
-                // formData.append('id', productId);
-                response = await api.put(`/products/${productId}`, formData, {
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                loadProducts();
-            } else {
-                response = await api.post('/products', formData, {
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                loadProducts();
-            }
-            if (response.status === 200) {
-                Alert.alert('Sucesso', editingProduct ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
-            }
-            setProductName('');
-            setProductPrice('');
-            setProductDescription('');
-            setSelectedImage(null);
-            setEditingProduct(null);
-        } catch (error) {
-            try {
-                handleSubmit();
-            } catch (error) {
-                console.error('Erro ao criar/editar produto:', error);
-                Alert.alert('Erro', editingProduct ? 'Erro ao editar produto' : 'Erro ao criar produto');
-            }
-        }
-    };
-
-    const handleEditProduct = (product) => {
-        setEditingProduct(true);
-        setProductName(product.name);
-        setProductPrice(String(product.price));
-        setProductDescription(product.description);
-        setSelectedImage(`${api.defaults.baseURL}${product.banner}`);
-        setSelectedCategory(product.category_id);
-        setProductId(product.id);
-        (scrollRef.current as ScrollView).scrollTo({ y: 0, animated: true });
-    };
-    const handleCancelEdit = () => {
-        setEditingProduct(false);
-        setProductName('');
-        setProductPrice('');
-        setProductDescription('');
-        setSelectedImage(null);
-        setSelectedCategory(categories[0].id);
-        setProductId(null);
-    }
-
-    const handleDeleteProduct = async (id) => {
-        try {
-            await api.delete(`/products/${id}`);
-            // setProducts(products.filter(product => product.id !== id));
-            loadProducts();
-            Alert.alert('Sucesso', 'Produto excluído com sucesso!');
-        } catch (err) {
-            setError('Erro ao excluir categoria.');
-        }
-    };
-
-    const getCategoryName = (categoryId) => {
-        const category = categories.find(category => category.id === categoryId);
-        return category ? category.name : 'Categoria desconhecida';
-    };
-
-    return (
-        <ScrollView ref={scrollRef} contentContainerStyle={styles.container}>
-            {editingProduct ? (
-                <Text style={styles.title}>Editar esse Produto</Text>
-            ) : (
-                <Text style={styles.title}>Crie um novo produto:</Text>
-            )}
-            <Text style={styles.label}>Escolha a categoria:</Text>
-
-            <View style={styles.pickerContainer}>
-                <TouchableOpacity onPress={loadCategories} style={styles.reloadButton}>
-                    <Ionicons name="refresh" style={styles.reloadIcon} />
-                </TouchableOpacity>
-                <Picker
-                    selectedValue={selectedCategory}
-                    onValueChange={value => setSelectedCategory(value)}
-                    style={styles.picker}
-                    dropdownIconColor={Platform.OS === 'ios' ? 'gray' : 'transparent'}
-                >
-                    {categories.map(category => (
-                        <Picker.Item key={category.id} label={category.name} value={category.id} />
-                    ))}
-                </Picker>
-            </View>
-
-            <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
-                {selectedImage ? (
-                    <Image source={{ uri: selectedImage }} style={styles.image} />
-                ) : (
-                    <Text style={styles.uploadText}>Toque para adicionar Imagem</Text>
-
-                )}
-            </TouchableOpacity>
-
-            <TextInput
-                placeholder='Nome do produto'
-                placeholderTextColor={COLORS.black}
-                value={productName}
-                onChangeText={setProductName}
-                autoCapitalize='none'
-                style={styles.input}
-            />
-            <TextInput
-                placeholder='Preço do produto'
-                placeholderTextColor={COLORS.black}
-                value={productPrice}
-                onChangeText={(text) => {
-                    // Substituir vírgulas por pontos
-                    const formattedText = text.replace(',', '.');
-                    setProductPrice(formattedText);
-                }}
-                keyboardType='numeric'
-                autoCapitalize='none'
-                style={styles.input}
-            />
-            <View style={styles.inpultContainer}>
-                <TextInput
-                    placeholder="Observações (opcional)"
-                    value={productDescription}
-                    onChangeText={setProductDescription}
-                    style={styles.inputDescription}
-                    multiline={true}
-                    numberOfLines={3}
-                    textAlignVertical="top"
-                    maxLength={400}
-                />
-                <Text style={styles.charCountText}>
-                    {400 - productDescription.length} caracteres restantes
-                </Text>
-            </View>
-
-            <View style={styles.buttonContainer}>
-                {/* Botão de Criar/Editar Produto */}
-                {(productName !== '' &&
-                    productPrice !== '' &&
-                    productDescription !== '' &&
-                    selectedImage !== null &&
-                    selectedCategory !== null) && (
-                        <TouchableOpacity onPress={handleSubmit} style={[styles.button, styles.submitButton]}>
-                            <Text style={styles.buttonText}>{editingProduct ? "Editar Produto" : "Criar Produto"}</Text>
-                        </TouchableOpacity>
-                    )}
-
-                {/* Exibir o botão "Cancelar" somente quando estiver editando */}
-                {editingProduct && (
-                    <TouchableOpacity onPress={handleCancelEdit} style={[styles.button, styles.cancelButton]}>
-                        <Text style={styles.buttonText}>Cancelar</Text>
-                    </TouchableOpacity>
-                )}
-            </View>
-
-
-
-            <Text style={styles.productsTitle}>Produtos</Text>
-
-            <View style={styles.pickerContainer}>
-                <TouchableOpacity onPress={loadProducts} style={styles.reloadButton}>
-                    <Ionicons name="refresh" style={styles.reloadIcon} />
-                </TouchableOpacity>
-                <Picker
-                    selectedValue={selectedCategoryView}
-                    onValueChange={value => setSelectedCategoryView(value)}
-                    style={styles.picker}
-                    dropdownIconColor={Platform.OS === 'ios' ? 'gray' : 'transparent'}
-                >
-                    <Picker.Item key="all" label="Todos os Produtos" value="all" />
-                    {categories.map(category => (
-                        <Picker.Item key={category.id} label={category.name} value={category.id} />
-                    ))}
-                </Picker>
-            </View>
-
-            <View style={styles.productsContainer}>
-                {loadingProducts ? (
-                    <ActivityIndicator size={60} color="red" />
-                ) : (
-                    products.map((item) => (
-                        <View key={item.id} style={styles.productItem}>
-                            <View style={styles.imageContainer}>
-                                <Image
-                                    source={{ uri: `${api.defaults.baseURL}${item.banner}` }}
-                                    style={styles.productImage}
-                                />
-                            </View>
-                            <View style={styles.infoContainer}>
-                                <View style={styles.actions}>
-                                    <TouchableOpacity onPress={() => handleEditProduct(item)} style={styles.editButton}>
-                                        <Text style={styles.editButtonText}>Editar</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleDeleteProduct(item.id)} style={styles.deleteButton}>
-                                        <Text style={styles.deleteButtonText}>Excluir</Text>
-                                    </TouchableOpacity>
-                                </View>
-
-                                <Text style={styles.productName}>{item.name}</Text>
-                                <Text style={styles.productDescription}>{item.description}</Text>
-                                <Text style={styles.productCategory}>{getCategoryName(item.category_id)}</Text>
-                                <Text style={styles.productPrice}>R$ {item.price}</Text>
-                            </View>
-                        </View>
-                    ))
-                )}
-            </View>
-        </ScrollView>
-    );
+type CategoryProps = {
+  id: string;
+  name: string;
 };
 
-export default App;
+type ProductProps = {
+  price: string;
+  ingredients: string;
+  description: string;
+  banner: string;
+  id: string;
+  name: string;
+  category: {
+    name: string;
+  };
+};
+
+type NavigationProp = NativeStackNavigationProp<StackParamList>;
+
+const PizzaScreen = () => {
+  const theme = useContext(ThemeContext);
+  const [categories, setCategories] = useState<CategoryProps[]>([]);
+  const [categorySelected, setCategorySelected] = useState<CategoryProps | null>(null);
+  const [products, setProducts] = useState<ProductProps[]>([]);
+  const [originalProducts, setOriginalProducts] = useState<ProductProps[]>([]); // Estado para armazenar os produtos originais
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState<{ [key: string]: boolean }>({});
+  const [productSelected, setProductSelected] = useState<ProductProps | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
+  const navigation = useNavigation<NavigationProp>();
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const categoryIcons = {
+    'Pizzas': 'pizza',
+    'Bebidas': 'beer',
+    'Sobremesas': 'ice-cream',
+  };
+
+  async function loadCategories() {
+    try {
+      const response = await api.get('/categories');
+      const categoriesWithProducts = await Promise.all(response.data.map(async (category: CategoryProps) => {
+        const productResponse = await api.get(`/products/${category.id}`);
+        return {
+          ...category,
+          hasProducts: productResponse.data.length > 0, // Adiciona uma propriedade para verificar se há produtos
+        };
+      }));
+
+      // Filtra categorias que têm produtos
+      const filteredCategories = categoriesWithProducts.filter(category => category.hasProducts);
+
+      // Se houver categorias com produtos, adiciona a categoria "Todos"
+      if (filteredCategories.length > 0) {
+        setCategories([{ id: 'all', name: 'Todos' }, ...filteredCategories]); // Adiciona a categoria "Todos"
+        setCategorySelected({ id: 'all', name: 'Todos' });
+      } else {
+        setCategories(filteredCategories); // Se não houver categorias com produtos, não adiciona "Todos"
+        setCategorySelected(null); // Reseta a categoria selecionada
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      if (categorySelected) {
+        loadProducts(); // Carrega os produtos somente se uma categoria estiver selecionada
+      } else {
+        loadCategories(); // Carrega categorias apenas quando necessário
+      }
+
+    }, [categorySelected, navigation])
+  );
+  const loadProducts = async () => {
+    setLoadingProducts(true);
+    try {
+      const response = await api.get(
+        categorySelected && categorySelected.id !== 'all'
+          ? `/products/${categorySelected.id}`
+          : '/products'
+      );
+
+      // Atualiza os produtos
+      const updatedProducts = response.data.map((product: ProductProps) => ({
+        ...product,
+        category: product.category || categorySelected,
+      }));
+
+      setProducts(updatedProducts);
+      setOriginalProducts(updatedProducts); // Salva os produtos originais
+      setProductSelected(updatedProducts[0]);  // Defina o primeiro produto como selecionado, se necessário
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, [categorySelected]);
+
+  const handleSearch = (text: string) => {
+    setSearchQuery(text);
+    if (text === '') {
+      setProducts(originalProducts); // Restaura os produtos originais quando o campo de pesquisa estiver vazio
+    } else {
+      const filtered = originalProducts.filter(product =>
+        product.name.toLowerCase().includes(text.toLowerCase()) ||
+        product.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setProducts(filtered); // Aplica o filtro
+    }
+  };
+
+  function handleChangeCategory(item: CategoryProps | null, index?: number) {
+    setCategorySelected(item);
+    if (index !== undefined) {
+      scrollViewRef.current?.scrollTo({ x: index * 150, animated: true });
+    }
+  }
+
+  const handleProductPress = (product: ProductProps) => {
+    navigation.navigate('AddProduct', { productId: product.id });
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    setLoadingDelete(prev => ({ ...prev, [productId]: true }));
+
+    try {
+      await api.delete(`/products/${productId}`);
+      setProducts(products.filter(product => product.id !== productId));
+      setOriginalProducts(originalProducts.filter(product => product.id !== productId));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingDelete(prev => ({ ...prev, [productId]: false }));
+      Alert.alert('Produto Deletado', 'Produto deletado com sucesso!');
+      loadCategories();
+    }
+  };
+
+
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    }
+    return text;
+  };
+
+  const renderProductItem = ({ item }: { item: ProductProps }) => (
+    <TouchableOpacity
+      style={styles(theme).foodItem}
+      onPress={() => handleProductPress(item)}
+    >
+      <View style={styles(theme).imageContainer}>
+        {imageError[item.id] || !item.banner ? (
+          <DefaultLogoImage style={styles(theme).image} theme={theme} />
+        ) : (
+          <Image
+            source={{ uri: `${api.defaults.baseURL}${item.banner}?t=${new Date().getTime()}` }}
+            onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
+            style={styles(theme).image}
+          />
+
+        )}
+      </View>
+      <View style={styles(theme).infoContainer}>
+        <Text style={styles(theme).name}>{item.name}</Text>
+        <Text style={styles(theme).category}>{item.category.name}</Text>
+        <Text style={styles(theme).ingredients} numberOfLines={2}>
+          {truncateText(item.description, 100)}
+        </Text>
+        <Text style={styles(theme).price}>
+          {Number(item.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+        </Text>
+
+
+      </View>
+
+      {loadingDelete[item.id] ? (
+        <View style={styles(theme).deleteButton}>
+          <ActivityIndicator size="small" color={theme.white} />
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={styles(theme).deleteButton}
+          onPress={async () => {
+            await handleDeleteProduct(item.id);
+          }}
+        >
+          <Ionicons name="trash" size={24} color={theme.white} />
+        </TouchableOpacity>
+      )}
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles(theme).container}>
+      <View style={styles(theme).headerFilter}>
+        <View style={styles(theme).searchContainer}>
+          <Ionicons name="search" size={24} color={theme.primary} style={styles(theme).searchIcon} />
+          <TextInput
+            style={styles(theme).searchInput}
+            placeholder="Procure..."
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+
+        <View style={styles(theme).categoriasContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles(theme).categoriesListContainer}
+            ref={scrollViewRef}
+          >
+            {categories.map((item, index) => {
+              const iconForCategory = categoryIcons[item.name] || 'fast-food';
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  style={[
+                    styles(theme).categoryButton,
+                    item.id === categorySelected?.id && styles(theme).selectedCategoryButton,
+                  ]}
+                  onPress={() => handleChangeCategory(item, index)}
+                >
+                  <Ionicons name={iconForCategory} style={[
+                    styles(theme).iconeCategorias, item.id === categorySelected?.id && { color: theme.white }
+                  ]} />
+                  <Text style={[styles(theme).categoryButtonText, item.id === categorySelected?.id && { color: theme.white }]}>{item.name}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+
+          {!loadingProducts && (
+            <TouchableOpacity style={styles(theme).adicionarProdutos} onPress={
+              () => navigation.navigate('AddProduct', { productId: null })
+            }>
+              <Text style={styles(theme).adicionarProdutosText}>Adicionar Produto</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {loadingProducts ? (
+        <ActivityIndicator size={33} color={theme.black} />
+      ) : products.length === 0 ? ( // Verifica se não há produtos
+        <View style={styles(theme).noProductsContainer}>
+          <Text style={styles(theme).noProductsText}>Não há produtos disponíveis</Text>
+          <Text style={styles(theme).noProductsTextSub}>Adicione para ver aqui</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={products}
+          renderItem={renderProductItem}
+          keyExtractor={item => item.id}
+        />
+      )}
+    </View>
+  );
+};
+
+export default PizzaScreen;

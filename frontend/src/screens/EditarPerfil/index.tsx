@@ -16,13 +16,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
-import { COLORS } from '../../styles/COLORS';
-import styles from './style'; // Usar o mesmo estilo do SignUp
+import styles from './style'; 
 import { TextInputMask } from 'react-native-masked-text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DefaultProfileAddImage } from '../../components/Profile';
+import { ThemeContext } from 'styled-components';
 
 export default function EditarPerfil() {
+  const theme = useContext(ThemeContext);
   const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
   const { user, setUser } = useContext(AuthContext);
   const [name, setName] = useState(user.name);
@@ -134,35 +135,37 @@ export default function EditarPerfil() {
 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Editar Perfil</Text>
+    <View style={styles(theme).container}>
+      <Text style={styles(theme).title}>Editar Perfil</Text>
 
-      {selectedImage && selectedImage !== `${api.defaults.baseURL}${user.profileImage}` ? (
-        <TouchableOpacity onPress={pickImageAsync} style={styles.imagePicker}>
-          <Image source={{ uri: selectedImage }} style={styles.image} />
+      {selectedImage !== null && user.profileImage ? (
+        <TouchableOpacity onPress={pickImageAsync} style={styles(theme).imagePicker}>
+          <Image source={{ uri: selectedImage }}
+          onError={(e) => setSelectedImage(null)}
+          style={styles(theme).image} />
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity onPress={pickImageAsync} style={[styles.imagePicker, styles.imagePlaceholder]}>
-          <DefaultProfileAddImage style={styles.defaultProfileIcon} />
-          <Text style={styles.imageText}>Adicionar Foto</Text>
+        <TouchableOpacity onPress={pickImageAsync} style={[styles(theme).imagePicker, styles(theme).imagePlaceholder]}>
+          <DefaultProfileAddImage style={styles(theme).defaultProfileIcon} theme={theme} />
+          <Text style={styles(theme).imageText}>Adicionar Foto</Text>
         </TouchableOpacity>
       )}
 
-      <View style={styles.inputContainer}>
+      <View style={styles(theme).inputContainer}>
         <TextInput
           placeholder='Nome Completo'
-          style={styles.input}
+          style={styles(theme).input}
           value={name}
           onChangeText={setName}
-          placeholderTextColor={COLORS.text}
+          placeholderTextColor={theme.text}
         />
         <TextInput
           placeholder='Email'
-          style={styles.input}
+          style={styles(theme).input}
           value={email}
           onChangeText={setEmail}
           autoCapitalize='none'
-          placeholderTextColor={COLORS.text}
+          placeholderTextColor={theme.text}
         />
         <TextInputMask
           type={'custom'}
@@ -170,28 +173,28 @@ export default function EditarPerfil() {
             mask: '(99) 9999-99999', // Máscara do telefone
           }}
           placeholder='Telefone'
-          style={styles.input}
+          style={styles(theme).input}
           value={phone}
           onChangeText={text => setphone(text)}
-          placeholderTextColor={COLORS.text}
+          placeholderTextColor={theme.text}
           keyboardType='phone-pad' // Define o teclado para números
           maxLength={15} // Limita o tamanho do campo
         />
         <TextInput
           placeholder='Nova Senha'
-          style={styles.input}
+          style={styles(theme).input}
           secureTextEntry={true}
           value={password}
           onChangeText={setPassword}
-          placeholderTextColor={COLORS.text}
+          placeholderTextColor={theme.text}
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => handleUpdateProfile(0)} disabled={loading}>
+      <TouchableOpacity style={styles(theme).button} onPress={() => handleUpdateProfile(0)} disabled={loading}>
         {loading ? (
-          <ActivityIndicator size="small" color={COLORS.white} />
+          <ActivityIndicator size="small" color={theme.white} />
         ) : (
-          <Text style={styles.buttonText}>Salvar</Text>
+          <Text style={styles(theme).buttonText}>Salvar</Text>
         )}
       </TouchableOpacity>
     </View>

@@ -1,19 +1,18 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     screenContainer: {
         flex: 1,
-        // backgroundColor: COLORS.background,
+        // backgroundColor: theme.background,
     },
     loadingContainer: {
         flex: 1,
-        // backgroundColor: COLORS.red,
+        // backgroundColor: theme.red,
         justifyContent: 'center',
         alignItems: 'center',
     },
     profileSection: {
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         elevation: 2,
         padding: 16,
     },
@@ -39,16 +38,16 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: COLORS.black,
+        color: theme.black,
         marginBottom: 4,
     },
     userPhone: {
         fontSize: 16,
-        color: COLORS.text,
+        color: theme.text,
     },
     userEmail: {
         fontSize: 16,
-        color: COLORS.text,
+        color: theme.text,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     logoutButton: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
         marginTop: 10,
         justifyContent: 'center',
         alignSelf: 'center',
@@ -73,23 +72,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     buttonText: {
-        color: COLORS.white,
+        color: theme.white,
         fontSize: 16,
         marginLeft: 8,
     },
     editButton: {
-        backgroundColor: COLORS.secondary,
+        backgroundColor: theme.secondary,
         marginRight: 10,
         padding: 8,
         borderRadius: 8,
     },
     deleteButton: {
-        backgroundColor: COLORS.danger,
+        backgroundColor: theme.danger,
         padding: 8,
         borderRadius: 8,
     },
     divider: {
-        // backgroundColor: COLORS.white,
+        // backgroundColor: theme.white,
         // marginHorizontal: 16,
         // paddingHorizontal: 16,
         width: '100%',
@@ -103,16 +102,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // alignSelf: 'center',
         alignContent: 'center',
-        backgroundColor: COLORS.secondary,
+        backgroundColor: theme.secondary,
         padding: 16,
         marginBottom: 10,
         elevation: 2,
     },
     addressHeaderText: {
-        // backgroundColor: COLORS.red,
+        // backgroundColor: theme.red,
         fontSize: 24,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
         flex: 1,
         textAlign: 'center',
     },
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 15,
         borderRadius: 10,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         marginBottom: 10,
         elevation: 1,
     },
@@ -136,20 +135,20 @@ const styles = StyleSheet.create({
     },
     addressText: {
         fontSize: 16,
-        color: COLORS.primary,
+        color: theme.primary,
     },
     addressSubtext: {
         fontSize: 14,
-        color: COLORS.secondary,
+        color: theme.secondary,
     },
     addButton: {
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 8,
     },
     addButtonText: {
-        color: COLORS.secondary,
+        color: theme.secondary,
         fontSize: 16,
     },
     addressListContainer: {
@@ -165,11 +164,11 @@ const styles = StyleSheet.create({
     emptyAddressTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.primary,
+        color: theme.primary,
     },
     emptyAddressText: {
         fontSize: 14,
-        color: COLORS.secondary,
+        color: theme.secondary,
         textAlign: 'center',
         marginTop: 8,
     },

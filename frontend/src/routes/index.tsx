@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { View, ActivityIndicator, Text } from "react-native";
-import { COLORS } from "../styles/COLORS";
+import { useTheme } from "styled-components";
 
 import AppRoutes from "./app.routes";
 import AdminRoutes from "./admin.routes"; // Certifique-se de que este componente existe
@@ -8,6 +8,7 @@ import AdminRoutes from "./admin.routes"; // Certifique-se de que este component
 import { AuthContext } from "../context/AuthContext";
 
 function Routes() {
+    const theme = useTheme();
 
     const { isAuthenticated, loading, user } = useContext(AuthContext);
 
@@ -16,12 +17,12 @@ function Routes() {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: COLORS.background,
+                    backgroundColor: theme.background,
                     justifyContent: "center",
                     alignItems: "center"
                 }}
             >
-                <ActivityIndicator size={60} color={COLORS.primary} />
+                <ActivityIndicator size={60} color={theme.primary} />
             </View>
         );
     }

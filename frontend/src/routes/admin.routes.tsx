@@ -1,6 +1,5 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { COLORS } from "../styles/COLORS";
 
 
 import EditarPerfil from "../screens/EditarPerfil";
@@ -10,10 +9,15 @@ import Endereco from "../screens/Address";
 import QrcodeGerneretor from "../screens/Admin/QrcodeGeneretor";
 import Config from "../screens/Admin/Config";
 import PaymentMethods from "../screens/Admin/PaymentMethods";
+import AddProduct from "../screens/Admin/AddProduct";
+import ChatAtendimento from "../screens/Admin/ChatAtendimento";
+import OrderDetails from "../screens/OrderDetails";
 
+import { useTheme } from "styled-components";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
+    ListUsers: undefined;
     EditarPerfil: undefined;
     AdminRoutes: undefined;
     MapScreen: {
@@ -29,16 +33,27 @@ export type StackParamList = {
         city: string;
         state: string;
         isVisualize: boolean;
+        addForUser: boolean;
     };
     Endereco: undefined;
     QrcodeGerneretor: undefined;
     Config: undefined;
     PaymentMethods: undefined;
+    AddProduct: {
+        productId: string;
+    };
+    ChatAtendimento: {
+        chatId: string;
+    };
+    OrderDetails: {
+        orderId: string;
+    };
 }
 
 const Stack = createStackNavigator<StackParamList>();
 
 function AppRoutes() {
+    const theme = useTheme();
     return (
         <Stack.Navigator>
             <Stack.Screen
@@ -53,9 +68,9 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Editar Perfil",
                     headerStyle: {
-                        backgroundColor: COLORS.background,
+                        backgroundColor: theme.background,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }}
             />
             <Stack.Screen
@@ -64,9 +79,9 @@ function AppRoutes() {
                 options={{
                     title: "Mapa",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
             <Stack.Screen
                 name="Endereco"
@@ -74,9 +89,9 @@ function AppRoutes() {
                 options={{
                     title: "Endereco",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
             <Stack.Screen
                 name="QrcodeGerneretor"
@@ -84,9 +99,9 @@ function AppRoutes() {
                 options={{
                     title: "Gerador de QrCode",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
             <Stack.Screen
                 name="Config"
@@ -94,9 +109,9 @@ function AppRoutes() {
                 options={{
                     title: "Configurações",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
             <Stack.Screen
                 name="PaymentMethods"
@@ -104,11 +119,41 @@ function AppRoutes() {
                 options={{
                     title: "Métodos de Pagamento",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
-
+            <Stack.Screen
+                name="AddProduct"
+                component={AddProduct}
+                options={{
+                    title: "Adicionar Produto",
+                    headerStyle: {
+                        backgroundColor: theme.primary,
+                    },
+                    headerTintColor: theme.white,
+                }} />
+            <Stack.Screen
+                name="ChatAtendimento"
+                component={ChatAtendimento}
+                options={{
+                    title: "Chat de Atendimento",
+                    headerStyle: {
+                        backgroundColor: theme.primary,
+                    },
+                    headerTintColor: theme.white,
+                }} />
+            <Stack.Screen
+                name="OrderDetails"
+                component={OrderDetails}
+                options={{
+                    title: "Detalhes da Compra",
+                    headerStyle: {
+                        backgroundColor: theme.primary,
+                    },
+                    headerTintColor: theme.white
+                }}
+            />
 
         </Stack.Navigator>
     );

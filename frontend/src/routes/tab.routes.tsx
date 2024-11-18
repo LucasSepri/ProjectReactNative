@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -9,18 +9,19 @@ import Carrinho from '../screens/Cart';
 import Favoritos from '../screens/Favorites';
 import Chat from '../screens/Chat';
 
-
 // Componente para Customizar a Barra de Navegação
 import CustomTabBar from '../components/CustomTabBar';
+import { ThemeContext } from 'styled-components';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabRoutes() {
+    const theme = useContext(ThemeContext); // Aqui usamos o useContext para obter o tema
 
     return (
         <Tab.Navigator
             screenOptions={{ headerShown: false }}
-            tabBar={(props) => <CustomTabBar {...props} />}
+            tabBar={(props) => <CustomTabBar {...props} theme={theme} />} // Passando o theme para o CustomTabBar
         >
             <Tab.Screen
                 name="Home"

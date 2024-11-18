@@ -1,28 +1,27 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
     padding: 20,
   },
   title: {
     fontSize: 28,
-    color: COLORS.primary,
+    color: theme.primary,
     fontWeight: 'bold',
     marginBottom: 6,
   },
   subTitle: {
     fontSize: 14,
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: 30,
   },
   imagePicker: {
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: theme.primary,
     borderStyle: 'dashed',
     borderRadius: 8,
     width: 150,
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
   },
   image: {
     width: '100%',
@@ -44,9 +43,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column', // Coloca o ícone e o texto em coluna
   },
   imageText: {
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 12,
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     paddingVertical: 4,
     borderRadius: 4,
     textAlign: 'center',
@@ -61,26 +60,26 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 8,
     fontSize: 16,
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: theme.border,
   },
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4,
   },
   buttonText: {
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 18,
     fontWeight: 'bold',
   }

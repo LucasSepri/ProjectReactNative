@@ -1,10 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     paddingBottom: 90,
   },
   header: {
@@ -13,8 +12,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: COLORS.white,
-    backgroundColor: COLORS.primary,
+    color: theme.white,
+    backgroundColor: theme.primary,
     textTransform: 'uppercase',
   },
   addressPickerContainer: {
@@ -26,7 +25,7 @@ const styles = StyleSheet.create({
   addressPicker: {
     flex: 1,
     borderWidth: 1,
-    borderColor: COLORS.primary,
+    borderColor: theme.primary,
     padding: 10,
     borderRadius: 5,
     flexDirection: 'row',
@@ -37,12 +36,12 @@ const styles = StyleSheet.create({
   qrCodeButton: {
     marginLeft: 10,
     padding: 10,
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     borderRadius: 5,
   },
   addAddressButton: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     padding: 10,
     borderRadius: 5,
     flexDirection: 'row',
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addAddressText: {
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -70,12 +69,12 @@ const styles = StyleSheet.create({
   addressItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: COLORS.text,
+    borderColor: theme.text,
     flexDirection: 'row',
     alignItems: 'center',
   },
   textAddress: {
-    color: COLORS.text,
+    color: theme.text,
     fontSize: 16,
     marginLeft: 10,
     flex: 1,
@@ -86,8 +85,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   closeModalText: {
-    backgroundColor: COLORS.primary,
-    color: COLORS.white,
+    backgroundColor: theme.primary,
+    color: theme.white,
     paddingVertical: 10,
     paddingHorizontal: 80,
     borderRadius: 10,
@@ -97,9 +96,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    borderColor: COLORS.border,
+    borderColor: theme.border,
     borderBottomWidth: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
     borderRadius: 10,
     elevation: 3,
     marginHorizontal: 16,
@@ -113,6 +112,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     marginRight: 10,
+    borderRadius: 10,
   },
   cardInfo: {
     flex: 1,
@@ -123,14 +123,14 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 14,
-    color: COLORS.secondary,
+    color: theme.secondary,
   },
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   quantityButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     padding: 5,
     borderRadius: 5,
   },
@@ -141,41 +141,41 @@ const styles = StyleSheet.create({
   orderSummary: {
     padding: 16,
     borderTopWidth: 1,
-    borderColor: COLORS.background,
+    borderColor: theme.background,
   },
   summaryText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: theme.white,
   },
   orderButton: {
     flexDirection: 'column',
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     paddingVertical: 12,
     alignItems: 'center',
     borderRadius: 5,
     marginTop: 10,
   },
   orderTextButton: {
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 18,
     fontWeight: 'bold',
   },
-  observationContainer:{
+  observationContainer: {
     marginHorizontal: 16,
-    borderColor: COLORS.border,
+    borderColor: theme.border,
     borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     padding: 10,
   },
   observationInput: {
     borderRadius: 5,
-    color: COLORS.text,
+    color: theme.text,
   },
 
   charCountText: {
-    color: COLORS.danger,
+    color: theme.danger,
     fontSize: 12,
     marginTop: 5,
     textAlign: 'right', // opcional, ajuste conforme necessário
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   textLoading: {
-    color: COLORS.primary,
+    color: theme.primary,
     fontSize: 26,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -197,36 +197,95 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
   },
   emptyMessage: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: COLORS.primary,
+    color: theme.primary,
     textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: 'bold',
   },
   emptyInstruction: {
-    fontSize: 14,
-    color: COLORS.text,
+    fontSize: 16,
+    color: theme.secondary,
+    textAlign: 'center',
   },
   botaoMesaSair: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     padding: 10,
     borderRadius: 5,
     margin: 10,
   },
   textoMesaSair: {
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 16,
     fontWeight: 'bold',
   },
   iconeMesaSair: {
     marginLeft: 10,
-    color: COLORS.white,
+    color: theme.white,
   },
+
+
+  modalOverlayP: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainerP: {
+    width: '90%',
+    padding: 20,
+    backgroundColor: theme.background,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15,
+    color: theme.text,
+  },
+  paymentMethodItem: {
+    padding: 15,
+    borderWidth: 1,
+    borderColor: theme.border,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  selectedPaymentMethod: {
+    borderColor: theme.primary,
+    backgroundColor: theme.primary,
+  },
+  paymentMethodText: {
+    fontSize: 16,
+    color: theme.text,
+  },
+  confirmButton: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: theme.primary,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  confirmButtonText: {
+    fontSize: 16,
+    color: theme.white,
+    fontWeight: 'bold',
+  },
+  closeModalButtonP: {
+    marginTop: 10,
+    padding: 10,
+    alignItems: 'center',
+  },
+  closeModalTextP: {
+    fontSize: 14,
+    color: theme.danger,
+  },
+
 });
 
 

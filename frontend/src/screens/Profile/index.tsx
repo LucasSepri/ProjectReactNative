@@ -6,10 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { COLORS } from '../../styles/COLORS';
 import styles from './style';
 import axios from 'axios';
 import { DefaultProfileImage } from '../../components/Profile';
+import { ThemeContext } from 'styled-components';
 
 type AddressProps = {
     zip: string;
@@ -26,6 +26,7 @@ type AddressProps = {
 };
 
 const PerfilEnderecoScreen = () => {
+    const theme = useContext(ThemeContext);
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
     const { user, signOut, isAuthenticated } = useContext(AuthContext);
     const [addresses, setAddresses] = useState<AddressProps[]>([]);
@@ -71,6 +72,7 @@ const PerfilEnderecoScreen = () => {
                 text: 'Remover',
                 style: 'destructive',
                 onPress: async () => {
+                    setLoading(true);
                     try {
                         await api.delete(`/addresses/${id}`, {
                             headers: { Authorization: `Bearer ${user.token}` },
@@ -79,6 +81,7 @@ const PerfilEnderecoScreen = () => {
                     } catch (error) {
                         console.error('Erro ao remover endereço:', error.response?.data || error.message);
                     }
+                    setLoading(false);
                 },
             },
         ]);
@@ -98,6 +101,7 @@ const PerfilEnderecoScreen = () => {
             city: item.city,
             state: item.state,
             isVisualize: true,
+            addForUser: false,
         });
     };
 
@@ -123,81 +127,81 @@ const PerfilEnderecoScreen = () => {
     };
 
     const renderAddressItem = ({ item }: { item: AddressProps }) => (
-        <View style={styles.addressItemContainer}>
-            <TouchableOpacity style={styles.addressContainer} onPress={() => handleOpenMap(item)}>
-                <MaterialIcons name="location-on" size={24} color={COLORS.primary} />
-                <View style={styles.addressInfo}>
-                    <Text style={styles.addressText}>{item.street}, {item.number}</Text>
-                    <Text style={styles.addressSubtext}>{item.neighborhood}, {item.city} - {item.state}</Text>
+        <View style={styles(theme).addressItemContainer}>
+            <TouchableOpacity style={styles(theme).addressContainer} onPress={() => handleOpenMap(item)}>
+                <MaterialIcons name="location-on" size={24} color={theme.primary} />
+                <View style={styles(theme).addressInfo}>
+                    <Text style={styles(theme).addressText}>{item.street}, {item.number}</Text>
+                    <Text style={styles(theme).addressSubtext}>{item.neighborhood}, {item.city} - {item.state}</Text>
                 </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleRemoveAddress(item.id)}>
-                <MaterialIcons name="delete" size={24} color={COLORS.danger} />
+                <MaterialIcons name="delete" size={24} color={theme.danger} />
             </TouchableOpacity>
         </View>
     );
 
     return (
-        <View style={styles.screenContainer}>
-            <View style={styles.profileSection}>
-                <View style={styles.headerSection}>
+        <View style={styles(theme).screenContainer}>
+            <View style={styles(theme).profileSection}>
+                <View style={styles(theme).headerSection}>
                     {user.profileImage && !imageError[user.id] ? (
-                        <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}` }} 
-                        onError={() => setImageError(prevState => ({ ...prevState, [user.id]: true }))}
-                        style={styles.profileImage} />
+                        <Image source={{ uri: `${api.defaults.baseURL}${user.profileImage}?t=${new Date().getTime()}` }}
+                            onError={() => setImageError(prevState => ({ ...prevState, [user.id]: true }))}
+                            style={styles(theme).profileImage} />
                     ) : (
-                        <DefaultProfileImage style={styles.profileImage} />
+                        <DefaultProfileImage style={styles(theme).profileImage} theme={theme} />
                     )}
-                    <View style={styles.userInfo}>
-                        <Text style={styles.userName}>{user.name}</Text>
-                        <Text style={styles.userPhone}>{user.phone}</Text>
-                        <Text style={styles.userEmail}>{user.email}</Text>
+                    <View style={styles(theme).userInfo}>
+                        <Text style={styles(theme).userName}>{user.name}</Text>
+                        <Text style={styles(theme).userPhone}>{user.phone}</Text>
+                        <Text style={styles(theme).userEmail}>{user.email}</Text>
                     </View>
                 </View>
 
-                <View style={styles.actionSection}>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => navigation.navigate('EditarPerfil')}>
-                            <Ionicons name="pencil" size={24} color={COLORS.white} />
-                            <Text style={styles.buttonText}>Editar Perfil</Text>
+                <View style={styles(theme).actionSection}>
+                    <View style={styles(theme).buttonContainer}>
+                        <TouchableOpacity style={[styles(theme).button, styles(theme).editButton]} onPress={() => navigation.navigate('EditarPerfil')}>
+                            <Ionicons name="pencil" size={24} color={theme.white} />
+                            <Text style={styles(theme).buttonText}>Editar Perfil</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDeleteUser}>
-                            <Ionicons name="trash" size={24} color={COLORS.white} />
-                            <Text style={styles.buttonText}>Excluir Conta</Text>
+                        <TouchableOpacity style={[styles(theme).button, styles(theme).deleteButton]} onPress={handleDeleteUser}>
+                            <Ionicons name="trash" size={24} color={theme.white} />
+                            <Text style={styles(theme).buttonText}>Excluir Conta</Text>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.logoutButton} onPress={signOut}>
-                        <Ionicons name="log-out" size={24} color={COLORS.white} />
-                        <Text style={styles.buttonText}>Sair</Text>
+                    <TouchableOpacity style={styles(theme).logoutButton} onPress={signOut}>
+                        <Ionicons name="log-out" size={24} color={theme.white} />
+                        <Text style={styles(theme).buttonText}>Sair</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <View style={styles.divider}>
-                <View style={styles.addressHeader}>
-                    <Text style={styles.addressHeaderText}>ENDEREÇOS</Text>
+            <View style={styles(theme).divider}>
+                <View style={styles(theme).addressHeader}>
+                    <Text style={styles(theme).addressHeaderText}>ENDEREÇOS</Text>
                     {loading ? null : (
-                        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Endereco')}>
-                            <Text style={styles.addButtonText}>Adicionar Endereço</Text>
+                        <TouchableOpacity style={styles(theme).addButton} onPress={() => navigation.navigate('Endereco', { addForUser: true })}>
+                            <Text style={styles(theme).addButtonText}>Adicionar Endereço</Text>
                         </TouchableOpacity>
                     )}
                 </View>
 
                 {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={COLORS.primary} />
+                    <View style={styles(theme).loadingContainer}>
+                        <ActivityIndicator size={33} color={theme.primary} />
                     </View>
                 ) : addresses.length === 0 ? (
-                    <View style={styles.emptyAddressContainer}>
-                        <Text style={styles.emptyAddressTitle}>Nenhum endereço cadastrado.</Text>
-                        <Text style={styles.emptyAddressText}>Toque no botão acima para adicionar um endereço.</Text>
+                    <View style={styles(theme).emptyAddressContainer}>
+                        <Text style={styles(theme).emptyAddressTitle}>Nenhum endereço cadastrado.</Text>
+                        <Text style={styles(theme).emptyAddressText}>Toque no botão acima para adicionar um endereço.</Text>
                     </View>
                 ) : (
                     <FlatList
                         data={addresses}
                         keyExtractor={(item) => item.id}
                         renderItem={renderAddressItem}
-                        contentContainerStyle={styles.addressListContainer}
+                        contentContainerStyle={styles(theme).addressListContainer}
                     />
                 )}
 

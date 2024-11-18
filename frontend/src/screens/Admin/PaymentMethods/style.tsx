@@ -1,17 +1,16 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../../styles/COLORS";
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: COLORS.background,
+        backgroundColor: theme.background,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: COLORS.text,
+        color: theme.text,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -25,35 +24,35 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
-        shadowColor: COLORS.black,
+        shadowColor: theme.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 3,
         elevation: 3,
     },
     submitButton: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
     },
     cancelButton: {
-        backgroundColor: COLORS.secondary,
+        backgroundColor: theme.secondary,
     },
     buttonText: {
-        color: COLORS.white,
+        color: theme.white,
         fontSize: 16,
         fontWeight: 'bold',
     },
     input: {
         height: 40,
-        borderColor: COLORS.border,
+        borderColor: theme.border,
         borderWidth: 1,
         borderRadius: 5,
         marginBottom: 20,
         paddingHorizontal: 10,
-        backgroundColor: COLORS.white,
-        color: COLORS.text,
+        backgroundColor: theme.white,
+        color: theme.text,
     },
     error: {
-        color: COLORS.danger,
+        color: theme.danger,
         marginBottom: 20,
     },
     paymentMethodItem: {
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         alignItems: 'center',
         padding: 10,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 8,
         elevation: 3,
         flexDirection: 'row',
@@ -70,19 +69,19 @@ const styles = StyleSheet.create({
     textoPaymentMethods: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.text,
+        color: theme.text,
     },
     actions: {
         alignItems: 'center',
         flexDirection: 'row',
     },
     editButton: {
-        color: COLORS.primary,
+        color: theme.primary,
         marginRight: 10,
         fontSize: 16,
     },
     deleteButton: {
-        backgroundColor: COLORS.danger,
+        backgroundColor: theme.danger,
         padding: 10,
         borderRadius: 8,
         alignSelf: 'flex-start',

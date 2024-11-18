@@ -9,6 +9,7 @@ interface CreateOrderServiceData {
   longitude?: number;
   tableNumber?: string;
   observation?: string;
+  paymentMethod: string; // Adicionado
 }
 
 class CreateOrderService {
@@ -20,8 +21,8 @@ class CreateOrderService {
     longitude,
     tableNumber,
     observation,
+    paymentMethod, // Adicionado
   }: CreateOrderServiceData): Promise<Order> {
-    // Buscamos os itens do carrinho do usuário
     const cart = await prisma.cart.findUnique({
       where: { user_id: userId },
       include: { 
@@ -34,12 +35,10 @@ class CreateOrderService {
       throw new Error('Carrinho vazio');
     }
 
-    // Calcula o total do pedido somando o preço de cada item do carrinho
     const totalPrice = cart.items.reduce((total, item) => {
       return total + item.product.price * item.amount;
     }, 0);
 
-    // Criamos o pedido
     const order = await prisma.order.create({
       data: {
         user_id: userId,
@@ -52,8 +51,9 @@ class CreateOrderService {
         longitude,
         tableNumber,
         observation,
+        paymentMethod, // Adicionado
         totalPrice,
-        status: 'Criado', // Status inicial do pedido
+        status: 'Criado',
         items: {
           create: cart.items.map((item) => ({
             product_name: item.product.name,
@@ -65,7 +65,6 @@ class CreateOrderService {
       },
     });
 
-    // Após criar o pedido, limpa o carrinho do usuário
     await prisma.cartItem.deleteMany({
       where: { cart_id: cart.id },
     });

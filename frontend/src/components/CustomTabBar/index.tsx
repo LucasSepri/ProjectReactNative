@@ -1,18 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { COLORS } from '../../styles/COLORS';
 
 interface CustomTabBarProps {
     state: any;
     descriptors: any;
     navigation: any;
+    theme: any; // O tema agora é obrigatório
 }
 
-const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigation }) => {
+const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigation, theme }) => {
     return (
-        <View style={styles.container}>
-            <View style={styles.content}>
+        <View style={styles(theme).container}>
+            <View style={styles(theme).content}>
                 {state.routes.map((route, index) => {
                     const { options } = descriptors[route.key];
 
@@ -46,11 +46,11 @@ const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigat
                             testID={options.tabBarTestID}
                             onPress={onPress}
                             onLongPress={onLongPress}
-                            style={styles.buttonTab}
+                            style={styles(theme).buttonTab}
                         >
                             <View style={{ alignItems: 'center', padding: 4 }}>
-                                <View style={[styles.innerButton, { backgroundColor: isFocused ? COLORS.primary : "transparent" }]}>
-                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? COLORS.white : COLORS.black, size: 34 })}
+                                <View style={[styles(theme).innerButton, { backgroundColor: isFocused ? theme.primary : "transparent" }]}>
+                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? theme.white : theme.black, size: 34 })}
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -61,7 +61,7 @@ const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigat
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -74,10 +74,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         position: 'absolute',
         bottom: 0,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme?.white, // Usando o tema aqui
         gap: 0,
         elevation: 10,
-        shadowColor: COLORS.black,
+        shadowColor: theme?.black,
         shadowOffset: {
             width: 0,
             height: 2,
@@ -85,12 +85,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3.80,
     },
-
     buttonTab: {
         justifyContent: 'center',
         alignItems: 'center',
     },
-
     innerButton: {
         padding: 10,
         borderRadius: 99,

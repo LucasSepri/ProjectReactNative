@@ -13,13 +13,14 @@ import {
   ScrollView
 } from 'react-native';
 import styles from './style';
-import { COLORS } from '../../styles/COLORS';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useTable } from '../../context/TableContext';
 import { useFocusEffect } from '@react-navigation/native';
-import DefaultLogoImage from '../../components/Logo';
+import { DefaultLogoImage } from '../../components/Logo';
+import { set } from 'react-hook-form';
+import { ThemeContext } from 'styled-components';
 
 type AddressProps = {
   zip: string;
@@ -36,6 +37,7 @@ type AddressProps = {
 };
 
 const Carrinho = ({ navigation }) => {
+  const theme = useContext(ThemeContext);
   const { isAuthenticated, user } = useContext(AuthContext);
   const { tableNumber, clearTable } = useTable();
 
@@ -48,12 +50,30 @@ const Carrinho = ({ navigation }) => {
   const [addressVisible, setAddressVisible] = useState(true);
   const [imageError, setImageError] = useState({});
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisibleP, setModalVisibleP] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+
+
+  const loadPaymentMethods = async () => {
+    try {
+      const response = await api.get('/payment-methods');
+      setPaymentMethods(response.data);
+    } catch (error) {
+      // console.error('Erro ao carregar métodos de pagamento:', error);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    loadPaymentMethods();
+  }, []);
 
 
   useEffect(() => {
     loadCartItems();
     loadUserAddresses();
-    const unsubscribe = navigation.addListener('focus', loadCartItems);
+    const unsubscribe = navigation.addListener('focus', loadCartItems, loadUserAddresses);
     return unsubscribe;
   }, [isAuthenticated, navigation]);
 
@@ -95,14 +115,28 @@ const Carrinho = ({ navigation }) => {
       setUserAddresses(response.data);
     } catch (error) {
       console.error('Erro ao buscar endereços:', error);
+      setUserAddresses([]);
     }
   };
 
-  const handleOrderSubmit = async () => {
+
+
+  const handleOrderSubmit = async (selectedPaymentMethod: string) => {
+    // alert(selectedPaymentMethod);
     if (!selectedAddress) {
-      Alert.alert('Endereço não selecionado', 'Por favor, selecione um endereço para entrega.');
+      Alert.alert('Endereço não selecionado', 'Por favor, Adicione um endereço para entrega.', [
+        { text: 'OK', onPress: userAddresses.length > 0 ? () => setModalVisible(true) : handleAddAddress },
+      ]);
       return;
     }
+    if (!selectedPaymentMethod) {
+      Alert.alert('Método de pagamento não selecionado', 'Por favor, Selecione um método de pagamento para a entrega.', [
+        { text: 'OK', onPress: () => setModalVisible(true) },
+      ]);
+      return;
+    }
+
+
 
     setLoading(true);
     try {
@@ -112,20 +146,21 @@ const Carrinho = ({ navigation }) => {
         observation,
         latitude: userAddresses.find(addr => addr.street === selectedAddress.split(',')[0])?.latitude, // obter latitude
         longitude: userAddresses.find(addr => addr.street === selectedAddress.split(',')[0])?.longitude, // obter longitude
+        paymentMethod: selectedPaymentMethod,
       });
 
       navigation.navigate('Pedidos');
       Alert.alert('Pedido Finalizado', 'Seu pedido foi realizado com sucesso!');
-      // Aqui, você pode redirecionar o usuário para outra tela ou limpar o carrinho
-      clearTable(); // Se você quiser limpar a mesa após a finalização do pedido
-      setCartItems([]); // Limpa os itens do carrinho
+      clearTable();
+      setCartItems([]);
     } catch (error) {
-      console.error('Erro ao finalizar o pedido:', error);
+      console.error('Erro ao finalizar o pedido:', error.response?.data || error);
       Alert.alert('Erro', 'Ocorreu um erro ao finalizar o pedido. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
+
 
 
 
@@ -168,31 +203,31 @@ const Carrinho = ({ navigation }) => {
     const totalPrice = item.product.price * item.amount;
 
     return (
-      <View style={styles.cartCard}>
-        <TouchableOpacity style={styles.removeButton} onPress={() => handleRemove(item.product_id)}>
-          <Icon name="trash" size={20} color={COLORS.danger} />
+      <View style={styles(theme).cartCard}>
+        <TouchableOpacity style={styles(theme).removeButton} onPress={() => handleRemove(item.product_id)}>
+          <Icon name="trash" size={20} color={theme.danger} />
         </TouchableOpacity>
         {imageError[item.product.id] ? (
-          <DefaultLogoImage style={styles.image} />
+          <DefaultLogoImage style={styles(theme).image} theme={theme} />
         ) : (
           <Image
-            source={{ uri: `${api.defaults.baseURL}${item.product.banner}` }}
+            source={{ uri: `${api.defaults.baseURL}${item.product.banner}?t=${new Date().getTime()}` }}
             onError={() => setImageError(prev => ({ ...prev, [item.product.id]: true }))}
-            style={styles.image}
+            style={styles(theme).image}
           />
         )}
 
-        <View style={styles.cardInfo}>
-          <Text style={styles.itemName}>{item.product.name}</Text>
-          <Text style={styles.price}>R$ {totalPrice.toFixed(2)}</Text>
+        <View style={styles(theme).cardInfo}>
+          <Text style={styles(theme).itemName}>{item.product.name}</Text>
+          <Text style={styles(theme).price}>{Number(totalPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
         </View>
-        <View style={styles.quantityContainer}>
-          <TouchableOpacity style={styles.quantityButton} onPress={() => updateItemAmount(item, -1)}>
-            <Icon name="remove" size={20} color={COLORS.white} />
+        <View style={styles(theme).quantityContainer}>
+          <TouchableOpacity style={styles(theme).quantityButton} onPress={() => updateItemAmount(item, -1)}>
+            <Icon name="remove" size={20} color={theme.white} />
           </TouchableOpacity>
-          <Text style={styles.quantity}>{item.amount}</Text>
-          <TouchableOpacity style={styles.quantityButton} onPress={() => updateItemAmount(item, 1)}>
-            <Icon name="add" size={20} color={COLORS.white} />
+          <Text style={styles(theme).quantity}>{item.amount}</Text>
+          <TouchableOpacity style={styles(theme).quantityButton} onPress={() => updateItemAmount(item, 1)}>
+            <Icon name="add" size={20} color={theme.white} />
           </TouchableOpacity>
         </View>
       </View>
@@ -200,9 +235,9 @@ const Carrinho = ({ navigation }) => {
   };
 
   const renderEmptyCart = () => (
-    <View style={styles.emptyContainer}>
-      <Text style={styles.emptyMessage}>Você ainda não tem produtos no Carrinho.</Text>
-      <Text style={styles.emptyInstruction}>Adicione produtos para vê-los aqui!</Text>
+    <View style={styles(theme).emptyContainer}>
+      <Text style={styles(theme).emptyMessage}>Você ainda não tem produtos no Carrinho.</Text>
+      <Text style={styles(theme).emptyInstruction}>Adicione produtos para vê-los aqui!</Text>
     </View>
   );
 
@@ -211,7 +246,8 @@ const Carrinho = ({ navigation }) => {
   };
 
   function handleAddAddress() {
-    navigation.navigate('Endereco');
+    setModalVisible(false);
+    navigation.navigate('Endereco', { addForUser: true });
   }
   useFocusEffect(
     React.useCallback(() => {
@@ -220,41 +256,44 @@ const Carrinho = ({ navigation }) => {
   );
 
 
+
+
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>
+    <SafeAreaView style={styles(theme).container}>
+      <Text style={styles(theme).header}>
         Carrinho
       </Text>
       {tableNumber ? (
-        <TouchableOpacity style={styles.botaoMesaSair} onPress={() => { clearTable(); }}>
-          <Text style={styles.textoMesaSair}>Mesa {tableNumber}</Text>
-          <Icon name="exit" size={20} style={styles.iconeMesaSair} />
+        <TouchableOpacity style={styles(theme).botaoMesaSair} onPress={() => { clearTable(); }}>
+          <Text style={styles(theme).textoMesaSair}>Mesa {tableNumber}</Text>
+          <Icon name="exit" size={20} style={styles(theme).iconeMesaSair} />
         </TouchableOpacity>
       ) : (
         isAuthenticated && (
-          <View style={styles.addressPickerContainer}>
+          <View style={styles(theme).addressPickerContainer}>
             {userAddresses.length > 0 ? (
               <>
-                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.addressPicker}>
-                  {selectedAddress && (<Icon name="location" size={20} color={COLORS.primary} />)}
+                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles(theme).addressPicker}>
+                  {selectedAddress && (<Icon name="location" size={20} color={theme.primary} />)}
                   <Text
-                    style={styles.textAddress}>
+                    style={styles(theme).textAddress}>
                     {selectedAddress || "Selecione seu endereço"}
                   </Text>
-                  <Icon name="chevron-down" size={20} color={COLORS.primary} />
+                  <Icon name="chevron-down" size={20} color={theme.primary} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.qrCodeButton} onPress={handleQRCodeScan}>
-                  <Icon name="qr-code-outline" size={24} color={COLORS.white} />
+                <TouchableOpacity style={styles(theme).qrCodeButton} onPress={handleQRCodeScan}>
+                  <Icon name="qr-code-outline" size={24} color={theme.white} />
                 </TouchableOpacity>
               </>
             ) : (
               <>
-                <TouchableOpacity onPress={handleAddAddress} style={styles.addAddressButton}>
-                  <Icon name="add-circle-outline" size={30} color={COLORS.white} />
-                  <Text style={styles.addAddressText}>Adicionar Endereço</Text>
+                <TouchableOpacity onPress={handleAddAddress} style={styles(theme).addAddressButton}>
+                  <Icon name="add-circle-outline" size={30} color={theme.white} />
+                  <Text style={styles(theme).addAddressText}>Adicionar Endereço</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.qrCodeButton} onPress={handleQRCodeScan}>
-                  <Icon name="qr-code-outline" size={24} color={COLORS.white} />
+                <TouchableOpacity style={styles(theme).qrCodeButton} onPress={handleQRCodeScan}>
+                  <Icon name="qr-code-outline" size={24} color={theme.white} />
                 </TouchableOpacity>
               </>
             )}
@@ -269,13 +308,17 @@ const Carrinho = ({ navigation }) => {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+        <View style={styles(theme).modalOverlay}>
+          <View style={styles(theme).modalContainer}>
             <ScrollView>
+              <TouchableOpacity onPress={handleAddAddress} style={styles(theme).addAddressButton}>
+                <Icon name="add-circle-outline" size={30} color={theme.white} />
+                <Text style={styles(theme).addAddressText}>Adicionar Endereço</Text>
+              </TouchableOpacity>
               {userAddresses.map((address) => (
                 <TouchableOpacity
                   key={address.id}
-                  style={styles.addressItem}
+                  style={styles(theme).addressItem}
                   onPress={() => {
                     setSelectedAddress(
                       `${address.street}, ${address.number} - ${address.neighborhood}, ${address.city} - ${address.state}`
@@ -283,26 +326,76 @@ const Carrinho = ({ navigation }) => {
                     setModalVisible(false);
                   }}
                 >
-                  <Icon name="location" size={20} color={COLORS.primary} />
-                  <Text style={styles.textAddress}>{`${address.street}, ${address.number} - ${address.neighborhood}, ${address.city} - ${address.state}`}</Text>
+                  <Icon name="location" size={20} color={theme.primary} />
+                  <Text style={styles(theme).textAddress}>{`${address.street}, ${address.number} - ${address.neighborhood}, ${address.city} - ${address.state}`}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeModalButton}>
-              <Text style={styles.closeModalText}>Fechar</Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles(theme).closeModalButton}>
+              <Text style={styles(theme).closeModalText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        visible={isModalVisibleP}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisibleP(false)}
+      >
+        <View style={styles(theme).modalOverlay}>
+          <View style={styles(theme).modalContainer}>
+            {/* Título */}
+            <Text style={styles(theme).modalTitle}>Selecione a forma de pagamento</Text>
+
+            {/* Lista de métodos de pagamento */}
+            <ScrollView>
+              {paymentMethods.map((method) => (
+                <TouchableOpacity
+                  key={method.id}
+                  style={[
+                    styles(theme).paymentMethodItem,
+                    selectedPaymentMethod === method.name && styles(theme).selectedPaymentMethod,
+                  ]}
+                  onPress={() => setSelectedPaymentMethod(method.name)}
+                >
+                  <Text style={styles(theme).paymentMethodText}>{method.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Botão Confirmar */}
+            <TouchableOpacity
+              onPress={() => {
+                handleOrderSubmit(selectedPaymentMethod); // Função chamada com o método selecionado
+                setModalVisibleP(false); // Fecha o modal após confirmar
+              }}
+              style={styles(theme).confirmButton}
+              disabled={!selectedPaymentMethod} // Desabilita o botão se nada foi selecionado
+            >
+              <Text style={styles(theme).confirmButtonText}>Confirmar</Text>
+            </TouchableOpacity>
+
+            {/* Botão Fechar */}
+            <TouchableOpacity
+              onPress={() => setModalVisibleP(false)}
+              style={styles(theme).closeModalButton}
+            >
+              <Text style={styles(theme).closeModalText}>Fechar</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
+
       {loading ? (
-        <Text style={styles.textLoading} />
+        <Text style={styles(theme).textLoading} />
       ) : cartItems.length === 0 ? (
         renderEmptyCart()
       ) : (
         <FlatList
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.flatList}
+          contentContainerStyle={styles(theme).flatList}
           data={cartItems}
           renderItem={({ item }) => <CartCard item={item} />}
           ListEmptyComponent={renderEmptyCart}
@@ -311,31 +404,34 @@ const Carrinho = ({ navigation }) => {
 
       {cartItems.length > 0 && (
         <>
-          <View style={styles.observationContainer}>
+          <View style={styles(theme).observationContainer}>
             <TextInput
               placeholder="Observações (opcional)"
               value={observation}
               onChangeText={(text) => setObservation(text)}
-              style={styles.observationInput}
+              style={styles(theme).observationInput}
               multiline={true}
               numberOfLines={3}
               textAlignVertical="top"
               maxLength={400}
             />
-            <Text style={styles.charCountText}>
+            <Text style={styles(theme).charCountText}>
               {400 - observation.length} caracteres restantes
-            </Text> 
+            </Text>
           </View>
 
-          <View style={styles.orderSummary}>
+          <View style={styles(theme).orderSummary}>
             {!loading ? (
-              <TouchableOpacity onPress={handleOrderSubmit} style={styles.orderButton}>
-                <Text style={styles.orderTextButton}>Finalizar Pedido</Text>
-                <Text style={styles.summaryText}>R$ {totalPrice.toFixed(2)}</Text>
+              <TouchableOpacity onPress={
+                // handleOrderSubmit
+                () => setModalVisibleP(true)
+              } style={styles(theme).orderButton}>
+                <Text style={styles(theme).orderTextButton}>Finalizar Pedido</Text>
+                <Text style={styles(theme).summaryText}>{Number(totalPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.orderButton}>
-                <ActivityIndicator size={40} color={COLORS.white} style={styles.flatList} />
+              <TouchableOpacity style={styles(theme).orderButton}>
+                <ActivityIndicator size={40} color={theme.white} style={styles(theme).flatList} />
               </TouchableOpacity>
             )}
           </View>

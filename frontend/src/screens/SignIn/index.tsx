@@ -11,11 +11,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import { AuthContext } from '../../context/AuthContext';
 import styles from './style';
-import { COLORS } from '../../styles/COLORS';
 import { Ionicons } from '@expo/vector-icons';
-import DefaultLogoImage from '../../components/Logo';
+import {DefaultLogoImage} from '../../components/Logo';
+import { ThemeContext } from 'styled-components';
 
 export default function SignIn() {
+    const theme = useContext(ThemeContext);
     const navigation = useNavigation<NativeStackNavigationProp<StackParamList>>();
     const { signIn, loadingAuth, user, isAuthenticated } = useContext(AuthContext);
 
@@ -53,18 +54,18 @@ export default function SignIn() {
     }
 
     return (
-        <View style={styles.container}>
-            <DefaultLogoImage style={styles.logo} />
-            <Text style={styles.title}>Bem-vindo de volta!</Text>
-            <Text style={styles.subTitle}>Faça login para continuar</Text>
+        <View style={styles(theme).container}>
+            <DefaultLogoImage style={styles(theme).logo} theme={theme}/>
+            <Text style={styles(theme).title}>Bem-vindo de volta!</Text>
+            <Text style={styles(theme).subTitle}>Faça login para continuar</Text>
 
-            <View style={styles.inputContainer}>
-                <View style={styles.inputWrapper}>
-                    <Ionicons name="mail-outline" size={24} color={COLORS.primary} style={styles.icon} />
+            <View style={styles(theme).inputContainer}>
+                <View style={styles(theme).inputWrapper}>
+                    <Ionicons name="mail-outline" size={24} color={theme.primary} style={styles(theme).icon} />
                     <TextInput
                         placeholder="Email"
-                        style={styles.input}
-                        placeholderTextColor={COLORS.text}
+                        style={styles(theme).input}
+                        placeholderTextColor={theme.text}
                         value={email}
                         autoCapitalize="none"
                         onChangeText={(text) => {
@@ -73,13 +74,13 @@ export default function SignIn() {
                         }}
                     />
                 </View>
-                <View style={styles.passwordContainer}>
-                    <View style={styles.inputWrapper}>
-                        <Ionicons name="lock-closed-outline" size={24} color={COLORS.primary} style={styles.icon} />
+                <View style={styles(theme).passwordContainer}>
+                    <View style={styles(theme).inputWrapper}>
+                        <Ionicons name="lock-closed-outline" size={24} color={theme.primary} style={styles(theme).icon} />
                         <TextInput
                             placeholder='Senha'
-                            style={styles.input}
-                            placeholderTextColor={COLORS.text}
+                            style={styles(theme).input}
+                            placeholderTextColor={theme.text}
                             secureTextEntry={showPassword}
                             value={password}
                             autoCapitalize='none'
@@ -88,26 +89,26 @@ export default function SignIn() {
                                 setErrorMessage('');
                             }}
                         />
-                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                            <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={COLORS.text} />
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles(theme).eyeIcon}>
+                            <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={theme.text} />
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {errorMessage ? (
-                    <Text style={styles.errorText}>{errorMessage}</Text>
+                    <Text style={styles(theme).errorText}>{errorMessage}</Text>
                 ) : null}
 
-                <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
+                <TouchableOpacity style={styles(theme).button} onPress={handleLogin} activeOpacity={0.8}>
                     {loadingAuth ? (
-                        <ActivityIndicator size={24} color={COLORS.white} />
+                        <ActivityIndicator size={24} color={theme.white} />
                     ) : (
-                        <Text style={styles.buttonText}>Entrar</Text>
+                        <Text style={styles(theme).buttonText}>Entrar</Text>
                     )}
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={navigateToSignUp}>
-                    <Text style={styles.registerText}>Não possui uma conta? Cadastre-se</Text>
+                    <Text style={styles(theme).registerText}>Não possui uma conta? Cadastre-se</Text>
                 </TouchableOpacity>
             </View>
         </View>

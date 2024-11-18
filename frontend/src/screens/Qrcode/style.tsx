@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
-import { COLORS } from "../../styles/COLORS";
 
-export const styles = StyleSheet.create({
+export const styles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -12,13 +11,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cameraHeader:{
-    backgroundColor: COLORS.secondary,
+    backgroundColor: theme.secondary,
     width: '100%',
   },
   cameraHeaderText:{
     textAlign: 'center',
     padding: 10,
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 20,
   },
   camera: {
@@ -29,7 +28,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
   },
   squareButton: {
     position: 'absolute',

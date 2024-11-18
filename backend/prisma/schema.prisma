@@ -28,6 +28,11 @@ model User {
   favorites Favorite[] // Relacionamento com produtos favoritos
   cart      Cart? // Relacionamento com carrinho
   addresses address[] // Relacionamento com endereços
+
+  sentMessages     Message[] @relation("SenderMessages") // Remover onDelete daqui
+  receivedMessages Message[] @relation("ReceiverMessages") // Remover onDelete daqui
+
+  chats Chat[] @relation("UserChats") // Campo de relação oposto com Chat
 }
 
 // Tabela de Categorias de Produtos
@@ -46,7 +51,7 @@ model Product {
   name        String
   price       Float // Para valores monetários
   description String
-  banner      String // URL da imagem do produto
+  banner      String? // URL da imagem do produto
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
@@ -58,7 +63,6 @@ model Product {
   favorites  Favorite[] // Relacionamento com favoritos
 }
 
-// Tabela de Pedidos (Ordem)
 // Tabela de Pedidos (Ordem)
 model Order {
   id              String   @id @default(uuid())
@@ -75,12 +79,11 @@ model Order {
   longitude       Float // Coordenada de longitude do endereço
   tableNumber     String? // Número da mesa, caso seja no estabelecimento
   observation     String? // Campo opcional para observações do pedido
-  paymentMethod   String? // Nome do método de pagamento utilizado (ex: "Cartão de Crédito", "Pix")
+  paymentMethod   String // Nome do método de pagamento utilizado (ex: "Cartão de Crédito", "Pix")
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
   items    Item[] // Relacionamento com itens de pedidos
-  payments OrderPayment[] // Relacionamento com pagamentos do pedido
 }
 
 // Tabela de Itens de Pedidos
@@ -154,30 +157,49 @@ model address {
 
 // Tabela de Métodos de Pagamento
 model PaymentMethod {
-  id         String       @id @default(uuid())
-  name       String       @unique // Nome do método de pagamento (ex: Cartão de Crédito, Pix)
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-
-  // Relacionamentos com a tabela OrderPayment
-  intendedPayments  OrderPayment[] @relation("IntendedPayment")  // Relacionamento com o pagamento pretendido
-  actualPayments    OrderPayment[] @relation("ActualPayment")    // Relacionamento com o pagamento efetivo
+  id         String   @id @default(uuid())
+  name       String   @unique // Nome do método de pagamento (ex: Cartão de Crédito, Pix)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
-// Tabela de Pagamentos de Pedidos
-model OrderPayment {
-  id               String       @id @default(uuid())
-  order            Order        @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  order_id         String       // FK do pedido
 
-  // Método de pagamento pretendido (opcional)
-  intendedPayment  PaymentMethod? @relation("IntendedPayment", fields: [intended_payment_id], references: [id], onDelete: SetNull)
-  intended_payment_id String?    // FK do método de pagamento pretendido
+// Tabela de Configurações do Comércio (E-commerce)
+model StoreSettings {
+  id String @id @default(uuid())
 
-  // Método de pagamento efetivo (opcional)
-  actualPayment    PaymentMethod? @relation("ActualPayment", fields: [actual_payment_id], references: [id], onDelete: SetNull)
-  actual_payment_id String?     // FK do método de pagamento efetivo
+  storeName    String // Nome do comércio (ex: Pizzaria Bom Gosto)
+  phone        String // Telefone do comércio
+  address      String // Endereço do comércio
+  latitude     Float // Coordenada de latitude
+  longitude    Float // Coordenada de longitude
+  logo         String // URL ou caminho da logo
+  background   String // URL ou caminho do fundo
+  colors       Json // Objeto JSON com as cores personalizadas
+  openingHours Json // Objeto JSON com os horários de abertura
 
-  created_at       DateTime     @default(now())
-  updated_at       DateTime     @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  content    String
+  timestamp  DateTime @default(now())
+  senderId   String?
+  receiverId String?
+  sender     User?    @relation("SenderMessages", fields: [senderId], references: [id], onDelete: SetNull)
+  receiver   User?    @relation("ReceiverMessages", fields: [receiverId], references: [id], onDelete: SetNull)
+  chatId     String
+  chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  isRead     Boolean  @default(false) // Novo campo para marcar se a mensagem foi lida
+}
+
+model Chat {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  users    User[]    @relation("UserChats") // Relacionamento com usuários
+  messages Message[] // Relacionamento com mensagens
 }

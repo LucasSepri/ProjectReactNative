@@ -1,221 +1,159 @@
-import { StyleSheet } from "react-native";
-import { COLORS } from "../../../styles/COLORS";
+import { StyleSheet } from 'react-native';
 
-
-export default StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
-        padding: 20,
-        backgroundColor: COLORS.white,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    pickerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: 10,
-        backgroundColor: COLORS.white,
-        marginBottom: 20,
-    },
-    reloadButton: {
-        padding: 10,
-        borderRadius: 25,
-        backgroundColor: COLORS.white,
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    reloadIcon: {
-        fontSize: 24,
-        color: COLORS.primary,
-    },
-    picker: {
         flex: 1,
-        height: 50,
-        backgroundColor: COLORS.white,
-        marginLeft: 10,
+        backgroundColor: theme.white,
     },
-    imagePicker: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: COLORS.white,
-        height: 200,
-        marginBottom: 20,
+    headerFilter: {
+        backgroundColor: theme.background,
+        margin: 16,
+        borderRadius: 10,
+        padding: 16,
+        borderColor: theme.primary,
+        borderWidth: 2,
+        elevation: 3,
     },
-    uploadText: {
-        fontSize: 18,
-        color: COLORS.text,
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-    },
-    input: {
-        padding: 10,
-        // height: 50,
-        borderColor: COLORS.border,
-        borderWidth: 1,
-        marginBottom: 20,
-        paddingLeft: 10,
-        backgroundColor: COLORS.white,
-    },
-    inpultContainer: {
-        padding: 10,
-        borderColor: COLORS.border,
-        borderWidth: 1,
-        marginBottom: 20,
-        paddingLeft: 10,
-        backgroundColor: COLORS.white,
-    },
-    inputDescription: {
-        borderRadius: 5,
-        color: COLORS.text,
-    },
-
-    charCountText: {
-        color: COLORS.danger,
-        fontSize: 12,
-        marginTop: 5,
-        textAlign: 'right', // opcional, ajuste conforme necessário
-    },
-    buttonContainer: {
+    searchContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly', // Distribui o espaço de maneira equilibrada
         alignItems: 'center',
-        marginTop: 15,
+        marginBottom: 16,
+        backgroundColor: theme.white,
+        borderColor: theme.primary,
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingLeft: 12,
+        paddingRight: 12,
     },
-
-    button: {
-        flex: 1, // Torna ambos os botões de tamanho igual
-        marginHorizontal: 5, // Dá espaço horizontal entre os botões
-        paddingVertical: 12,
+    searchIcon: {
+        marginRight: 8,
+    },
+    searchInput: {
+        flex: 1,
+        height: 40,
+        fontSize: 16,
+        color: theme.black,
+    },
+    categoriasContainer: {
+        marginVertical: 10,
+    },
+    categoriesListContainer: {
+        marginBottom: 10,
+        // flex: 1,
+    },
+    categoryButton: {
+        flexDirection: 'row',
+        padding: 10,
+        backgroundColor: theme.white,
         borderRadius: 8,
         alignItems: 'center',
-        shadowColor: COLORS.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-        elevation: 3, // Para sombra no Android
+        marginRight: 8,
+        elevation: 2,
+        shadowColor: theme.black,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
     },
-
-    submitButton: {
-        backgroundColor: COLORS.success, // Verde para criar/editar
+    selectedCategoryButton: {
+        backgroundColor: theme.primary,
     },
-
-    cancelButton: {
-        backgroundColor: COLORS.danger, // Vermelho para cancelar
+    iconeCategorias: {
+        fontSize: 24,
+        color: theme.black,
     },
-
-    buttonText: {
-        color: COLORS.white,
+    categoryButtonText: {
+        marginLeft: 5,
+        fontSize: 14,
+        color: theme.black,
+        fontWeight: '600',
+    },
+    adicionarProdutos: {
+        padding: 10,
+        backgroundColor: theme.primary,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    adicionarProdutosText: {
+        color: theme.white,
         fontSize: 16,
         fontWeight: 'bold',
     },
-
-    cancelButtonText: {
-        color: COLORS.white,
-        fontSize: 16,
+    noProductsContainer: {
+        flex: 1,
+        paddingTop: 46,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    noProductsText: {
+        fontSize: 20,
         fontWeight: 'bold',
+        color: theme.primary,
         textAlign: 'center',
     },
-
-    productsTitle: {
-        fontSize: 24,
+    noProductsTextSub: {
+        fontSize: 16,
+        color: theme.secondary,
+        textAlign: 'center',
         fontWeight: 'bold',
-        marginVertical: 20,
     },
-    productsContainer: {
-        marginBottom: 20,
-    },
-    productItem: {
+    foodItem: {
+        marginHorizontal: 16,
         flexDirection: 'row',
-        backgroundColor: COLORS.white,
-        marginBottom: 20,
-        borderRadius: 10, // Aumento no raio para torná-lo mais moderno
-        elevation: 3, // Adiciona sombra para Android
-        shadowColor: COLORS.black, // Cor da sombra para iOS
-        shadowOffset: { width: 0, height: 2 }, // Posição da sombra
-        shadowOpacity: 0.1, // Opacidade da sombra
-        shadowRadius: 1.5, // Raio da sombra
-        overflow: 'hidden', // Garante que nada saia do card
+        alignItems: 'center',
+        marginBottom: 16,
+        backgroundColor: theme.white,
+        borderRadius: 8,
+        padding: 16,
+        shadowColor: theme.black,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 3,
     },
+
+    deleteButton: {
+        backgroundColor: theme.danger,
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+
     imageContainer: {
-        marginVertical: 'auto',
-        marginHorizontal: 10,
-        width: 120,
-        height: 120,
+        marginRight: 16,
     },
-    productImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 12,
-        backgroundColor: COLORS.white, // Cor de fundo caso a imagem não carregue
-        resizeMode: 'cover',
+    image: {
+        width: 100,
+        height: 100,
+        borderRadius: 8,
+        borderColor: theme.border,
+        borderWidth: 1,
     },
     infoContainer: {
         flex: 1,
-        padding: 10,
-        justifyContent: 'space-between', // Altera o alinhamento para distribuir os itens uniformemente
     },
-    actions: {
-        flexDirection: 'row',
-        alignSelf: 'flex-end',
-        marginBottom: 10,
-    },
-    editButton: {
-        padding: 5,
-        backgroundColor: COLORS.secondary,
-        borderRadius: 5,
-        marginRight: 10,
-    },
-    deleteButton: {
-        padding: 5,
-        backgroundColor: COLORS.danger,
-        borderRadius: 5,
-    },
-    editButtonText: {
-        color: COLORS.white,
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    deleteButtonText: {
-        color: COLORS.white,
-        fontSize: 14,
-        fontWeight: '500',
-    },
-    productName: {
-        fontSize: 18,
+    name: {
+        fontSize: 20,
         fontWeight: 'bold',
-        color: COLORS.primary, // Torna a cor do texto um pouco mais escura para melhor leitura
+        marginBottom: 4,
     },
-    productDescription: {
+    category: {
+        fontSize: 14,
+        color: theme.primary,
+        marginBottom: 4,
+    },
+    ingredients: {
+        opacity: 0.8,
+        fontSize: 14,
+    },
+    price: {
+        fontWeight: 'bold',
         fontSize: 16,
-        color: COLORS.text, // Cor mais leve para o texto
-        marginVertical: 4, // Adiciona margem vertical para separar do título e ingredientes
-    },
-    productIngredients: {
-        fontSize: 14,
-        color: COLORS.text,
-        fontStyle: 'italic', // Estilo itálico para diferenciar dos outros textos
-    },
-    productCategory: {
-        fontSize: 16,
-        color: COLORS.primary,
-        fontWeight: 'bold',
-    },
-    productPrice: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: COLORS.secondary, // Uma cor diferente para destacar o preço
+        color: theme.primary,
+        marginTop: 8,
     },
 });
+
+export default styles;

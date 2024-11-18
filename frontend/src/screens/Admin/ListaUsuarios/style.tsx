@@ -1,21 +1,22 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
     },
 
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 8,
         elevation: 3,
         paddingHorizontal: 12,
-        width: '80%',
+        borderColor: theme.primary,
+        borderWidth: 1,
+        marginBottom: 20,
     },
     searchIcon: {
         marginRight: 8,
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
     userContainer: {
         marginBottom: 20,
         padding: 10,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 8,
         elevation: 2,
     },
@@ -52,21 +53,21 @@ const styles = StyleSheet.create({
     },
     email: {
         fontSize: 14,
-        color: COLORS.text,
+        color: theme.text,
     },
     telefone:{
         fontSize: 14,
-        color: COLORS.text,
+        color: theme.text,
     },
     deleteButton: {
-        backgroundColor: COLORS.danger,
+        backgroundColor: theme.danger,
         padding: 10,
         borderRadius: 8,
         alignSelf: 'flex-start',
         marginBottom: 10,
     },
     addAdminButton: {
-        backgroundColor: COLORS.success,
+        backgroundColor: theme.success,
         borderRadius: 8,
         flexDirection: 'row',
         alignItems: 'center',
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     removeAdminButton: {
-        backgroundColor: COLORS.secondary,
+        backgroundColor: theme.secondary,
         paddingHorizontal: 40,
         paddingVertical: 10,
         borderRadius: 8,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     userRoleButtonText: {
-        color: COLORS.white,
+        color: theme.white,
         fontWeight: 'bold',
         marginLeft: 5,
     },
@@ -101,8 +102,8 @@ const styles = StyleSheet.create({
     refreshList: {
         padding: 10,
         borderRadius: 25,
-        backgroundColor: COLORS.white,
-        shadowColor: COLORS.black,
+        backgroundColor: theme.white,
+        shadowColor: theme.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
@@ -110,8 +111,21 @@ const styles = StyleSheet.create({
     },
     refreshIcon: {
         fontSize: 24,
-        color: COLORS.primary,
+        color: theme.primary,
     },
+    reflectionContainer:{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: theme.primary,
+        padding: 10,
+        alignItems: 'center',
+    },
+    reflectionText:{
+        color: theme.white,
+        fontWeight: 'bold',
+    }
 });
 
 export default styles;

@@ -1,17 +1,16 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
     },
     headerFilter: {
-        backgroundColor: COLORS.background,
+        backgroundColor: theme.background,
         margin: 16,
         borderRadius: 10,
         padding: 16,
-        borderColor: COLORS.primary,
+        borderColor: theme.primary,
         borderWidth: 2,
         elevation: 3,
     },
@@ -19,8 +18,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
-        backgroundColor: COLORS.white,
-        borderColor: COLORS.primary,
+        backgroundColor: theme.white,
+        borderColor: theme.primary,
         borderWidth: 1,
         borderRadius: 8,
         paddingLeft: 12,
@@ -33,7 +32,7 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 40,
         fontSize: 16,
-        color: COLORS.black,
+        color: theme.black,
     },
     categoriasContainer: {
         marginTop: 8,
@@ -44,27 +43,27 @@ const styles = StyleSheet.create({
     categoryButton: {
         flexDirection: 'row',
         padding: 10,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 8,
         alignItems: 'center',
         marginRight: 8,
         elevation: 2,
-        shadowColor: COLORS.black,
+        shadowColor: theme.black,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.2,
         shadowRadius: 2,
     },
     selectedCategoryButton: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
     },
     iconeCategorias: {
         fontSize: 24,
-        color: COLORS.black,
+        color: theme.black,
     },
     categoryButtonText: {
         marginLeft: 5,
         fontSize: 14,
-        color: COLORS.black,
+        color: theme.black,
         fontWeight: '600',
     },
     noProductsContainer: {
@@ -76,12 +75,12 @@ const styles = StyleSheet.create({
     noProductsText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: COLORS.primary,
+        color: theme.primary,
         textAlign: 'center',
     },
     noProductsTextSub: {
         fontSize: 16,
-        color: COLORS.secondary,
+        color: theme.secondary,
         textAlign: 'center',
         fontWeight: 'bold',
     },
@@ -89,10 +88,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 16,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 8,
         padding: 16,
-        shadowColor: COLORS.black,
+        shadowColor: theme.black,
         shadowOffset: {
             width: 0,
             height: 2,
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 8,
-        borderColor: COLORS.border,
+        borderColor: theme.border,
         borderWidth: 1,
     },
     infoContainer: {
@@ -121,7 +120,7 @@ const styles = StyleSheet.create({
     },
     category: {
         fontSize: 14,
-        color: COLORS.primary,
+        color: theme.primary,
         marginBottom: 4,
     },
     ingredients: {
@@ -131,7 +130,7 @@ const styles = StyleSheet.create({
     price: {
         fontWeight: 'bold',
         fontSize: 16,
-        color: COLORS.primary,
+        color: theme.primary,
         marginTop: 8,
     },
 });

@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, Pressable, Alert, ActivityIndicator } from 'react-native';
 import styles from './style';
-import { COLORS } from '../../styles/COLORS';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { StackParamList } from '../../routes/app.routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { set } from 'react-hook-form';
-import DefaultLogoImage from '../../components/Logo';
+// import { set } from 'react-hook-form';
+import { DefaultLogoImage } from '../../components/Logo';
+import { ThemeContext } from 'styled-components';
 
 type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
 const ProductDetails = ({ route }) => {
+    const theme = useContext(ThemeContext);
     const navigation = useNavigation<NavigationProp>();
     const { isAuthenticated } = useContext(AuthContext);
 
@@ -49,7 +50,7 @@ const ProductDetails = ({ route }) => {
                 "Atenção",
                 "Para adicionar ao carrinho, você precisa estar logado.",
                 [
-                    { text: "Cancelar", style: "cancel" },
+                    { text: "Cancelar", onPress: () => setLoading(false) },
                     { text: "Login", onPress: () => navigation.navigate('SignIn') }
                 ]
             );
@@ -110,74 +111,74 @@ const ProductDetails = ({ route }) => {
     }, [quantity, product]);
 
     return (
-        <View style={styles.container}>
+        <View style={styles(theme).container}>
             <ScrollView >
-                <View style={styles.imageContainer}>
+                <View style={styles(theme).imageContainer}>
                     {imageError[product.id] || !product.banner ? (
-                        <DefaultLogoImage style={styles.image} />
+                        <DefaultLogoImage style={styles(theme).image} theme={theme} />
                     ) : (
                         <Image
-                            source={{ uri: `${api.defaults.baseURL}${product.banner}` }}
+                            source={{ uri: `${api.defaults.baseURL}${product.banner}?t=${new Date().getTime()}` }}
                             onError={() => setImageError(prev => ({ ...prev, [product.id]: true }))}
-                            style={styles.image}
+                            style={styles(theme).image}
                         />
                     )}
                     <TouchableOpacity
-                        style={[styles.button, styles.favoriteButton]}
+                        style={[styles(theme).button, styles(theme).favoriteButton]}
                         onPress={handleFavoriteToggle}
                     >
-                        <Icon name={isFavorite ? "heart" : "heart-outline"} size={24} color={COLORS.white} />
+                        <Icon name={isFavorite ? "heart" : "heart-outline"} size={24} color={theme.white} />
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.button, styles.backButton]}
+                        style={[styles(theme).button, styles(theme).backButton]}
                         onPress={() => navigation.goBack()}
                     >
-                        <Icon name="arrow-back" size={24} color={COLORS.white} />
+                        <Icon name="arrow-back" size={24} color={theme.white} />
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.detailsContainer}>
-                    <Text style={styles.title}>{product.name}</Text>
-                    <Text style={styles.category}>{category ? category.name : 'Categoria não disponível'}</Text>
-                    <Text style={styles.description}>{product.description}</Text>
+                <View style={styles(theme).detailsContainer}>
+                    <Text style={styles(theme).title}>{product.name}</Text>
+                    <Text style={styles(theme).category}>{category ? category.name : 'Categoria não disponível'}</Text>
+                    <Text style={styles(theme).description}>{product.description}</Text>
 
                     {isPizza && (
-                        <View style={styles.sizeSelection}>
+                        <View style={styles(theme).sizeSelection}>
                             <TouchableOpacity
-                                style={[styles.sizeButton, size === 'broto' && styles.sizeButtonSelected]}
+                                style={[styles(theme).sizeButton, size === 'broto' && styles(theme).sizeButtonSelected]}
                                 onPress={() => setSize('broto')}
                             >
-                                <Text style={styles.sizeText}>Broto</Text>
+                                <Text style={styles(theme).sizeText}>Broto</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.sizeButton, size === 'grande' && styles.sizeButtonSelected]}
+                                style={[styles(theme).sizeButton, size === 'grande' && styles(theme).sizeButtonSelected]}
                                 onPress={() => setSize('grande')}
                             >
-                                <Text style={styles.sizeText}>Grande</Text>
+                                <Text style={styles(theme).sizeText}>Grande</Text>
                             </TouchableOpacity>
                         </View>
                     )}
                 </View>
             </ScrollView>
 
-            <View style={styles.footerContainer}>
-                <View style={styles.quantityContainer}>
-                    <TouchableOpacity onPress={decrement} style={styles.quantityButton}>
-                        <Icon name="remove" size={30} color={COLORS.black} />
+            <View style={styles(theme).footerContainer}>
+                <View style={styles(theme).quantityContainer}>
+                    <TouchableOpacity onPress={decrement} style={styles(theme).quantityButton}>
+                        <Icon name="remove" size={30} color={theme.black} />
                     </TouchableOpacity>
-                    <Text style={styles.quantityText}>{quantity}</Text>
-                    <TouchableOpacity onPress={increment} style={styles.quantityButton}>
-                        <Icon name="add" size={30} color={COLORS.black} />
+                    <Text style={styles(theme).quantityText}>{quantity}</Text>
+                    <TouchableOpacity onPress={increment} style={styles(theme).quantityButton}>
+                        <Icon name="add" size={30} color={theme.black} />
                     </TouchableOpacity>
                 </View>
                 {loading ? (
-                    <Pressable style={styles.addToCartButton}>
-                        <ActivityIndicator size="large" color={COLORS.white} />
+                    <Pressable style={styles(theme).addToCartButton}>
+                        <ActivityIndicator size={33} color={theme.white} />
                     </Pressable>
                 ) : (
-                    <Pressable style={styles.addToCartButton} onPress={handleAddToCart}>
-                        <Text style={styles.addToCartButtonText}>Adicionar ao Carrinho</Text>
-                        <Text style={styles.totalText}>R$ {total.toFixed(2)}</Text>
+                    <Pressable style={styles(theme).addToCartButton} onPress={handleAddToCart}>
+                        <Text style={styles(theme).addToCartButtonText}>Adicionar ao Carrinho</Text>
+                        <Text style={styles(theme).totalText}>{Number(total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
                     </Pressable>
                 )}
             </View>

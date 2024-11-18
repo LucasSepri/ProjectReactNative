@@ -2,9 +2,6 @@ import React from "react";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-// Estilos
-import { COLORS } from "../styles/COLORS";
-
 // Telas
 import AdminCategorias from "../screens/Admin/Categorias";
 import Perfil from "../screens/Profile";
@@ -13,6 +10,13 @@ import ListUsers from "../screens/Admin/ListaUsuarios";
 import QRCodeGenerator from "../screens/Admin/QrcodeGeneretor";
 import config from "../screens/Admin/Config";
 import PaymentMethods from "../screens/Admin/PaymentMethods";
+import FilesList from "../screens/Admin/FilesList";
+import AtendimentoOn from "../screens/Admin/AtendimentoOn";
+import Sockets from "../screens/Admin/SocketOnline";
+import ControlleOrder from "../screens/Admin/ControlleOrder";
+import SalesScreen from "../screens/Admin/SalesScreen";
+
+import { useTheme } from "styled-components";
 
 export type StackParamListAdmin = {
     AdminProdutos: undefined;
@@ -22,20 +26,27 @@ export type StackParamListAdmin = {
     QRCodeGenerator: undefined;
     Config: undefined;
     PaymentMethods: undefined;
+    FilesList: undefined;
+    AtendimentoOn: undefined;
+    Sockets: undefined;
+    ControlleOrder: undefined;
+    SalesScreen: undefined;
 }
 
 const Drawer = createDrawerNavigator<StackParamListAdmin>();
 
 function AdminRoutes() {
+    const theme = useTheme(); // Acessa o tema carregado
+
     return (
         <Drawer.Navigator
-            screenOptions={({ route }) => ({
+            screenOptions={({ route, navigation }) => ({
                 headerShown: true,
                 headerStyle: {
-                    backgroundColor: COLORS.primary,
+                    backgroundColor: theme.primary, // Usando a cor primária
                 },
-                headerTintColor: COLORS.white,
-                drawerActiveTintColor: COLORS.primary,
+                headerTintColor: theme.color, // Usando a cor branca para o texto do header
+                drawerActiveTintColor: theme.primary, // Cor primária para itens ativos do drawer
                 drawerIcon: ({ focused, size }) => {
                     let iconName;
                     switch (route.name) {
@@ -62,12 +73,44 @@ function AdminRoutes() {
                             break;
                         default:
                             iconName = 'menu';
+                            break;
+                        case 'FilesList':
+                            iconName = focused ? 'document-attach' : 'document-attach-outline';
+                            break;
+                        case 'AtendimentoOn':
+                            iconName = focused ? 'chatbox' : 'chatbox-outline';
+                            break;
+                        case 'Sockets':
+                            iconName = focused ? 'wifi' : 'wifi-outline';
+                            break;
+                        case 'ControlleOrder':
+                            iconName = focused ? 'clipboard' : 'clipboard-outline';
+                            break;
+                        case 'SalesScreen':
+                            iconName = focused ? 'analytics' : 'analytics-outline';
+                            break;
+
                     }
 
-                    return <Ionicons name={iconName} size={size} color={focused ? COLORS.primary : COLORS.black} />;
+                    return <Ionicons name={iconName} size={size} color={focused ? theme.primary : theme.black
+                    } />;
                 },
             })}
         >
+            <Drawer.Screen
+                name="Config"
+                component={config}
+                options={{
+                    title: "Configurações",
+                }}
+            />
+            <Drawer.Screen
+                name="SalesScreen"
+                component={SalesScreen}
+                options={{
+                    title: "Vendas",
+                }}
+            />
             <Drawer.Screen
                 name="ListUsers"
                 component={ListUsers}
@@ -83,6 +126,13 @@ function AdminRoutes() {
                 }}
             />
             <Drawer.Screen
+                name="PaymentMethods"
+                component={PaymentMethods}
+                options={{
+                    title: "Métodos de Pagamento",
+                }}
+            />
+            <Drawer.Screen
                 name="AdminProdutos"
                 component={AdminProdutos}
                 options={{
@@ -90,10 +140,10 @@ function AdminRoutes() {
                 }}
             />
             <Drawer.Screen
-                name="PaymentMethods"
-                component={PaymentMethods}
+                name="ControlleOrder"
+                component={ControlleOrder}
                 options={{
-                    title: "Métodos de Pagamento",
+                    title: "Controle de Pedidos",
                 }}
             />
             <Drawer.Screen
@@ -103,11 +153,26 @@ function AdminRoutes() {
                     title: "Gerador de QR Code",
                 }}
             />
+
             <Drawer.Screen
-                name="Config"
-                component={config}
+                name="FilesList"
+                component={FilesList}
                 options={{
-                    title: "Configurações",
+                    title: "Arquivos",
+                }}
+            />
+            <Drawer.Screen
+                name="AtendimentoOn"
+                component={AtendimentoOn}
+                options={{
+                    title: "Atendimento Online",
+                }}
+            />
+            <Drawer.Screen
+                name="Sockets"
+                component={Sockets}
+                options={{
+                    title: "Sockets Online",
                 }}
             />
             <Drawer.Screen
@@ -117,7 +182,8 @@ function AdminRoutes() {
                     title: "Seus Dados",
                 }}
             />
-        </Drawer.Navigator>
+
+        </Drawer.Navigator >
     );
 }
 

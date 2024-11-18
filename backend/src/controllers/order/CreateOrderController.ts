@@ -3,7 +3,7 @@ import CreateOrderService from '../../services/order/CreateOrderService';
 
 class CreateOrderController {
   async handle(request: Request, response: Response) {
-    const { deliveryType, deliveryAddress, latitude, longitude, tableNumber, observation } = request.body;
+    const { deliveryType, deliveryAddress, latitude, longitude, tableNumber, observation, paymentMethod } = request.body;
     const { id: userId } = request.user; // Supondo que o userId é extraído do token de autenticação
 
     const createOrderService = new CreateOrderService();
@@ -17,6 +17,7 @@ class CreateOrderController {
         longitude,
         tableNumber,
         observation,
+        paymentMethod
       });
 
       return response.status(201).json(order);

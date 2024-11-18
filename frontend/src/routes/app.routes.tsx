@@ -1,6 +1,5 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { COLORS } from "../styles/COLORS";
 
 import Perfil from "../screens/Profile";
 import SignIn from "../screens/SignIn";
@@ -16,6 +15,8 @@ import Endereco from "../screens/Address";
 
 import TabRouter from "./tab.routes";
 import Qrcode from "../screens/Qrcode";
+
+import { useTheme } from "styled-components";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
@@ -41,8 +42,9 @@ export type StackParamList = {
         city: string;
         state: string;
         isVisualize: boolean;
+        addForUser: boolean;
     };
-    Endereco: undefined;
+    Endereco: { addForUser: boolean };
     Qrcode: undefined;
     MapScreen2: undefined;
     Carrinho: undefined;
@@ -51,8 +53,10 @@ export type StackParamList = {
 const Stack = createStackNavigator<StackParamList>();
 
 function AppRoutes() {
+    const theme = useTheme();
     return (
         <Stack.Navigator>
+         
             <Stack.Screen
                 name="TabRouter"
                 component={TabRouter}
@@ -64,9 +68,9 @@ function AppRoutes() {
                 options={{
                     title: "Mapa",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
 
             <Stack.Screen
@@ -75,9 +79,9 @@ function AppRoutes() {
                 options={{
                     title: "Qrcode",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
 
             <Stack.Screen
@@ -86,9 +90,9 @@ function AppRoutes() {
                 options={{
                     title: "Endereco",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
             <Stack.Screen
                 name="OrderDetails"
@@ -96,9 +100,9 @@ function AppRoutes() {
                 options={{
                     title: "Detalhes do Pedido",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }}
             />
             <Stack.Screen
@@ -108,9 +112,9 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Seus Dados",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }}
             />
             <Stack.Screen
@@ -119,9 +123,9 @@ function AppRoutes() {
                 options={{
                     title: "Logar-se",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }}
             />
             <Stack.Screen name="Pesquisa"
@@ -130,9 +134,9 @@ function AppRoutes() {
                     headerShown: true,
                     title: "Pesquisar Produto",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
 
             <Stack.Screen
@@ -141,9 +145,9 @@ function AppRoutes() {
                 options={{
                     title: "cadastrar-se",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }} />
             <Stack.Screen
                 name="EditarPerfil"
@@ -151,9 +155,9 @@ function AppRoutes() {
                 options={{
                     title: "Editar Perfil",
                     headerStyle: {
-                        backgroundColor: COLORS.primary,
+                        backgroundColor: theme.primary,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }}
             />
             <Stack.Screen
@@ -163,9 +167,9 @@ function AppRoutes() {
                     headerShown: false,
                     title: "Detalhes do Produto",
                     headerStyle: {
-                        backgroundColor: COLORS.black,
+                        backgroundColor: theme.black,
                     },
-                    headerTintColor: COLORS.white,
+                    headerTintColor: theme.white,
                 }}
             />
 

@@ -1,15 +1,13 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
     },
     headerImage: {
         justifyContent: 'center',
         alignItems: 'center',
-
     },
     headerIconsContainer: {
         flexDirection: 'row',
@@ -29,7 +27,7 @@ const styles = StyleSheet.create({
     profileName: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
         marginLeft: 10,
     },
     EntrarButton: {
@@ -39,7 +37,7 @@ const styles = StyleSheet.create({
     loginText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
     },
     tableExitButton: {
         flexDirection: 'row',
@@ -48,12 +46,12 @@ const styles = StyleSheet.create({
     tableExitText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
     },
     exitIcon: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
         marginLeft: 10,
     },
     logo: {
@@ -61,63 +59,61 @@ const styles = StyleSheet.create({
         height: 150,
         marginBottom: 10,
         borderRadius: 10,
-        borderColor: COLORS.white,
-        borderWidth: 2,
+        // borderColor: theme.white,
+        // borderWidth: 2,
+        elevation: 2,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
         marginBottom: 10,
-        textShadowColor: COLORS.black,
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 5,
+        // elevation: 2,
+        textAlign: 'center',
     },
     buttonContainer: {
+        // backgroundColor: theme.primary,
+        width: '100%',
+        paddingHorizontal: 20,
+
         flexDirection: 'column',
         marginVertical: 10,
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        width: '80%',
+        // marginHorizontal: 20,
+        gap: 10,
     },
     buttonSeparator: {
         flexDirection: 'row',
-        marginBottom: 10,
+        gap: 10,
     },
     whatsAppButton: {
         flexDirection: 'row',
-        backgroundColor: COLORS.success,
+        backgroundColor: theme.success,
         padding: 10,
         borderRadius: 5,
         flex: 1,
-        width: '100%',
-        alignContent: 'center',
         alignItems: 'center',
-        // alignSelf: 'center',
     },
     hoursButton: {
         flexDirection: 'row',
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.secondary,
         padding: 10,
         borderRadius: 5,
         flex: 1,
-        marginHorizontal: 5,
         alignItems: 'center',
-
     },
     locationButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.secondary,
+        backgroundColor: theme.primary,
         padding: 10,
         borderRadius: 5,
-        flex: 1,
-        marginHorizontal: 5,
+        // flex: 1,
+        // marginHorizontal: 5,
         marginBottom: 10,
         alignSelf: 'center',
     },
     buttonText: {
-        color: COLORS.white,
+        color: theme.white,
         fontWeight: 'bold',
         alignSelf: 'center',
         textAlign: 'center',
@@ -125,7 +121,7 @@ const styles = StyleSheet.create({
     },
 
     categoriesSection: {
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         flexDirection: 'column',
         flex: 1,
     },
@@ -134,8 +130,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginHorizontal: 45,
-        marginVertical: 20,
+        // marginHorizontal: 45,
+        // marginVertical: 20,
+        paddingHorizontal: 40,
+        paddingVertical: 20,
+    },
+    sectionTitle: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: theme.primary,
+        textTransform: 'uppercase',
+        marginRight: 20,
+    },
+    searchButton: {
+        // backgroundColor: theme.danger,
+        flexDirection: 'row',
+        backgroundColor: theme.primary,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        flex: 1,
     },
     loadingContainer: {
         flex: 1,
@@ -143,24 +158,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
     },
-    searchButton: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.primary,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        flex: 1,
-    },
-    sectionTitle: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        color: COLORS.primary,
-        textTransform: 'uppercase',
-        marginRight: 20,
-    },
+
+
     categories: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
         paddingVertical: 5,
         paddingHorizontal: 10,
     },
@@ -172,23 +173,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     selectedCategoryButton: {
-        borderBottomColor: COLORS.white,
+        borderBottomColor: theme.white,
         borderBottomWidth: 2,
         borderRadius: 0,
     },
     categoryHorizontalIcon: {
         fontSize: 30,
-        color: COLORS.white,
+        color: theme.white,
     },
     categoryIcon: {
         fontSize: 30,
-        color: COLORS.primary,
+        color: theme.primary,
     },
     categoryText: {
-        color: COLORS.white,
+        color: theme.white,
     },
     productsSection: {
-    
+
         paddingBottom: 80,
         paddingTop: 20,
         // flex: 1,
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 20,
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
         elevation: 5,
         margin: 30,
         borderRadius: 10,
@@ -206,17 +207,17 @@ const styles = StyleSheet.create({
     emptyMessageText: {
         fontWeight: 'bold',
         fontSize: 18,
-        color: COLORS.white,
+        color: theme.white,
         textAlign: 'center',
     },
 
     categoryContainer: {
         marginBottom: 15,
         borderTopWidth: 4,
-        borderTopColor: COLORS.primary,
+        borderTopColor: theme.primary,
         marginHorizontal: 20,
         marginVertical: 10,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         elevation: 2,
         borderRadius: 5,
     },
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 10,
-        color: COLORS.primary,
+        color: theme.primary,
         padding: 10,
         borderRadius: 5,
     },
@@ -238,8 +239,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginBottom: 10,
         padding: 10,
-        backgroundColor: COLORS.white,
-        borderBottomColor: COLORS.border,
+        backgroundColor: theme.white,
+        borderBottomColor: theme.border,
         borderBottomWidth: 1,
         borderRadius: 5,
         paddingBottom: 20,
@@ -257,6 +258,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     productName: {
+        fontWeight: 'bold',
         fontSize: 18,
     },
     productDescription: {
@@ -267,7 +269,7 @@ const styles = StyleSheet.create({
     },
     productPrice: {
         fontSize: 16,
-        color: COLORS.secondary,
+        color: theme.secondary,
     },
     loader: {
         flex: 1,
@@ -281,6 +283,40 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 1,
         backgroundColor: 'white', // Ou outra cor, se necessário
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        marginHorizontal: 30,
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: theme.primary, // Use a cor personalizada, se desejar
+    },
+    hoursContainer: {
+        marginBottom: 30,
+    },
+    hourText: {
+        fontSize: 18,
+        color: theme.secondary, // Cor para os horários
+    },
+    closeButton: {
+        backgroundColor: theme.primary, // Cor personalizada para o botão
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    closeButtonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 
 });

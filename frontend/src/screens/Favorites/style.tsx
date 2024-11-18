@@ -1,10 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     paddingBottom: 90,
   },
   loadingContainer:{
@@ -18,8 +17,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: COLORS.white,
-    backgroundColor: COLORS.primary,
+    color: theme.white,
+    backgroundColor: theme.primary,
     textTransform: 'uppercase',
   },
   searchContainer: {
@@ -27,11 +26,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
     borderRadius: 8,
     elevation: 5,
     paddingHorizontal: 12,
-    borderColor: COLORS.primary,
+    borderColor: theme.primary,
     borderWidth: 1,
   },
   searchIcon: {
@@ -53,12 +52,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
     borderRadius: 8,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: theme.border,
     borderBottomWidth: 1,
     padding: 16,
-    shadowColor: COLORS.black,
+    shadowColor: theme.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 14,
-    color: COLORS.primary,
+    color: theme.primary,
     marginBottom: 4,
   },
   ingredients: {
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginTop: 8,
-    color: COLORS.primary,
+    color: theme.primary,
   },
   emptyContainer: {
     flex: 1,
@@ -101,14 +100,14 @@ const styles = StyleSheet.create({
   },
   emptyMessage: {
     fontSize: 16,
-    color: COLORS.primary,
+    color: theme.primary,
     textAlign: 'center',
     marginBottom: 8,
     fontWeight: 'bold',
   },
   emptyInstruction: {
     fontSize: 16,
-    color: COLORS.secondary,
+    color: theme.secondary,
     textAlign: 'center',
   },
 });

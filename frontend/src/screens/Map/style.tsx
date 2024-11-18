@@ -1,24 +1,23 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: COLORS.background,
+      backgroundColor: theme.background,
     },
     header: {
       paddingVertical: 20,
-      backgroundColor: COLORS.white,
+      backgroundColor: theme.white,
       alignItems: 'center',
     },
     headerText: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: COLORS.black,
+      color: theme.black,
     },
     addressText: {
       fontSize: 16,
-      color: COLORS.text,
+      color: theme.text,
       textAlign: 'center',
     },
     webView: {
@@ -28,18 +27,18 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       padding: 15,
-      backgroundColor: COLORS.background,
+      backgroundColor: theme.background,
     },
     button: {
       flex: 1,
       marginHorizontal: 5,
       paddingVertical: 10,
-      backgroundColor: COLORS.primary,
+      backgroundColor: theme.primary,
       borderRadius: 5,
       alignItems: 'center',
     },
     buttonText: {
-      color: COLORS.white,
+      color: theme.white,
       fontWeight: 'bold',
     },
   });

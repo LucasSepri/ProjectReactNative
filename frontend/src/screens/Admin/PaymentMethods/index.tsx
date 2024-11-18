@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../../services/api';
 
 import styles from './style';
-import { COLORS } from '../../../styles/COLORS';
+import { ThemeContext } from 'styled-components';
 
 export default function AdminPaymentMethods() {
+    const theme = useContext(ThemeContext);
     const [name, setName] = useState('');
     const [paymentMethods, setPaymentMethods] = useState([]);
     const [editingPaymentMethod, setEditingPaymentMethod] = useState(null);
@@ -73,45 +74,45 @@ export default function AdminPaymentMethods() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Adicionar Método de Pagamento</Text>
+        <View style={styles(theme).container}>
+            <Text style={styles(theme).title}>Adicionar Método de Pagamento</Text>
             <TextInput
-                style={styles.input}
+                style={styles(theme).input}
                 placeholder="Nome do Método de Pagamento"
                 value={name}
                 onChangeText={setName}
             />
 
-            <View style={styles.buttonContainer}>
+            <View style={styles(theme).buttonContainer}>
                 {/* Botão de Criar/Editar Método de Pagamento */}
-                <TouchableOpacity onPress={handleAddPaymentMethod} style={[styles.button, styles.submitButton]}>
-                    <Text style={styles.buttonText}>
+                <TouchableOpacity onPress={handleAddPaymentMethod} style={[styles(theme).button, styles(theme).submitButton]}>
+                    <Text style={styles(theme).buttonText}>
                         {editingPaymentMethod ? "Editar" : "Adicionar"}
                     </Text>
                 </TouchableOpacity>
 
                 {editingPaymentMethod && (
-                    <TouchableOpacity onPress={handleCancelEdit} style={[styles.button, styles.cancelButton]}>
-                        <Text style={styles.buttonText}>Cancelar</Text>
+                    <TouchableOpacity onPress={handleCancelEdit} style={[styles(theme).button, styles(theme).cancelButton]}>
+                        <Text style={styles(theme).buttonText}>Cancelar</Text>
                     </TouchableOpacity>
                 )}
             </View>
 
-            {error && <Text style={styles.error}>{error}</Text>}
+            {error && <Text style={styles(theme).error}>{error}</Text>}
 
-            <Text style={styles.title}>Métodos de Pagamento</Text>
+            <Text style={styles(theme).title}>Métodos de Pagamento</Text>
             <FlatList
                 data={paymentMethods}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <View style={styles.paymentMethodItem}>
-                        <Text style={styles.textoPaymentMethods}>{item.name}</Text>
-                        <View style={styles.actions}>
+                    <View style={styles(theme).paymentMethodItem}>
+                        <Text style={styles(theme).textoPaymentMethods}>{item.name}</Text>
+                        <View style={styles(theme).actions}>
                             <TouchableOpacity onPress={() => handleEditPaymentMethod(item)}>
-                                <Text style={styles.editButton}>Editar</Text>
+                                <Text style={styles(theme).editButton}>Editar</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeletePaymentMethod(item.id)}>
-                                <Icon name="trash" size={20} style={{ color: COLORS.white }} />
+                            <TouchableOpacity style={styles(theme).deleteButton} onPress={() => handleDeletePaymentMethod(item.id)}>
+                                <Icon name="trash" size={20} style={{ color: theme.white }} />
                             </TouchableOpacity>
                         </View>
                     </View>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Alert,  Text, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Alert, Text, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { api } from '../../services/api';
@@ -7,6 +7,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import styles from './style';
+import { ThemeContext } from 'styled-components';
+import { useAddress } from '../../context/AddressContext';  // Importa o hook useAddress
 
 type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
@@ -25,16 +27,17 @@ interface MapScreenProps {
       referencePoint: string;
       complement: string;
       isVisualize: boolean;
+      addForUser?: boolean;
     };
   };
 }
 
 const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
-  const { address, latitude: initialLatitude, longitude: initialLongitude, zip, street, number, neighborhood, city, state, referencePoint, complement } = route.params;
-
+  const theme = useContext(ThemeContext);
+  const { address, setAddress } = useAddress(); // Obtém o endereço do contexto
   const [coordinate, setCoordinate] = useState({
-    latitude: initialLatitude,
-    longitude: initialLongitude,
+    latitude: route.params.latitude,
+    longitude: route.params.longitude,
   });
   const [tempCoordinate, setTempCoordinate] = useState(coordinate);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -47,6 +50,14 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
   };
 
   const handleSaveAddress = async () => {
+    const { zip, street, number, neighborhood, city, state, complement, referencePoint } = route.params;
+
+    // Verifica se todos os campos estão preenchidos antes de salvar
+    if (!zip || !street || !number || !neighborhood || !city || !state || !coordinate.latitude || !coordinate.longitude) {
+      Alert.alert('Erro', 'Por favor, complete todos os campos antes de salvar.');
+      return;
+    }
+
     Alert.alert(
       'Confirmação',
       `Deseja salvar o endereço?\n\n` +
@@ -67,8 +78,32 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
         {
           text: 'Salvar',
           onPress: async () => {
-            try {
-              await api.post('/addresses', {
+            if (route.params.addForUser == true) {
+              try {
+                await api.post('/addresses', {
+                  zip,
+                  street,
+                  number,
+                  neighborhood,
+                  city,
+                  state,
+                  complement,
+                  referencePoint,
+                  latitude: coordinate.latitude,
+                  longitude: coordinate.longitude,
+                });
+                Alert.alert('Sucesso', 'Endereço salvo com sucesso!', [{
+                  text: 'OK',
+                  onPress: () => {
+                    navigation.popToTop();
+                  }
+                }]);
+              } catch (error) {
+                Alert.alert('Erro', 'Não foi possível salvar o endereço.');
+                console.error(error);
+              }
+            }else {
+              setAddress({
                 zip,
                 street,
                 number,
@@ -79,11 +114,9 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
                 referencePoint,
                 latitude: coordinate.latitude,
                 longitude: coordinate.longitude,
-              });
-              Alert.alert('Sucesso', 'Endereço salvo com sucesso!', [{ text: 'OK', onPress: () => navigation.navigate('Perfil') }]);
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível salvar o endereço.');
-              console.error(error);
+                address: address.street+', '+address.number+', '+address.city,
+              })
+              navigation.popToTop();
             }
           },
         },
@@ -143,36 +176,36 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>
+    <View style={styles(theme).container}>
+      <View style={styles(theme).header}>
+        <Text style={styles(theme).headerText}>
           {!route.params.isVisualize ? (
             isRedirecting ? 'Arraste o marcador até o local correto' : 'Confirme o local do seu endereço'
           ) : 'Local do Endereço'}
         </Text>
-        <Text style={styles.addressText}>{address}</Text>
+        <Text style={styles(theme).addressText}>{route.params.address}</Text>
       </View>
 
       <WebView
         originWhitelist={['*']}
         source={{ html: htmlContent }}
-        style={styles.webView}
+        style={styles(theme).webView}
         onMessage={handleWebViewMessage}
       />
 
       {!route.params.isVisualize && (
-        <View style={styles.buttonContainer}>
+        <View style={styles(theme).buttonContainer}>
           {isRedirecting ? (
-            <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-              <Text style={styles.buttonText}>Confirmar Nova Posição</Text>
+            <TouchableOpacity style={styles(theme).button} onPress={handleConfirm}>
+              <Text style={styles(theme).buttonText}>Confirmar Nova Posição</Text>
             </TouchableOpacity>
           ) : (
             <>
-              <TouchableOpacity style={styles.button} onPress={() => setIsRedirecting(true)}>
-                <Text style={styles.buttonText}>Ajustar</Text>
+              <TouchableOpacity style={styles(theme).button} onPress={() => setIsRedirecting(true)}>
+                <Text style={styles(theme).buttonText}>Ajustar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={handleSaveAddress}>
-                <Text style={styles.buttonText}>Salvar Endereço</Text>
+              <TouchableOpacity style={styles(theme).button} onPress={handleSaveAddress}>
+                <Text style={styles(theme).buttonText}>Salvar Endereço</Text>
               </TouchableOpacity>
             </>
           )}

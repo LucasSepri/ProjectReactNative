@@ -1,25 +1,24 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-export default StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flexGrow: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         padding: 20,
     },
     header: {
         fontSize: 26,
         fontWeight: 'bold',
         textAlign: 'center',
-        color: COLORS.primary,
+        color: theme.primary,
         marginBottom: 20,
     },
     section: {
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 10,
         padding: 15,
         marginBottom: 20,
-        shadowColor: COLORS.black,
+        shadowColor: theme.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 2,
@@ -28,40 +27,40 @@ export default StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: COLORS.secondary,
+        color: theme.secondary,
         marginBottom: 10,
         borderBottomWidth: 1,
-        borderBottomColor: COLORS.white,
+        borderBottomColor: theme.white,
         paddingBottom: 5,
     },
     orderText: {
         fontSize: 16,
         marginBottom: 8,
-        color: COLORS.black,
+        color: theme.black,
     },
     label: {
         fontWeight: 'bold',
-        color: COLORS.text,
+        color: theme.text,
     },
     itemContainer: {
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 8,
         padding: 10,
         marginBottom: 10,
     },
     itemText: {
         fontSize: 16,
-        color: COLORS.text,
+        color: theme.text,
     },
     button: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
         padding: 15,
         borderRadius: 10,
         alignItems: 'center',
         marginTop: 20,
     },
     buttonText: {
-        color: COLORS.white,
+        color: theme.white,
         fontSize: 18,
         fontWeight: 'bold',
     },
@@ -72,3 +71,4 @@ export default StyleSheet.create({
         marginTop: 20,
     },
 });
+export default styles;

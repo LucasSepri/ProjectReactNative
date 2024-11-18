@@ -1,17 +1,16 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: COLORS.text,
+    color: theme.text,
   },
   zipContainer: {
     flexDirection: 'row',
@@ -21,14 +20,14 @@ const styles = StyleSheet.create({
   zipInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: theme.border,
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
   },
   searchButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
@@ -38,15 +37,15 @@ const styles = StyleSheet.create({
   label: {
     marginBottom: 5,
     fontSize: 16,
-    color: COLORS.text,
+    color: theme.text,
   },
   input: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: theme.border,
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.white,
   },
   rowContainer: {
     flexDirection: 'row',
@@ -54,23 +53,25 @@ const styles = StyleSheet.create({
   },
   halfContainer: {
     flex: 1,
+  },
+  halfContainerNo:{
     marginRight: 10,
   },
   switch: {
     alignSelf: 'center',
   },
   confirmButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
   },
   confirmButtonText: {
-    color: COLORS.white,
+    color: theme.white,
     fontSize: 18,
   },
   disabledButton: {
-    backgroundColor: COLORS.border,
+    backgroundColor: theme.border,
   },
 });
 

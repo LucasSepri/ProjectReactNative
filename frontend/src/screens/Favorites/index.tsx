@@ -5,10 +5,10 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import styles from './style';
-import { COLORS } from '../../styles/COLORS';
-import DefaultLogoImage from '../../components/Logo';
+import { DefaultLogoImage } from '../../components/Logo';
 import { api } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
+import { ThemeContext } from 'styled-components';
 
 type ProductProps = {
   price: string;
@@ -32,6 +32,7 @@ const truncateText = (text: string, maxLength: number) => {
 };
 
 const FavoritesScreen = () => {
+  const theme = useContext(ThemeContext);
   const { isAuthenticated, user } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [favorites, setFavorites] = useState<ProductProps[]>([]);
@@ -85,27 +86,27 @@ const FavoritesScreen = () => {
 
   const renderProductItem = ({ item }: { item: ProductProps }) => (
     <TouchableOpacity
-      style={styles.foodItem}
+      style={styles(theme).foodItem}
       onPress={() => handleProductPress(item)}
     >
-      <View style={styles.imageContainer}>
+      <View style={styles(theme).imageContainer}>
         {imageError[item.id] || !item.banner ? (
-          <DefaultLogoImage style={styles.image} />
+          <DefaultLogoImage style={styles(theme).image} theme={theme} />
         ) : (
           <Image
-            source={{ uri: `${api.defaults.baseURL}` + item.banner }}
+            source={{ uri: `${api.defaults.baseURL}` + item.banner + `?t=${new Date().getTime()}` }}
             onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
-            style={styles.image}
+            style={styles(theme).image}
           />
         )}
       </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.category}>{item.category.name}</Text>
-        <Text style={styles.ingredients} numberOfLines={2}>
+      <View style={styles(theme).infoContainer}>
+        <Text style={styles(theme).name}>{item.name}</Text>
+        <Text style={styles(theme).category}>{item.category.name}</Text>
+        <Text style={styles(theme).ingredients} numberOfLines={2}>
           {truncateText(item.description, 100)}
         </Text>
-        <Text style={styles.price}>R$ {item.price}</Text>
+        <Text style={styles(theme).price}>{Number(item.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -113,34 +114,34 @@ const FavoritesScreen = () => {
 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Favoritos</Text>
+    <View style={styles(theme).container}>
+      <Text style={styles(theme).header}>Favoritos</Text>
 
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
+      <View style={styles(theme).searchContainer}>
+        <Ionicons name="search" size={24} color={theme.primary} style={styles(theme).searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={styles(theme).searchInput}
           placeholder="Procure..."
           value={searchQuery}
           onChangeText={handleSearch}
         />
       </View>
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
+        <View style={styles(theme).loadingContainer}>
+          <ActivityIndicator size={33} color={theme.primary} />
         </View>
       ) : (
         filteredProducts.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyMessage}>Você ainda não tem produtos favoritados.</Text>
-            <Text style={styles.emptyInstruction}>Favorite produtos para vê-los aqui!</Text>
+          <View style={styles(theme).emptyContainer}>
+            <Text style={styles(theme).emptyMessage}>Você ainda não tem produtos favoritados.</Text>
+            <Text style={styles(theme).emptyInstruction}>Favorite produtos para vê-los aqui!</Text>
           </View>
         ) : (
           <FlatList
             data={filteredProducts}
             renderItem={renderProductItem}
             keyExtractor={item => item.id}
-            contentContainerStyle={styles.productList}
+            contentContainerStyle={styles(theme).productList}
             showsVerticalScrollIndicator={false}
           />
         )

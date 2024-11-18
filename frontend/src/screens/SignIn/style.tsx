@@ -1,10 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-export default StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: theme.background,
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 24,
@@ -13,19 +12,19 @@ export default StyleSheet.create({
         width: 160,
         height: 160,
         marginBottom: 22,
-        borderColor: COLORS.white,
+        borderColor: theme.white,
         borderWidth: 3,
         borderRadius: 20,
     },
     title: {
         fontSize: 28,
-        color: COLORS.primary,
+        color: theme.primary,
         fontWeight: 'bold',
         marginBottom: 6,
     },
     subTitle: {
         fontSize: 14,
-        color: COLORS.black,
+        color: theme.black,
         marginBottom: 30,
     },
     inputContainer: {
@@ -35,9 +34,9 @@ export default StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: COLORS.border,
+        borderColor: theme.border,
         borderRadius: 8,
-        backgroundColor: COLORS.background,
+        backgroundColor: theme.background,
         marginBottom: 14,
         elevation: 1, // Sombra leve para os campos de entrada
     },
@@ -52,21 +51,21 @@ export default StyleSheet.create({
         paddingVertical: 14,
         paddingHorizontal: 16,
         fontSize: 16,
-        color: COLORS.text,
+        color: theme.text,
     },
     errorText:{
-        color: COLORS.danger,
+        color: theme.danger,
         fontSize: 14,
         textAlign: 'center',
     },
     button: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
         paddingVertical: 16,
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
-        shadowColor: COLORS.black,
+        shadowColor: theme.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
@@ -74,12 +73,12 @@ export default StyleSheet.create({
     },
     buttonText: {
         fontSize: 18,
-        color: COLORS.white,
+        color: theme.white,
         fontWeight: '600',
     },
     registerText: {
         marginTop: 24,
-        color: COLORS.primary,
+        color: theme.primary,
         fontSize: 15,
         textAlign: 'center',
         textDecorationLine: 'underline',
@@ -90,3 +89,5 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
     },
 });
+
+export default styles;

@@ -1,18 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, Alert, TextInput } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, Alert, TextInput, RefreshControl, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from './style';
 import { AuthContext } from '../../../context/AuthContext';
 import { api } from '../../../services/api';
-import { COLORS } from '../../../styles/COLORS';
 import { DefaultProfileImage } from '../../../components/Profile';
+import { ThemeContext } from 'styled-components';
 
 const ListUsers = () => {
+    const theme = useContext(ThemeContext);
     const { signOut, user } = useContext(AuthContext);
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [imageError, setImageError] = useState({});
+    const [refreshing, setRefreshing] = useState(false);  // Estado para controlar o refresh
+    const [loadingDelete, setLoadingDelete] = useState<{ [key: string]: boolean }>({});
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -61,6 +64,7 @@ const ListUsers = () => {
             Alert.alert('Erro ao excluir usuário.');
             console.error('Error deleting user:', userId, 'erro:', error);
         }
+        setLoadingDelete(prev => ({ ...prev, [userId]: false }));
     };
 
     const updateUserRole = async (userId, isAdmin) => {
@@ -85,7 +89,6 @@ const ListUsers = () => {
             );
         }
     };
-
 
     const handleUpdateCargoUser = (userId, isAdmin) => {
         if (userId === user.id) {
@@ -119,12 +122,16 @@ const ListUsers = () => {
     };
 
     const handleDeleteUser = (userId) => {
+        setLoadingDelete(prev => ({ ...prev, [userId]: true }));
         if (userId === user.id) {
             const otherAdmins = users.filter(user => user.isAdmin && user.id !== userId);
             if (otherAdmins.length === 0) {
                 Alert.alert(
                     "Erro",
-                    "Não é possível excluir o único administrador do sistema. Promova outro usuário a administrador antes de se excluir."
+                    "Não é possível excluir o único administrador do sistema. Promova outro usuário a administrador antes de se excluir.",
+                    [
+                        { text: "OK", onPress: () => setLoadingDelete(prev => ({ ...prev, [userId]: false })) }
+                    ]
                 );
                 return;
             } else {
@@ -132,7 +139,7 @@ const ListUsers = () => {
                     "Confirmar exclusão",
                     "Você realmente quer excluir a si mesmo? Você será desconectado do aplicativo.",
                     [
-                        { text: "Cancelar", style: "cancel" },
+                        { text: "Cancelar", style: "cancel", onPress: () => setLoadingDelete(prev => ({ ...prev, [userId]: false })) },
                         { text: "SIM", onPress: () => deleteUser(userId) }
                     ]
                 );
@@ -142,7 +149,7 @@ const ListUsers = () => {
                 "Confirmar exclusão",
                 "Você tem certeza que quer excluir este usuário?",
                 [
-                    { text: "Cancelar", style: "cancel" },
+                    { text: "Cancelar", style: "cancel", onPress: () => setLoadingDelete(prev => ({ ...prev, [userId]: false })) },
                     { text: "SIM", onPress: () => deleteUser(userId) }
                 ]
             );
@@ -152,16 +159,16 @@ const ListUsers = () => {
     const renderUserRoleButton = (isAdmin, userId) => {
         if (isAdmin) {
             return (
-                <TouchableOpacity style={styles.removeAdminButton} onPress={() => handleUpdateCargoUser(userId, true)}>
-                    <Icon name="remove-circle" size={20} color={COLORS.white} />
-                    <Text style={styles.userRoleButtonText}> Remover Admin</Text>
+                <TouchableOpacity style={styles(theme).removeAdminButton} onPress={() => handleUpdateCargoUser(userId, true)}>
+                    <Icon name="remove-circle" size={20} color={theme.white} />
+                    <Text style={styles(theme).userRoleButtonText}> Remover Admin</Text>
                 </TouchableOpacity>
             );
         } else {
             return (
-                <TouchableOpacity style={styles.addAdminButton} onPress={() => handleUpdateCargoUser(userId, false)}>
-                    <Icon name="add-circle" size={20} color={COLORS.white} />
-                    <Text style={styles.userRoleButtonText}> Tornar Admin</Text>
+                <TouchableOpacity style={styles(theme).addAdminButton} onPress={() => handleUpdateCargoUser(userId, false)}>
+                    <Icon name="add-circle" size={20} color={theme.white} />
+                    <Text style={styles(theme).userRoleButtonText}> Tornar Admin</Text>
                 </TouchableOpacity>
             );
         }
@@ -169,68 +176,80 @@ const ListUsers = () => {
 
     const refreshList = async () => {
         try {
+            setRefreshing(true);  // Inicia a animação de refresh
             const response = await api.get('/users');
             setUsers(response.data);
             setFilteredUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
+        } finally {
+            setRefreshing(false);  // Finaliza a animação de refresh
         }
     };
 
+    const onRefresh = () => {
+        refreshList();
+    };
 
     useEffect(() => {
         refreshList();
     }, [navigator]);
 
-
     const renderItem = ({ item }) => (
-        <View style={styles.userContainer}>
-            <View style={styles.userInfoContainer}>
-                {item.profileImage && !imageError[item.id] && user.profileImage ? (
-                    <Image source={{ uri: `${api.defaults.baseURL}${item.profileImage}` }}
+        <View style={styles(theme).userContainer}>
+            <View style={styles(theme).userInfoContainer}>
+                {item.profileImage && !imageError[item.id] ? (
+                    <Image
+                        source={{ uri: `${api.defaults.baseURL}${item.profileImage}?t=${new Date().getTime()}` }}
                         onError={() => setImageError(prevState => ({ ...prevState, [item.id]: true }))}
-                        style={styles.profileImage} />
+                        style={styles(theme).profileImage}
+                    />
                 ) : (
-                    <DefaultProfileImage style={styles.profileImage} />
+                    <DefaultProfileImage style={styles(theme).profileImage} theme={theme}/>
                 )}
-                <View style={styles.userInfo}>
-                    <Text style={styles.name}>{item.name}</Text>
-                    <Text style={styles.email}>{item.email}</Text>
-                    <Text style={styles.telefone}>{item.phone}</Text>
+
+                <View style={styles(theme).userInfo}>
+                    <Text style={styles(theme).name}>{item.name}</Text>
+                    <Text style={styles(theme).email}>{item.email}</Text>
+                    <Text style={styles(theme).telefone}>{item.phone}</Text>
                     <Text>{item.isAdmin ? 'Admin' : 'Usuario'}</Text>
                 </View>
-                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteUser(item.id)}>
-                    <Icon name="trash" size={20} color={COLORS.white} />
-                </TouchableOpacity>
+
+                {loadingDelete[item.id] ? (
+                    <View style={styles(theme).deleteButton}>
+                        <ActivityIndicator size="small" color={theme.white} />
+                    </View>
+                ) : (
+                    <TouchableOpacity style={styles(theme).deleteButton} onPress={() => handleDeleteUser(item.id)}>
+                        <Icon name="trash" size={20} color={theme.white} />
+                    </TouchableOpacity>
+                )}
             </View>
-            <View style={styles.roleButtonContainer}>
+            <View style={styles(theme).roleButtonContainer}>
                 {renderUserRoleButton(item.isAdmin, item.id)}
             </View>
         </View>
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.searchContainerRefresh}>
-                <TouchableOpacity onPress={refreshList} style={styles.refreshList}>
-                    <Icon name="refresh" size={24} color={COLORS.primary} style={styles.refreshIcon} />
-                </TouchableOpacity>
-
-                <View style={styles.searchContainer}>
-                    <Icon name="search" size={24} color={COLORS.primary} style={styles.searchIcon} />
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Pesquisar usuários..."
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                    />
-                </View>
+        <View style={styles(theme).container}>
+            <View style={styles(theme).searchContainer}>
+                <Icon name="search" size={24} color={theme.primary} style={styles(theme).searchIcon} />
+                <TextInput
+                    style={styles(theme).searchInput}
+                    placeholder="Pesquisar usuários..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
             </View>
 
             <FlatList
                 data={filteredUsers}
                 keyExtractor={item => item.id.toString()}
                 renderItem={renderItem}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} />
+                }
             />
         </View>
     );

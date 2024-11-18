@@ -1,10 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { COLORS } from '../../styles/COLORS';
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
     },
     imageContainer: {
         position: 'relative',
@@ -24,19 +23,19 @@ const styles = StyleSheet.create({
     favoriteButton: {
         top: 16,
         right: 16,
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
     },
     backButton: {
         top: 16,
         left: 16,
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
     },
     detailsContainer: {
         paddingHorizontal: 16,
         paddingVertical: 20,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         borderRadius: 10,
-        shadowColor: COLORS.black,
+        shadowColor: theme.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
@@ -45,25 +44,25 @@ const styles = StyleSheet.create({
     },
     category: {
         fontSize: 14,
-        color: COLORS.secondary,
+        color: theme.secondary,
         textTransform: 'uppercase',
         marginBottom: 8,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: COLORS.text,
+        color: theme.text,
         marginBottom: 8,
     },
     price: {
         fontSize: 20,
         fontWeight: '600',
-        color: COLORS.primary,
+        color: theme.primary,
         marginBottom: 12,
     },
     description: {
         fontSize: 16,
-        color: COLORS.text,
+        color: theme.text,
         marginBottom: 20,
     },
     sizeSelection: {
@@ -75,22 +74,22 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 8,
         borderWidth: 1,
-        borderColor: COLORS.primary,
+        borderColor: theme.primary,
     },
     sizeButtonSelected: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
     },
     sizeText: {
         fontSize: 16,
-        color: COLORS.text,
+        color: theme.text,
     },
     footerContainer: {
         paddingHorizontal: 16,
         paddingVertical: 20,
         elevation: 5,
-        borderTopColor: COLORS.border,
+        borderTopColor: theme.border,
         borderTopWidth: 1,
-        backgroundColor: COLORS.white,
+        backgroundColor: theme.white,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -100,8 +99,8 @@ const styles = StyleSheet.create({
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.white,
-        borderColor: COLORS.border,
+        backgroundColor: theme.white,
+        borderColor: theme.border,
         borderWidth: 1,
         borderRadius: 10,
         marginRight: 16,
@@ -116,12 +115,12 @@ const styles = StyleSheet.create({
     quantityText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: COLORS.text,
+        color: theme.text,
         marginHorizontal: 8,
         paddingVertical: 20,
     },
     addToCartButton: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: theme.primary,
         flex: 1,
         paddingVertical: 10,
         borderRadius: 8,
@@ -130,12 +129,12 @@ const styles = StyleSheet.create({
     addToCartButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
     },
     totalText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: COLORS.white,
+        color: theme.white,
         marginBottom: 10,
     },
 });

@@ -4,13 +4,15 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from './style'; // Importando seu estilo
 import { api } from '../../services/api';
 import { AuthContext } from '../../context/AuthContext';
-import { COLORS } from '../../styles/COLORS';
+import { ThemeContext } from 'styled-components';
 
 const OrdemScreen = ({ navigation }) => {
+  const theme = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]); // Para armazenar todas as ordens
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // Estado para controlar o refresh
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showStartPicker, setShowStartPicker] = useState(false);
@@ -26,15 +28,24 @@ const OrdemScreen = ({ navigation }) => {
       return setLoading(false);
     } else {
       try {
-        const response = await api.get('/orders/'); // Supondo que você tenha uma rota para obter as ordens
-        setOrders(response.data);
-        setAllOrders(response.data); // Armazena todas as ordens
+        const response = await api.get('/orders/');
+        // Ordenando as ordens pela data de criação, da mais recente para a mais antiga
+        const sortedOrders = response.data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setOrders(sortedOrders);
+        setAllOrders(sortedOrders);
       } catch (error) {
         console.error('Erro ao carregar as ordens:', error);
       } finally {
         setLoading(false);
       }
     }
+  };
+
+  // Função para ser chamada tanto no carregamento inicial quanto no refresh
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadOrders();
+    setRefreshing(false);
   };
 
   useEffect(() => {
@@ -45,13 +56,33 @@ const OrdemScreen = ({ navigation }) => {
   const handleCancelOrder = async (orderId) => {
     setLoading(true);
     try {
-      await api.delete(`/orders/${orderId}/cancel/`);
-      Alert.alert('Sucesso', 'Ordem cancelada com sucesso.');
-      loadOrders();
+      const response = await api.get('/orders/');
+      // Ordenando as ordens pela data de criação, da mais recente para a mais antiga
+      const sortedOrders = response.data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      sortedOrders.map(async (order) => {
+        if (order.id === orderId) {
+          if (order.status !== 'Criado') {
+            alert('Não foi possivel cancelar esta ordem, pois ela já foi processada.');
+            setOrders(sortedOrders);
+            setAllOrders(sortedOrders);
+          } else {
+            try {
+              await api.delete(`/orders/${orderId}/cancel/`);
+              Alert.alert('Sucesso', 'Ordem cancelada com sucesso.');
+              loadOrders();
+            } catch (error) {
+              console.error('Erro ao cancelar a ordem:', error);
+              Alert.alert('Erro', 'Não foi possível cancelar a ordem.');
+            } finally {
+              setLoading(false);
+            }
+          }
+        }
+      });
     } catch (error) {
-      console.error('Erro ao cancelar a ordem:', error);
-      Alert.alert('Erro', 'Não foi possível cancelar a ordem.');
+      console.error('Erro ao carregar as ordens:', error);
     }
+
     setLoading(false);
   };
 
@@ -59,52 +90,59 @@ const OrdemScreen = ({ navigation }) => {
     const orderDate = new Date(item.created_at);
 
     return (
-      <TouchableOpacity style={styles.orderCard} onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}>
-        <Text style={styles.orderText}>Ordem ID: {item.id}</Text>
-        <Text style={styles.orderText}>Status: {item.status}</Text>
-        <Text style={styles.orderText}>Preço Total: R$ {item.totalPrice.toFixed(2)}</Text>
-        <Text style={styles.orderText}>Data: {orderDate.toLocaleDateString('pt-BR')} {orderDate.toLocaleTimeString()}</Text>
+      <TouchableOpacity style={styles(theme).orderCard} onPress={() => navigation.navigate('OrderDetails', { orderId: item.id })}>
+        <Text style={styles(theme).orderText}>Ordem ID: {item.id}</Text>
+        <Text style={styles(theme).orderText}>Status: {item.status}</Text>
+        <Text style={styles(theme).orderText}>Preço Total: {Number(item.totalPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</Text>
+        <Text style={styles(theme).orderText}>Data: {orderDate.toLocaleDateString('pt-BR')} {orderDate.toLocaleTimeString()}</Text>
 
         {item.status === 'Criado' && (
           <TouchableOpacity
-            style={styles.cancelButton}
+            style={styles(theme).cancelButton}
             onPress={() => handleCancelOrder(item.id)}
           >
-            <Text style={styles.cancelButtonText}>Cancelar Ordem</Text>
+            <Text style={styles(theme).cancelButtonText}>Cancelar Ordem</Text>
           </TouchableOpacity>
         )}
       </TouchableOpacity>
     );
   };
 
-
   const filterOrdersByDate = () => {
     const filteredOrders = allOrders.filter(order => {
       const orderDate = new Date(order.created_at);
-      return orderDate >= startDate && orderDate <= endDate;
+
+      const startOfDay = new Date(startDate);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      return orderDate >= startOfDay && orderDate <= endOfDay;
     });
-    setOrders(filteredOrders);
+
+    // Ordenar novamente após o filtro, para garantir que a ordem das ordens seja da mais recente para a mais antiga
+    setOrders(filteredOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Ordens</Text>
+    <View style={styles(theme).container}>
+      <Text style={styles(theme).header}>Ordens</Text>
 
       {/* Filtro de datas */}
-      <View style={styles.filterContainer}>
-        <Text style={styles.filterTitle}>Filtrar</Text>
-        <View style={styles.datePickerContainer}>
-          <TouchableOpacity style={styles.dateButton} onPress={() => setShowStartPicker(true)}>
-            <Text style={styles.dateButtonText}>Data de Início: {startDate.toLocaleDateString('pt-BR')}</Text>
+      <View style={styles(theme).filterContainer}>
+        <Text style={styles(theme).filterTitle}>Filtrar</Text>
+        <View style={styles(theme).datePickerContainer}>
+          <TouchableOpacity style={styles(theme).dateButton} onPress={() => setShowStartPicker(true)}>
+            <Text style={styles(theme).dateButtonText}>Data de Início: {startDate.toLocaleDateString('pt-BR')}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.dateButton} onPress={() => setShowEndPicker(true)}>
-            <Text style={styles.dateButtonText}>Data de Fim: {endDate.toLocaleDateString('pt-BR')}</Text>
+          <TouchableOpacity style={styles(theme).dateButton} onPress={() => setShowEndPicker(true)}>
+            <Text style={styles(theme).dateButtonText}>Data de Fim: {endDate.toLocaleDateString('pt-BR')}</Text>
           </TouchableOpacity>
-
         </View>
 
-        <TouchableOpacity style={styles.filterButton} onPress={filterOrdersByDate}>
-          <Text style={styles.filterButtonText}>Filtrar Ordens</Text>
+        <TouchableOpacity style={styles(theme).filterButton} onPress={filterOrdersByDate}>
+          <Text style={styles(theme).filterButtonText}>Filtrar Ordens</Text>
         </TouchableOpacity>
       </View>
 
@@ -134,19 +172,21 @@ const OrdemScreen = ({ navigation }) => {
 
       {/* Lista de ordens */}
       {loading ? (
-        <ActivityIndicator size={50} color={COLORS.primary} />
+        <ActivityIndicator size={50} color={theme.primary} />
       ) : (
         <>
           {orders.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyMessage}>Nenhuma Ordem Encontrada</Text>
-              <Text style={styles.emptyInstruction}>Tente novamente mais tarde.</Text>
+            <View style={styles(theme).emptyContainer}>
+              <Text style={styles(theme).emptyMessage}>Nenhuma Ordem Encontrada</Text>
+              <Text style={styles(theme).emptyInstruction}>Tente novamente mais tarde.</Text>
             </View>
           ) : (
             <FlatList
               data={orders}
               renderItem={renderOrderItem}
               keyExtractor={(item) => item.id.toString()}
+              onRefresh={handleRefresh}  // Adiciona o evento de refresh
+              refreshing={refreshing}    // Controla o estado de refresh
             />
           )}
         </>
