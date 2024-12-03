@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const styles = (theme) => StyleSheet.create({
+const styles = (theme: { [key: string]: string }) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
@@ -71,16 +71,20 @@ const styles = (theme) => StyleSheet.create({
         borderRadius: 8,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 40,
+        justifyContent: 'center',
         paddingVertical: 10,
+        paddingHorizontal: 10,
+        flex: 1,
     },
     removeAdminButton: {
         backgroundColor: theme.secondary,
-        paddingHorizontal: 40,
-        paddingVertical: 10,
         borderRadius: 8,
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        flex: 1,
     },
     userRoleButtonText: {
         color: theme.white,
@@ -89,8 +93,10 @@ const styles = (theme) => StyleSheet.create({
     },
     roleButtonContainer: {
         marginTop: 10,
+        gap: 10,
         flex: 1,
         alignItems: 'center',
+        flexDirection: 'row',
     },
     searchContainerRefresh: {
         flexDirection: 'row',

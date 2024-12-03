@@ -1,30 +1,56 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { api } from '../../../services/api';
+import { ThemeContext, useTheme } from 'styled-components';
 
 import styles from './style';
-import { ThemeContext } from 'styled-components';
+import { useFocusEffect } from '@react-navigation/native';
+
+interface Category {
+    id: string;
+    name: string;
+}
 
 export default function AdminCategorias() {
-    const theme = useContext(ThemeContext);
-    const [name, setName] = useState('');
-    const [categories, setCategories] = useState([]);
-    const [editingCategory, setEditingCategory] = useState(null);
-    const [error, setError] = useState(null);
+    const theme = useTheme() as {
+        primary: string;
+        secondary: string;
+        border: string;
+        background: string;
+        text: string;
+        white: string;
+        danger: string;
+    };
+    const [name, setName] = useState<string>('');
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         fetchCategories();
     }, []);
 
     const fetchCategories = async () => {
+        setLoading(true);
         try {
             const response = await api.get('/categories');
             setCategories(response.data);
+            setLoading(false);
         } catch (err) {
             setError('Erro ao buscar categorias.');
+            setLoading(false);
         }
     };
+
+    // Usando useFocusEffect para recarregar as categorias quando a tela entrar em foco
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchCategories();
+        }, [])
+    );
+
 
     const handleAddCategory = async () => {
         if (!name) {
@@ -51,12 +77,12 @@ export default function AdminCategorias() {
         }
     };
 
-    const handleEditCategory = (category) => {
+    const handleEditCategory = (category: Category) => {
         setName(category.name);
         setEditingCategory(category);
     };
 
-    const handleDeleteCategory = async (id) => {
+    const handleDeleteCategory = async (id: string) => {
         try {
             await api.delete(`/categories/${id}`);
             setCategories(categories.filter(cat => cat.id !== id));
@@ -73,6 +99,10 @@ export default function AdminCategorias() {
         setEditingCategory(null);
     };
 
+    const onRefresh = () => {
+        fetchCategories();
+    };
+
     return (
         <View style={styles(theme).container}>
             <Text style={styles(theme).title}>Adicionar Categorias</Text>
@@ -84,13 +114,11 @@ export default function AdminCategorias() {
             />
 
             <View style={styles(theme).buttonContainer}>
-                {/* Botão de Criar/Editar Produto */}
                 <TouchableOpacity onPress={handleAddCategory} style={[styles(theme).button, styles(theme).submitButton]}>
                     <Text style={styles(theme).buttonText}>
                         {editingCategory ? "Editar" : "Adicionar"}
                     </Text>
                 </TouchableOpacity>
-
 
                 {editingCategory && (
                     <TouchableOpacity onPress={handleCancelEdit} style={[styles(theme).button, styles(theme).cancelButton]}>
@@ -98,7 +126,6 @@ export default function AdminCategorias() {
                     </TouchableOpacity>
                 )}
             </View>
-
 
             {error && <Text style={styles(theme).error}>{error}</Text>}
 
@@ -114,11 +141,17 @@ export default function AdminCategorias() {
                                 <Text style={styles(theme).editButton}>Editar</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles(theme).deleteButton} onPress={() => handleDeleteCategory(item.id)}>
-                                <Icon name="trash" size={20} style={{ color: theme.white }} />
+                                <Icon name="trash" size={20} style={{ color: theme && theme.white }} />
                             </TouchableOpacity>
                         </View>
                     </View>
                 )}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={loading}
+                        onRefresh={onRefresh}
+                    />
+                }
             />
         </View>
     );

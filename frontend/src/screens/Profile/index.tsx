@@ -31,7 +31,8 @@ const PerfilEnderecoScreen = () => {
     const { user, signOut, isAuthenticated } = useContext(AuthContext);
     const [addresses, setAddresses] = useState<AddressProps[]>([]);
     const [loading, setLoading] = useState(true);
-    const [imageError, setImageError] = useState({});
+    const [loadingDelete, setLoadingDelete] = useState(false);
+    const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
 
     const fetchAddresses = async () => {
         try {
@@ -56,7 +57,7 @@ const PerfilEnderecoScreen = () => {
         if (isAuthenticated) {
             fetchAddresses();
         } else {
-            navigation.navigate('Home');
+            navigation.navigate("Inicio", { screen: 'Home' });
         }
     }, [isAuthenticated, navigation]);
 
@@ -79,7 +80,8 @@ const PerfilEnderecoScreen = () => {
                         });
                         setAddresses(prevAddresses => prevAddresses.filter(address => address.id !== id));
                     } catch (error) {
-                        console.error('Erro ao remover endereço:', error.response?.data || error.message);
+                        const err = error as any;
+                        console.error('Erro ao remover endereço:', err.response?.data || err.message);
                     }
                     setLoading(false);
                 },
@@ -92,8 +94,8 @@ const PerfilEnderecoScreen = () => {
             address: `${item.street}, ${item.number}`,
             latitude: item.latitude,
             longitude: item.longitude,
-            complement: item.complement,
-            referencePoint: item.referencePoint,
+            complement: item.complement || '',
+            referencePoint: item.referencePoint || '',
             zip: item.zip,
             street: item.street,
             number: item.number,
@@ -102,6 +104,7 @@ const PerfilEnderecoScreen = () => {
             state: item.state,
             isVisualize: true,
             addForUser: false,
+            returnScreen: 'Perfil',
         });
     };
 
@@ -109,19 +112,20 @@ const PerfilEnderecoScreen = () => {
         try {
             await api.delete(`/users/${user.id}`, { data: { userId: user.id } });
             signOut();
-            navigation.navigate('Home');
+            //navigation.navigate('Home');
         } catch (error) {
             console.error('Erro ao excluir conta:', error);
         }
     };
 
     const handleDeleteUser = () => {
+        setLoadingDelete(true);
         Alert.alert(
             "Confirmar exclusão",
             "Você tem certeza que quer excluir sua conta?",
             [
-                { text: "Cancelar", style: "cancel" },
-                { text: "Sim", onPress: handleDeleteAccount },
+                { text: "Cancelar", style: "cancel", onPress: () => setLoadingDelete(false) },
+                { text: "Sim", onPress: async () => { await handleDeleteAccount(); setLoadingDelete(false); } },
             ]
         );
     };
@@ -129,14 +133,14 @@ const PerfilEnderecoScreen = () => {
     const renderAddressItem = ({ item }: { item: AddressProps }) => (
         <View style={styles(theme).addressItemContainer}>
             <TouchableOpacity style={styles(theme).addressContainer} onPress={() => handleOpenMap(item)}>
-                <MaterialIcons name="location-on" size={24} color={theme.primary} />
+                <MaterialIcons name="location-on" size={24} color={theme && theme.primary} />
                 <View style={styles(theme).addressInfo}>
                     <Text style={styles(theme).addressText}>{item.street}, {item.number}</Text>
                     <Text style={styles(theme).addressSubtext}>{item.neighborhood}, {item.city} - {item.state}</Text>
                 </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleRemoveAddress(item.id)}>
-                <MaterialIcons name="delete" size={24} color={theme.danger} />
+                <MaterialIcons name="delete" size={24} color={theme && theme.danger} />
             </TouchableOpacity>
         </View>
     );
@@ -162,16 +166,23 @@ const PerfilEnderecoScreen = () => {
                 <View style={styles(theme).actionSection}>
                     <View style={styles(theme).buttonContainer}>
                         <TouchableOpacity style={[styles(theme).button, styles(theme).editButton]} onPress={() => navigation.navigate('EditarPerfil')}>
-                            <Ionicons name="pencil" size={24} color={theme.white} />
+                            <Ionicons name="pencil" size={24} color={theme && theme.white} />
                             <Text style={styles(theme).buttonText}>Editar Perfil</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles(theme).button, styles(theme).deleteButton]} onPress={handleDeleteUser}>
-                            <Ionicons name="trash" size={24} color={theme.white} />
-                            <Text style={styles(theme).buttonText}>Excluir Conta</Text>
-                        </TouchableOpacity>
+
+                        {loadingDelete ? (
+                            <View style={[styles(theme).button, styles(theme).deleteButton, {alignItems: 'center', justifyContent: 'center'}]}>
+                                <ActivityIndicator size={24} color={theme ? theme.white : {}} />
+                            </View>
+                        ) : (
+                            <TouchableOpacity style={[styles(theme).button, styles(theme).deleteButton]} onPress={handleDeleteUser}>
+                                <Ionicons name="trash" size={24} color={theme && theme.white} />
+                                <Text style={styles(theme).buttonText}>Excluir Conta</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                     <TouchableOpacity style={styles(theme).logoutButton} onPress={signOut}>
-                        <Ionicons name="log-out" size={24} color={theme.white} />
+                        <Ionicons name="log-out" size={24} color={theme && theme.white} />
                         <Text style={styles(theme).buttonText}>Sair</Text>
                     </TouchableOpacity>
                 </View>
@@ -181,7 +192,7 @@ const PerfilEnderecoScreen = () => {
                 <View style={styles(theme).addressHeader}>
                     <Text style={styles(theme).addressHeaderText}>ENDEREÇOS</Text>
                     {loading ? null : (
-                        <TouchableOpacity style={styles(theme).addButton} onPress={() => navigation.navigate('Endereco', { addForUser: true })}>
+                        <TouchableOpacity style={styles(theme).addButton} onPress={() => navigation.navigate('Endereco', { addForUser: true, returnScreen: 'Perfil' })}>
                             <Text style={styles(theme).addButtonText}>Adicionar Endereço</Text>
                         </TouchableOpacity>
                     )}
@@ -189,7 +200,7 @@ const PerfilEnderecoScreen = () => {
 
                 {loading ? (
                     <View style={styles(theme).loadingContainer}>
-                        <ActivityIndicator size={33} color={theme.primary} />
+                        <ActivityIndicator size={33} color={theme && theme.primary} />
                     </View>
                 ) : addresses.length === 0 ? (
                     <View style={styles(theme).emptyAddressContainer}>

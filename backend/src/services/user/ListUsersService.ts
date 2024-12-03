@@ -16,6 +16,7 @@ class ListUsersService {
         phone: true,
         profileImage: true,
         isAdmin: true,
+        isReceptionist: true,
         created_at: true,
         updated_at: true,
       },

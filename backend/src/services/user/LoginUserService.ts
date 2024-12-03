@@ -46,6 +46,7 @@ class LoginUserService {
                 email: user.email,
                 phone: user.phone, // Incluindo telefone no retorno
                 isAdmin: user.isAdmin,
+                isReceptionist: user.isReceptionist,
                 profileImage: user.profileImage,
             },
             token,

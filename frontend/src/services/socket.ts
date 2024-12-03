@@ -1,51 +1,55 @@
-import { io } from "socket.io-client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { io, Socket } from 'socket.io-client';
 
-const socket = io("http://192.168.3.98:3333", {
-    autoConnect: false,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
+// Endereço do servidor Socket.IO
+const socket: Socket = io('http://46.202.144.33:3333');
+
+// Função para verificar a conexão e reconectar se necessário
+function verificarConexao() {
+  if (!socket.connected) {
+    console.log('Conexão perdida. Tentando reconectar...');
+    socket.connect(); // Reconecta ao servidor
+  } else {
+    console.log('Conexão ativa');
+  }
+}
+
+// Evento de conexão
+socket.on('connect', () => {
+  console.log(`Conectado ao servidor com o ID: ${socket.id}`);
 });
 
-export async function initializeSocket() { // Adicionado export aqui
-    try {
-        const userInfo = await AsyncStorage.getItem('@token');
-        const { token, id: userId } = JSON.parse(userInfo || '{}');
+// Evento de atualização da lista de sockets online
+socket.on('updateSocketsList', (connectedSockets: string[]) => {
+  console.log('Lista de sockets conectados:', connectedSockets);
+});
 
-        if (!token || !userId) {
-            console.log('Token ou User ID não encontrado');
-            return;
-        }
 
-        socket.auth = { token, userId };
-        socket.connect();
+// Evento de desconexão
+socket.on('disconnect', (reason: string) => {
+  console.log(`Desconectado do servidor. Motivo: ${reason}`);
+  verificarConexao(); // Verifica a conexão ao desconectar
+});
 
-        socket.on('connect', () => {
-            console.log('WebSocket conectado:', socket.id);
-        });
+// Evento de reconexão
+socket.on('reconnect', (attemptNumber: number) => {
+  console.log(`Reconectado ao servidor após ${attemptNumber} tentativas`);
+});
 
-        socket.on('disconnect', (reason) => {
-            console.log('WebSocket desconectado:', reason);
+// Evento de erro
+socket.on('error', (error: Error) => {
+  console.error(`Erro no WebSocket: ${error.message}`);
+});
 
-            if (reason === "io server disconnect") {
-                socket.connect();
-            }
-        });
+socket.on('lojaAtualizada', () => {
+  //console.log('Loja atualizada');
+});
 
-        socket.on('reconnect_attempt', (attempt) => {
-            console.log(`Tentando reconectar (${attempt})...`);
-        });
-
-        socket.on('reconnect_failed', () => {
-            console.log('Falha ao reconectar ao WebSocket.');
-        });
-
-        socket.on('error', (error) => {
-            console.error('Erro no WebSocket:', error);
-        });
-    } catch (error) {
-        console.error('Erro ao inicializar o socket:', error);
-    }
+// Enviar mensagem para o servidor para atualizar a loja
+function atualizarLoja() {
+  socket.emit('AtualizarLoja');
 }
+
+// Exemplo de envio de dados para o servidor
+atualizarLoja();
 
 export default socket;

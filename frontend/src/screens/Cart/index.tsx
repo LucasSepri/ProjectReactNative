@@ -99,7 +99,6 @@ const Carrinho = ({ navigation }) => {
       setCartItems(response.data.cart.items);
       setTotalPrice(response.data.totalPrice);
     } catch (error) {
-      console.error('Erro ao carregar o carrinho:', error);
       setCartItems([]);
       setTotalPrice(0);
     } finally {
@@ -247,7 +246,7 @@ const Carrinho = ({ navigation }) => {
 
   function handleAddAddress() {
     setModalVisible(false);
-    navigation.navigate('Endereco', { addForUser: true });
+    navigation.navigate('Endereco', { addForUser: true, returnScreen: 'Carrinho' });
   }
   useFocusEffect(
     React.useCallback(() => {

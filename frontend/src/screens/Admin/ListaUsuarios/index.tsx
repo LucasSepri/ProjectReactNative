@@ -5,15 +5,33 @@ import styles from './style';
 import { AuthContext } from '../../../context/AuthContext';
 import { api } from '../../../services/api';
 import { DefaultProfileImage } from '../../../components/Profile';
-import { ThemeContext } from 'styled-components';
+import { ThemeContext, useTheme } from 'styled-components';
+
+interface user {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    isAdmin: boolean;
+    isReceptionist: boolean;
+    profileImage: string;
+}
 
 const ListUsers = () => {
-    const theme = useContext(ThemeContext);
+    const theme = useTheme() as {
+        primary: string;
+        secondary: string;
+        border: string;
+        background: string;
+        text: string;
+        white: string;
+        danger: string;
+    };
     const { signOut, user } = useContext(AuthContext);
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<user[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState([]);
-    const [imageError, setImageError] = useState({});
+    const [filteredUsers, setFilteredUsers] = useState<user[]>([]);
+    const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
     const [refreshing, setRefreshing] = useState(false);  // Estado para controlar o refresh
     const [loadingDelete, setLoadingDelete] = useState<{ [key: string]: boolean }>({});
 
@@ -48,7 +66,7 @@ const ListUsers = () => {
         }
     }, [searchQuery, users]);
 
-    const deleteUser = async (userId) => {
+    const deleteUser = async (userId: string) => {
         try {
             await api.delete(`/users/${userId}`, {
                 data: {
@@ -67,7 +85,7 @@ const ListUsers = () => {
         setLoadingDelete(prev => ({ ...prev, [userId]: false }));
     };
 
-    const updateUserRole = async (userId, isAdmin) => {
+    const updateUserRole = async (userId: string, isAdmin: boolean) => {
         const endpoint = isAdmin ? `/users/revoke/${userId}` : `/users/promote/${userId}`;
         try {
             await api.put(endpoint, { user_id: user.id, isAdmin: user.isAdmin });
@@ -90,7 +108,31 @@ const ListUsers = () => {
         }
     };
 
-    const handleUpdateCargoUser = (userId, isAdmin) => {
+
+    const updateReceptionistRole = async (userId: string, isReceptionist: boolean) => {
+        const endpoint = isReceptionist ? `/users/revokeReceptionist/${userId}` : `/users/promoteReceptionist/${userId}`;
+        try {
+            await api.put(endpoint, { user_id: user.id, isReceptionist: user.isReceptionist });
+            const updatedUsers = users.map(user => {
+                if (user.id === userId) {
+                    return { ...user, isReceptionist: !isReceptionist };
+                }
+                return user;
+            });
+            setUsers(updatedUsers);
+
+            if (userId === user.id) {
+                signOut();
+            }
+        } catch (error) {
+            Alert.alert(
+                "Erro",
+                "Não é possível atualizar o cargo do usuário. Tente novamente mais tarde."
+            );
+        }
+    };
+
+    const handleUpdateCargoUser = (userId: string, isAdmin: boolean) => {
         if (userId === user.id) {
             const otherAdmins = users.filter(user => user.isAdmin && user.id !== userId);
             if (otherAdmins.length === 0) {
@@ -121,7 +163,7 @@ const ListUsers = () => {
         }
     };
 
-    const handleDeleteUser = (userId) => {
+    const handleDeleteUser = (userId: string) => {
         setLoadingDelete(prev => ({ ...prev, [userId]: true }));
         if (userId === user.id) {
             const otherAdmins = users.filter(user => user.isAdmin && user.id !== userId);
@@ -156,19 +198,40 @@ const ListUsers = () => {
         }
     };
 
-    const renderUserRoleButton = (isAdmin, userId) => {
+    const renderUserRoleButton = (isAdmin: boolean, userId: string) => {
         if (isAdmin) {
             return (
                 <TouchableOpacity style={styles(theme).removeAdminButton} onPress={() => handleUpdateCargoUser(userId, true)}>
-                    <Icon name="remove-circle" size={20} color={theme.white} />
+                    <Icon name="remove-circle" size={20} color={theme && theme.
+                        white} />
                     <Text style={styles(theme).userRoleButtonText}> Remover Admin</Text>
                 </TouchableOpacity>
             );
         } else {
             return (
                 <TouchableOpacity style={styles(theme).addAdminButton} onPress={() => handleUpdateCargoUser(userId, false)}>
-                    <Icon name="add-circle" size={20} color={theme.white} />
+                    <Icon name="add-circle" size={20} color={theme && theme.
+                        white} />
                     <Text style={styles(theme).userRoleButtonText}> Tornar Admin</Text>
+                </TouchableOpacity>
+            );
+        }
+    };
+    const renderReceptionistRoleButton = (isAdmin: boolean, userId: string, isReceptionist: boolean) => {
+        if (isReceptionist) {
+            return (
+                <TouchableOpacity style={styles(theme).removeAdminButton} onPress={() => updateReceptionistRole(userId, true)}>
+                    <Icon name="remove-circle" size={20} color={theme && theme.
+                        white} />
+                    <Text style={styles(theme).userRoleButtonText}> Remover Recepcionista </Text>
+                </TouchableOpacity>
+            );
+        } else {
+            return (
+                <TouchableOpacity style={styles(theme).addAdminButton} onPress={() => updateReceptionistRole(userId, false)}>
+                    <Icon name="add-circle" size={20} color={theme && theme.
+                        white} />
+                    <Text style={styles(theme).userRoleButtonText}> Tornar Recepcionista</Text>
                 </TouchableOpacity>
             );
         }
@@ -195,7 +258,7 @@ const ListUsers = () => {
         refreshList();
     }, [navigator]);
 
-    const renderItem = ({ item }) => (
+    const renderItem = ({ item }: { item: any }) => (
         <View style={styles(theme).userContainer}>
             <View style={styles(theme).userInfoContainer}>
                 {item.profileImage && !imageError[item.id] ? (
@@ -205,28 +268,31 @@ const ListUsers = () => {
                         style={styles(theme).profileImage}
                     />
                 ) : (
-                    <DefaultProfileImage style={styles(theme).profileImage} theme={theme}/>
+                    <DefaultProfileImage style={styles(theme).profileImage} theme={theme} />
                 )}
 
                 <View style={styles(theme).userInfo}>
                     <Text style={styles(theme).name}>{item.name}</Text>
                     <Text style={styles(theme).email}>{item.email}</Text>
                     <Text style={styles(theme).telefone}>{item.phone}</Text>
-                    <Text>{item.isAdmin ? 'Admin' : 'Usuario'}</Text>
+                    <Text>{item.isAdmin ? 'Admin' : item.isReceptionist ? 'Recepcionista' : 'Usuario'}</Text>
                 </View>
 
                 {loadingDelete[item.id] ? (
                     <View style={styles(theme).deleteButton}>
-                        <ActivityIndicator size="small" color={theme.white} />
+                        <ActivityIndicator size="small" color={theme && theme.
+                            white} />
                     </View>
                 ) : (
                     <TouchableOpacity style={styles(theme).deleteButton} onPress={() => handleDeleteUser(item.id)}>
-                        <Icon name="trash" size={20} color={theme.white} />
+                        <Icon name="trash" size={20} color={theme && theme.
+                            white} />
                     </TouchableOpacity>
                 )}
             </View>
             <View style={styles(theme).roleButtonContainer}>
                 {renderUserRoleButton(item.isAdmin, item.id)}
+                {renderReceptionistRoleButton(item.isAdmin, item.id, item.isReceptionist)}
             </View>
         </View>
     );
@@ -234,7 +300,8 @@ const ListUsers = () => {
     return (
         <View style={styles(theme).container}>
             <View style={styles(theme).searchContainer}>
-                <Icon name="search" size={24} color={theme.primary} style={styles(theme).searchIcon} />
+                <Icon name="search" size={24} color={theme && theme.
+                    primary} style={styles(theme).searchIcon} />
                 <TextInput
                     style={styles(theme).searchInput}
                     placeholder="Pesquisar usuários..."
@@ -248,7 +315,8 @@ const ListUsers = () => {
                 keyExtractor={item => item.id.toString()}
                 renderItem={renderItem}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme && theme.
+                        primary]} />
                 }
             />
         </View>

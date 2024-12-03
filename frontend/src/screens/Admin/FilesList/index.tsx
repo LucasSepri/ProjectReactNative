@@ -20,11 +20,17 @@ const FilesScreen: React.FC = () => {
         try {
             const response = await api.get('/files');
             return response.data.files;
-        } catch (error) {
-            console.error('Erro ao buscar arquivos:', error);
+        } catch (error: any) {
+            if (error.response?.status === 401) {
+                console.error('Unauthorized: Invalid or expired token');
+                Alert.alert('Erro de Autorização', 'Sessão expirada. Por favor, faça login novamente.');
+            } else {
+                console.error('Erro ao buscar arquivos:', error);
+            }
             return [];
         }
     };
+
 
     const loadFiles = async () => {
         setLoading(true);
@@ -152,7 +158,7 @@ const FilesScreen: React.FC = () => {
                 >
                     {imageError[item] ? (
                         <View style={styles(theme).imageContainerStyle}>
-                            <Text style={{color: theme.color}}>{item}</Text>
+                            <Text style={{ color: theme && theme.color }}>{item}</Text>
                         </View>
                     ) : (
                         <Image
@@ -238,7 +244,7 @@ const FilesScreen: React.FC = () => {
     );
 };
 
-const styles = (theme) => StyleSheet.create({
+const styles = (theme: any) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.white,

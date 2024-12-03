@@ -29,7 +29,9 @@ import Animated from 'react-native-reanimated';
 import { DefaultLogoImage } from '../../../components/Logo';
 import socket from '../../../services/socket';
 
-const StoreSettingsScreen = ({ navigation }) => {
+import { NavigationProp } from '@react-navigation/native';
+
+const StoreSettingsScreen = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const theme = useContext(ThemeContext);
     const { address, setAddress } = useAddress();
 
@@ -259,7 +261,6 @@ const StoreSettingsScreen = ({ navigation }) => {
                 name: 'background.jpg',
             } as any);
         }
-        console.log(selectedBackground);
 
         formData.append('storeName', storeSettings.storeName);
         formData.append('phone', storeSettings.phone);
@@ -280,7 +281,7 @@ const StoreSettingsScreen = ({ navigation }) => {
             socket.emit('AtualizarLoja');
             fetchStoreSettings();
 
-            Alert.alert('Sucesso', 'Configurações da loja atualizadas');
+            Alert.alert('Sucesso', 'Configurações atualizadas com sucesso, reinicie o aplicativo para ver todas as mudanças');
         } catch (error) {
             // console.error('Erro ao salvar configurações:', error);
             Alert.alert('Erro', 'Ocorreu um erro ao atualizar as configurações, tente novamente');
@@ -463,7 +464,7 @@ const StoreSettingsScreen = ({ navigation }) => {
                                 <Ionicons name="trash" size={18} color={theme.white} />
                             </TouchableOpacity></>
                     ) : (
-                        <TouchableOpacity style={styles(theme).button} onPress={() => navigation.navigate('Endereco', { addForUser: false })}>
+                        <TouchableOpacity style={styles(theme).button} onPress={() => navigation.navigate('Endereco', { addForUser: false, returnScreen: "Config" })}>
                             <Ionicons name="location" size={18} color={theme.white} style={styles(theme).icon} />
                             <Text style={styles(theme).addressText}>
                                 {'Adicionar endereço'}

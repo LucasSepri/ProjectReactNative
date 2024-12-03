@@ -6,22 +6,20 @@ import SignIn from "../screens/SignIn";
 import Pesquisa from "../screens/Search";
 import SignUp from "../screens/SignUp";
 import EditarPerfil from "../screens/EditarPerfil";
-import Home from "../screens/Home";
+import { Home } from "../screens/Home";
 import OrderDetails from "../screens/OrderDetails";
 import ProductDetails from "../screens/ProductDetails";
 import MapScreen from "../screens/Map";
 import Endereco from "../screens/Address";
 
 
-import TabRouter from "./tab.routes";
+import Inicio from "./tab.routes";
 import Qrcode from "../screens/Qrcode";
 
 import { useTheme } from "styled-components";
 
 // Definindo os tipos de rotas
 export type StackParamList = {
-    TabRouter: undefined;
-    Home: undefined;
     OrderDetails: undefined;
     Perfil: undefined;
     Pesquisa: undefined;
@@ -43,11 +41,18 @@ export type StackParamList = {
         state: string;
         isVisualize: boolean;
         addForUser: boolean;
+        returnScreen: string;
     };
-    Endereco: { addForUser: boolean };
+    Endereco: { 
+        addForUser: boolean,
+        returnScreen: string
+     };
     Qrcode: undefined;
     MapScreen2: undefined;
-    Carrinho: undefined;
+    Inicio: { 
+        screen: string;
+    };
+    Home: undefined;
 }
 
 const Stack = createStackNavigator<StackParamList>();
@@ -56,10 +61,9 @@ function AppRoutes() {
     const theme = useTheme();
     return (
         <Stack.Navigator>
-         
             <Stack.Screen
-                name="TabRouter"
-                component={TabRouter}
+                name="Inicio"
+                component={Inicio}
                 options={{ headerShown: false }}
             />
             <Stack.Screen

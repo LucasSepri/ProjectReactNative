@@ -13,7 +13,20 @@ import { ThemeContext } from 'styled-components';
 
 type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
-const ProductDetails = ({ route }) => {
+type RouteParams = {
+    product: {
+        id: number;
+        name: string;
+        description: string;
+        price: string;
+        banner: string;
+    };
+    category: {
+        name: string;
+    };
+};
+
+const ProductDetails = ({ route }: { route: { params: RouteParams } }) => {
     const theme = useContext(ThemeContext);
     const navigation = useNavigation<NavigationProp>();
     const { isAuthenticated } = useContext(AuthContext);
@@ -21,12 +34,9 @@ const ProductDetails = ({ route }) => {
     const { product, category } = route.params;
     const [quantity, setQuantity] = useState(1);
     const [total, setTotal] = useState(0);
-    const [size, setSize] = useState('broto');
     const [isFavorite, setIsFavorite] = useState(false);
     const [imageError, setImageError] = useState({ [product.id]: false });
     const [loading, setLoading] = useState(false);
-
-    const isPizza = category.name?.toLowerCase() === 'pizza';
 
     const checkIfFavorite = async () => {
         if (!isAuthenticated) return;
@@ -66,7 +76,7 @@ const ProductDetails = ({ route }) => {
             const response = await api.post('/cart', payload);
             if (response.status === 201) {
                 Alert.alert("Adicionado com Sucesso", `Adicionado ${quantity} de ${product.name} ao carrinho`);
-                navigation.navigate('Carrinho');
+                navigation.navigate("Inicio", { screen: "Carrinho" });
             }
             setLoading(false);
         } catch (error) {
@@ -127,13 +137,13 @@ const ProductDetails = ({ route }) => {
                         style={[styles(theme).button, styles(theme).favoriteButton]}
                         onPress={handleFavoriteToggle}
                     >
-                        <Icon name={isFavorite ? "heart" : "heart-outline"} size={24} color={theme.white} />
+                        {theme && (<Icon name={isFavorite ? "heart" : "heart-outline"} size={24} color={theme.white} />)}
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles(theme).button, styles(theme).backButton]}
                         onPress={() => navigation.goBack()}
                     >
-                        <Icon name="arrow-back" size={24} color={theme.white} />
+                        {theme && (<Icon name="arrow-back" size={24} color={theme.white} />)}
                     </TouchableOpacity>
                 </View>
 
@@ -141,39 +151,22 @@ const ProductDetails = ({ route }) => {
                     <Text style={styles(theme).title}>{product.name}</Text>
                     <Text style={styles(theme).category}>{category ? category.name : 'Categoria não disponível'}</Text>
                     <Text style={styles(theme).description}>{product.description}</Text>
-
-                    {isPizza && (
-                        <View style={styles(theme).sizeSelection}>
-                            <TouchableOpacity
-                                style={[styles(theme).sizeButton, size === 'broto' && styles(theme).sizeButtonSelected]}
-                                onPress={() => setSize('broto')}
-                            >
-                                <Text style={styles(theme).sizeText}>Broto</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles(theme).sizeButton, size === 'grande' && styles(theme).sizeButtonSelected]}
-                                onPress={() => setSize('grande')}
-                            >
-                                <Text style={styles(theme).sizeText}>Grande</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
                 </View>
             </ScrollView>
 
             <View style={styles(theme).footerContainer}>
                 <View style={styles(theme).quantityContainer}>
                     <TouchableOpacity onPress={decrement} style={styles(theme).quantityButton}>
-                        <Icon name="remove" size={30} color={theme.black} />
+                    {theme && (<Icon name="remove" size={30} color={theme.black} />)}
                     </TouchableOpacity>
                     <Text style={styles(theme).quantityText}>{quantity}</Text>
                     <TouchableOpacity onPress={increment} style={styles(theme).quantityButton}>
-                        <Icon name="add" size={30} color={theme.black} />
+                    {theme && (<Icon name="add" size={30} color={theme.black} />)}
                     </TouchableOpacity>
                 </View>
                 {loading ? (
                     <Pressable style={styles(theme).addToCartButton}>
-                        <ActivityIndicator size={33} color={theme.white} />
+                        {theme && (<ActivityIndicator size={33} color={theme.white} />)}
                     </Pressable>
                 ) : (
                     <Pressable style={styles(theme).addToCartButton} onPress={handleAddToCart}>

@@ -2,18 +2,32 @@ import prisma from "../../prisma";
 
 class DashboardService {
   async getSalesSummary() {
+    // Somar o total de vendas, considerando apenas ordens fechadas (isClosed: true)
     const totalSales = await prisma.order.aggregate({
       _sum: { totalPrice: true },
+      where: {
+        isClosed: true,
+      },
     });
 
+    // Contar clientes ativos (considerando ordens fechadas)
     const activeClients = await prisma.order.findMany({
+      where: {
+        isClosed: true,
+      },
       select: { user_id: true },
       distinct: ['user_id'],
     });
 
+    // Obter os produtos mais vendidos (considerando ordens fechadas)
     const topProducts = await prisma.item.groupBy({
       by: ['product_name'],
       _sum: { amount: true },
+      where: {
+        order: {
+          isClosed: true, // Considerando ordens fechadas
+        },
+      },
       orderBy: { _sum: { amount: 'desc' } },
       take: 2,
     });
@@ -25,15 +39,15 @@ class DashboardService {
     };
   }
 
-
   async getSalesChart() {
-    // Buscar todas as ordens do ano atual
+    // Buscar todas as ordens fechadas do ano atual
     const orders = await prisma.order.findMany({
       where: {
         created_at: {
           gte: new Date(new Date().getFullYear(), 0, 1), // Início do ano
           lt: new Date(new Date().getFullYear() + 1, 0, 1), // Fim do ano
         },
+        isClosed: true, // Considerando apenas ordens fechadas
       },
       select: {
         created_at: true,
@@ -57,13 +71,18 @@ class DashboardService {
     }));
   }
 
-
   async getSoldProductsTable() {
+    // Obter os produtos vendidos, considerando ordens fechadas
     const products = await prisma.item.groupBy({
       by: ['product_name'],
       _sum: {
         amount: true,
         product_price: true,
+      },
+      where: {
+        order: {
+          isClosed: true, // Considerando ordens fechadas
+        },
       },
     });
 

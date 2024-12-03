@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { ThemeContext } from 'styled-components';
 
 interface CustomTabBarProps {
     state: any;
@@ -9,11 +10,12 @@ interface CustomTabBarProps {
     theme: any; // O tema agora é obrigatório
 }
 
-const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigation, theme }) => {
+const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigation }) => {
+    const theme = useContext(ThemeContext) || {}
     return (
         <View style={styles(theme).container}>
             <View style={styles(theme).content}>
-                {state.routes.map((route, index) => {
+                {state.routes.map((route: { key: string; name: string; params?: object }, index: number) => {
                     const { options } = descriptors[route.key];
 
                     const isFocused = state.index === index;
@@ -50,7 +52,7 @@ const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigat
                         >
                             <View style={{ alignItems: 'center', padding: 4 }}>
                                 <View style={[styles(theme).innerButton, { backgroundColor: isFocused ? theme.primary : "transparent" }]}>
-                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? theme.white : theme.black, size: 34 })}
+                                    {options.tabBarIcon && options.tabBarIcon({ color: isFocused ? theme?.white : theme?.primary, size: 34 })}
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -61,7 +63,7 @@ const CustomTabBar: React.FC<CustomTabBarProps> = ({ state, descriptors, navigat
     );
 };
 
-const styles = (theme) => StyleSheet.create({
+const styles = (theme: any) => StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',

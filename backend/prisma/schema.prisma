@@ -14,15 +14,16 @@ datasource db {
 
 // Tabela de Usuários
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  password     String
-  isAdmin      Boolean  @default(false)
-  profileImage String? // Campo opcional para imagem de perfil
-  phone        String? // Novo campo para o telefone do usuário
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  password       String
+  isAdmin        Boolean  @default(false)
+  isReceptionist Boolean  @default(false)
+  profileImage   String? // Campo opcional para imagem de perfil
+  phone          String? // Novo campo para o telefone do usuário
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
   orders    Order[] // Relacionamento com pedidos
   favorites Favorite[] // Relacionamento com produtos favoritos
@@ -80,10 +81,11 @@ model Order {
   tableNumber     String? // Número da mesa, caso seja no estabelecimento
   observation     String? // Campo opcional para observações do pedido
   paymentMethod   String // Nome do método de pagamento utilizado (ex: "Cartão de Crédito", "Pix")
+  isClosed        Boolean  @default(false) // Indica se o pedido foi fechado no caixa
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
 
-  items    Item[] // Relacionamento com itens de pedidos
+  items Item[] // Relacionamento com itens de pedidos
 }
 
 // Tabela de Itens de Pedidos
@@ -163,7 +165,6 @@ model PaymentMethod {
   updated_at DateTime @updatedAt
 }
 
-
 // Tabela de Configurações do Comércio (E-commerce)
 model StoreSettings {
   id String @id @default(uuid())
@@ -202,4 +203,24 @@ model Chat {
 
   users    User[]    @relation("UserChats") // Relacionamento com usuários
   messages Message[] // Relacionamento com mensagens
+}
+
+model Employee {
+  id           String   @id @default(uuid())
+  employeeImage String? // Campo opcional para imagem de perfil
+  name         String
+  rg           String   @unique
+  cpf          String   @unique
+  workCard     String   @unique // Carteira de trabalho
+  address      String
+  phone        String
+  email        String   @unique
+  hiringDate   DateTime // Data de contratação
+  workingHours Json // JSON para descrever horários de trabalho (ex: { start: "08:00", end: "18:00" })
+  salary       Float
+  dayOff       Json // Dia de folga
+  vacation     Json // JSON para descrever período de férias (ex: { start: "2024-01-01", end: "2024-01-15" })
+  uniformSize  String // Tamanho do uniforme
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }

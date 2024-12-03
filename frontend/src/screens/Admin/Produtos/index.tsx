@@ -86,11 +86,13 @@ const PizzaScreen = () => {
         loadProducts(); // Carrega os produtos somente se uma categoria estiver selecionada
       } else {
         loadCategories(); // Carrega categorias apenas quando necessário
+        loadProducts(); // Carrega os produtos somente se uma categoria estiver selecionada
       }
 
     }, [categorySelected, navigation])
   );
   const loadProducts = async () => {
+    setImageError({});
     setLoadingProducts(true);
     try {
       const response = await api.get(
@@ -181,7 +183,6 @@ const PizzaScreen = () => {
             onError={() => setImageError(prev => ({ ...prev, [item.id]: true }))}
             style={styles(theme).image}
           />
-
         )}
       </View>
       <View style={styles(theme).infoContainer}>
@@ -193,8 +194,6 @@ const PizzaScreen = () => {
         <Text style={styles(theme).price}>
           {Number(item.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
         </Text>
-
-
       </View>
 
       {loadingDelete[item.id] ? (
@@ -213,6 +212,7 @@ const PizzaScreen = () => {
       )}
     </TouchableOpacity>
   );
+
 
   return (
     <View style={styles(theme).container}>

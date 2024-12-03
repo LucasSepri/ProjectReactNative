@@ -46,6 +46,7 @@ class LoginUserController {
           email: user.email,
           phone: user.phone, // Incluindo o telefone
           isAdmin: user.isAdmin,
+          isReceptionist: user.isReceptionist, 
           profileImage: user.profileImage,
         },
         token,

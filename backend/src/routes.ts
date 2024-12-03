@@ -12,6 +12,8 @@ import DeleteUserController from './controllers/user/DeleteUserController';
 import ListUsersController from './controllers/user/ListUsersController';
 import PromoteUserController from './controllers/user/PromoteUserController';
 import RevokeAdminController from './controllers/user/RevokeAdminController';
+import PromoteReceptionistController from './controllers/user/PromoteReceptionistController';
+import RevokeReceptionistController from './controllers/user/RevokeReceptionistController';
 
 /* ---- Endereço Controller ---- */
 import CreateAddressController from './controllers/address/CreateAddressController';
@@ -47,6 +49,7 @@ import CancelOrderController from './controllers/order/CancelOrderController';
 import UpdateOrderStatusController from './controllers/order/UpdateOrderStatusController';
 import FindOrderController from './controllers/order/FindOrderController';
 import ListAllOrdersController from './controllers/order/ListAllOrdersController';
+import CashierController from './controllers/order/CashierController';
 
 /* ---- Payment Methods Controller ---- */
 import {
@@ -67,6 +70,9 @@ import {
     getStoreSettingsController,
 } from './controllers/storeSettings/storeSettingsController';
 
+/* ----- Employees ------- */
+import EmployeeController from './controllers/Employee/EmployeeController';
+
 const router = Router();
 
 /* --------- USUÁRIOS --------- */
@@ -81,11 +87,15 @@ router.delete('/users/:id', isAuthenticated, DeleteUserController.handle);
 // Rota para listar todos os usuários, protegida por autenticação e acesso de admin
 router.get('/users', isAuthenticated, isAdmin, ListUsersController.handle);
 // Rota para promover usuário a administrador
+router.put('/users/promoteReceptionist/:id', isAuthenticated, isAdmin, PromoteReceptionistController.handle);
+// Rota para revogar status de administrador
+router.put('/users/revokeReceptionist/:id', isAuthenticated, isAdmin, RevokeReceptionistController.handle);
+// Rota para obter os dados do usuário, protegida pelo middleware
+router.get('/user', isAuthenticated, UserProtectController.getUserData.bind(UserProtectController));
+// Rota para promover usuário a administrador
 router.put('/users/promote/:id', isAuthenticated, isAdmin, PromoteUserController.handle);
 // Rota para revogar status de administrador
 router.put('/users/revoke/:id', isAuthenticated, isAdmin, RevokeAdminController.handle);
-// Rota para obter os dados do usuário, protegida pelo middleware
-router.get('/user', isAuthenticated, UserProtectController.getUserData.bind(UserProtectController));
 
 /* --------- ENDEREÇOS --------- */
 // Rota para criar um endereço
@@ -130,10 +140,11 @@ router.put('/cart', isAuthenticated, UpdateCartItemController.handle);
 // Criar, listar, cancelar e atualizar status dos pedidos
 router.post('/orders', isAuthenticated, CreateOrderController.handle);
 router.get('/orders', isAuthenticated, ListOrdersController.handle);
-router.get('/orders/:id', FindOrderController.handle);
+router.get('/orders/:id', isAuthenticated, FindOrderController.handle);
 router.delete('/orders/:order_id/cancel', isAuthenticated, CancelOrderController.handle);
-router.put('/orders/:order_id/status', isAuthenticated, isAdmin, UpdateOrderStatusController.handle);
-router.get("/admin/orders", isAuthenticated, isAdmin, ListAllOrdersController.handle);
+router.put('/orders/:order_id/status', isAuthenticated, UpdateOrderStatusController.handle);
+router.get("/admin/orders", ListAllOrdersController.handle);
+router.post("/cashier/close", CashierController.closeDailyCashier);
 
 /* -------- payment-methods --------- */
 // Criar, buscar, atualizar e excluir métodos de pagamento
@@ -167,11 +178,22 @@ router.delete('/store-settings', isAuthenticated, isAdmin, deleteStoreSettingsCo
 /* ------- Sales ------- */
 // Rota para o resumo de vendas
 router.get('/dashboard/summary', (req, res) => dashboardController.getSalesSummary(req, res));
-
 // Rota para o gráfico de vendas mensais
 router.get('/dashboard/chart', (req, res) => dashboardController.getSalesChart(req, res));
-
 // Rota para a tabela de produtos vendidos
 router.get('/dashboard/products', (req, res) => dashboardController.getSoldProductsTable(req, res));
+
+
+/* ----------- Employees -----------*/
+// Rota para criar um funcionário
+router.post('/employees', upload.single('employeeImage'),isAuthenticated, isAdmin, EmployeeController.createEmployee);
+// Rota para listar todos os funcionários
+router.get('/employees', isAuthenticated, isAdmin, EmployeeController.listEmployees);
+// Rota para editar um funcionário
+router.put('/employees/:id', upload.single('employeeImage'),isAuthenticated, isAdmin, EmployeeController.updateEmployee);
+// Rota para excluir um funcionário
+router.delete('/employees/:id',isAuthenticated, isAdmin, EmployeeController.deleteEmployee);
+// Rota para buscar funcionário por ID
+router.get('/employees/:id', isAuthenticated, isAdmin, EmployeeController.getEmployeeById);
 
 export default router;

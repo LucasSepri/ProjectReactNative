@@ -52,6 +52,7 @@ const styles = (theme) =>
             paddingHorizontal: 12,
             borderColor: theme.primary,
             borderWidth: 1,
+            flex: 1,
         },
         searchIcon: {
             marginRight: 8,
@@ -67,11 +68,9 @@ const styles = (theme) =>
             gap: 10,
         },
         picker: {
-            // flex: 1,
-            width: '100%',
+            flex: 1,
             height: 50,
             borderColor: theme.primary,
-            // backgroundColor: theme.primary,
             color: theme.black,
             borderWidth: 1,
             borderRadius: 8,
@@ -95,7 +94,13 @@ const styles = (theme) =>
             color: theme.white,
             fontWeight: "bold",
         },
+        buttonContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            gap: 10,
+        },
         filterButton: {
+            flex: 1,
             backgroundColor: theme.secondary,
             paddingVertical: 14,
             borderRadius: 8,
@@ -107,6 +112,20 @@ const styles = (theme) =>
             shadowRadius: 6,
             elevation: 3,
         },
+        fecharCaixaButton:{
+            flex: 1,
+            backgroundColor: theme.danger,
+            paddingVertical: 14,
+            borderRadius: 8,
+            alignItems: 'center',
+            justifyContent: 'center',
+            shadowColor: theme.black,
+            shadowOffset: { width: 0, height: 3 },
+            shadowOpacity: 0.1,
+            shadowRadius: 6,
+            elevation: 3,
+        },
+
         filterButtonText: {
             color: theme.white,
             fontWeight: "bold",

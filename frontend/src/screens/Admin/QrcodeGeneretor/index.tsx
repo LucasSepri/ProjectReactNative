@@ -6,9 +6,20 @@ import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import Svg, { G, Path, Polygon, Rect } from 'react-native-svg';
 import theme from '../../../styles/theme';
-import { ThemeContext } from 'styled-components';
+import { ThemeContext } from 'styled-components/native';
 
-const DefaultSvgIcon = ({theme}) => (
+interface ThemeProps {
+    primary: string;
+    text: string;
+    background: string;
+    border: string;
+}
+
+interface DefaultSvgIconProps {
+    theme: ThemeProps;
+}
+
+const DefaultSvgIcon: React.FC<DefaultSvgIconProps> = ({ theme }) => (
     <Svg id="Livello_1" x="0px" y="0px" width="200px" height="200px" viewBox="-260 40 520 520" style={{ width: '100%', height: '100%' }}>
         <G>
             <Polygon id="XMLID_14_" fill={theme.primary} points="100,360 60,360 60,320 20.1,320 20.1,440.1 60,440.1 60,480 100,480 	" />
@@ -32,22 +43,17 @@ const DefaultSvgIcon = ({theme}) => (
     </Svg>
 );
 
-const QRCodeGenerator = () => {
-    const theme = useContext(ThemeContext);
-    const [inputText, setInputText] = useState('');
-    const [qrValue, setQrValue] = useState('');
-    const qrRef = useRef();
+const QRCodeGenerator: React.FC = () => {
+    const theme = useContext(ThemeContext) as ThemeProps;
+    const [inputText, setInputText] = useState<string>('');
+    const [qrValue, setQrValue] = useState<string>('');
+    const qrRef = useRef<View | null>(null);
 
-    const generateQRCode = (text) => {
-        if (text) {
-            const newQrValue = "&&" + text;
-            setQrValue(newQrValue);
-        } else {
-            setQrValue('');
-        }
+    const generateQRCode = (text: string): void => {
+        setQrValue(text ? `&&${text}` : '');
     };
 
-    const saveQRCodeAsPNG = async () => {
+    const saveQRCodeAsPNG = async (): Promise<void> => {
         if (qrRef.current) {
             try {
                 const uri = await captureRef(qrRef, {
@@ -67,7 +73,7 @@ const QRCodeGenerator = () => {
         }
     };
 
-    const handleInputChange = (text) => {
+    const handleInputChange = (text: string): void => {
         const numericText = text.replace(/[^0-9]/g, '');
         setInputText(numericText);
         generateQRCode(numericText);
@@ -80,7 +86,7 @@ const QRCodeGenerator = () => {
                 {qrValue ? (
                     <QRCode
                         value={qrValue}
-                        size={180} // Tamanho do QR Code ajustado
+                        size={180}
                         backgroundColor="white"
                         color="black"
                     />
@@ -90,15 +96,15 @@ const QRCodeGenerator = () => {
             </View>
             <TextInput
                 style={styles(theme).input}
-                placeholder="Digite o numero da Mesa"
+                placeholder="Digite o número da Mesa"
                 placeholderTextColor={theme.text}
                 value={inputText}
                 onChangeText={handleInputChange}
                 keyboardType="numeric"
             />
-            <TouchableOpacity 
-                style={[styles(theme).button, qrValue ? {} : styles(theme).disabledButton]} 
-                onPress={qrValue ? saveQRCodeAsPNG : null} 
+            <TouchableOpacity
+                style={[styles(theme).button, qrValue ? {} : styles(theme).disabledButton]}
+                onPress={qrValue ? saveQRCodeAsPNG : undefined}
                 disabled={!qrValue}
             >
                 <Text style={styles(theme).buttonText}>Salvar como PNG</Text>
@@ -107,23 +113,23 @@ const QRCodeGenerator = () => {
     );
 };
 
-const styles = (theme) => StyleSheet.create({
+const styles = (theme: ThemeProps) => StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: theme.background, // Fundo claro
+        backgroundColor: theme.background,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: theme.primary, // Azul escuro
-        marginBottom: 30, // Aumentado para dar mais espaço
+        color: theme.primary,
+        marginBottom: 30,
     },
     input: {
         height: 50,
-        borderColor: theme.border, // Cinza para bordas
+        borderColor: theme.border,
         borderWidth: 1,
         borderRadius: 5,
         width: '100%',
@@ -139,13 +145,13 @@ const styles = (theme) => StyleSheet.create({
         overflow: 'hidden',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 240, // Largura ligeiramente aumentada
-        height: 240, // Altura ligeiramente aumentada
-        elevation: 3, // Sombra para um efeito de profundidade
-        marginBottom: 20, // Adicionado espaço abaixo do QR Code
+        width: 240,
+        height: 240,
+        elevation: 3,
+        marginBottom: 20,
     },
     button: {
-        backgroundColor: theme.primary, // Cor do botão
+        backgroundColor: theme.primary,
         padding: 15,
         borderRadius: 5,
         marginBottom: 10,
@@ -153,10 +159,10 @@ const styles = (theme) => StyleSheet.create({
         alignItems: 'center',
     },
     disabledButton: {
-        backgroundColor: theme.border, // Cor de fundo quando desativado
+        backgroundColor: theme.border,
     },
     buttonText: {
-        color: 'white', 
+        color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -38,7 +38,7 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(true);
     const [showConfirmPassword, setShowConfirmPassword] = useState(true);
 
@@ -103,29 +103,30 @@ export default function SignUp() {
         }
 
         try {
-            const response = await api.post('/users', formData, {
+            setLoading(true); 
+            await api.post('/users', formData, {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'multipart/form-data',
-                }
+                },
             });
-            await signIn({ email, password });
+
             Alert.alert("Sucesso", "Conta criada e você está logado!");
-            if (!response.data.user.isAdmin) {
-                navigation.navigate('Home');
-            } else {
-                navigationAdm.navigate('ListUsers');
-            }
-        } catch (error) {
-            // Check if the error message indicates an email duplication
-            if (error.response && error.response.data && error.response.data.error === 'E-mail já cadastrado.') {
-                Alert.alert("Erro", "O e-mail informado já está cadastrado. Tente outro.");
+            await signIn({ email, password });
+        } catch (error: any) {
+            console.error("Erro ao criar conta:", error.response?.data || error.message);
+
+            if (error.response && error.response.data) {
+                const errorMessage = error.response.data.error || "Erro desconhecido.";
+                Alert.alert("Erro", errorMessage);
             } else {
                 Alert.alert("Erro", "Erro ao criar conta. Por favor, tente novamente mais tarde.");
             }
-        } finally {
-            setLoading(false);
         }
+        finally {
+            setLoading(false); 
+        }
+
     }
 
 
@@ -149,35 +150,35 @@ export default function SignUp() {
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity onPress={pickImageAsync} style={[styles(theme).imagePicker, styles(theme).imagePlaceholder]}>
-                        <DefaultProfileAddImage style={styles(theme).defaultProfileIcon} theme={theme}/>
+                        <DefaultProfileAddImage style={styles(theme).defaultProfileIcon} theme={theme} />
                         <Text style={styles(theme).imageText}>Adicionar Foto</Text>
                     </TouchableOpacity>
                 )}
 
                 <View style={styles(theme).inputContainer}>
                     <View style={styles(theme).inputWrapper}>
-                        <Ionicons name="person-outline" size={24} color={theme.primary} style={styles(theme).icon} />
+                        {theme && <Ionicons name="person-outline" size={24} color={theme && theme.primary} style={styles(theme).icon} />}
                         <TextInput
                             placeholder='Nome Completo'
                             style={styles(theme).input}
                             value={name}
                             onChangeText={setName}
-                            placeholderTextColor={theme.text}
+                            placeholderTextColor={theme && theme && theme.text}
                         />
                     </View>
                     <View style={styles(theme).inputWrapper}>
-                        <Ionicons name="mail-outline" size={24} color={theme.primary} style={styles(theme).icon} />
+                        {theme && <Ionicons name="mail-outline" size={24} color={theme && theme.primary} style={styles(theme).icon} />}
                         <TextInput
                             placeholder='Email'
                             style={styles(theme).input}
                             value={email}
                             onChangeText={setEmail}
                             autoCapitalize='none'
-                            placeholderTextColor={theme.text}
+                            placeholderTextColor={theme && theme && theme.text}
                         />
                     </View>
                     <View style={styles(theme).inputWrapper}>
-                        <Ionicons name="call-outline" size={24} color={theme.primary} style={styles(theme).icon} />
+                        {theme && <Ionicons name="call-outline" size={24} color={theme && theme.primary} style={styles(theme).icon} />}
                         <TextInputMask
                             type={'custom'}
                             options={{
@@ -187,42 +188,42 @@ export default function SignUp() {
                             style={styles(theme).input}
                             value={phone}
                             onChangeText={text => setPhone(text)}
-                            placeholderTextColor={theme.text}
+                            placeholderTextColor={theme && theme.text}
                             keyboardType='phone-pad'
                             maxLength={15}
                         />
                     </View>
                     <View style={styles(theme).passwordContainer}>
                         <View style={styles(theme).inputWrapper}>
-                            <Ionicons name="lock-closed-outline" size={24} color={theme.primary} style={styles(theme).icon} />
+                            {theme && <Ionicons name="lock-closed-outline" size={24} color={theme && theme.primary} style={styles(theme).icon} />}
                             <TextInput
                                 placeholder='Senha'
                                 style={styles(theme).input}
-                                placeholderTextColor={theme.text}
+                                placeholderTextColor={theme && theme && theme.text}
                                 secureTextEntry={showPassword}
                                 value={password}
                                 autoCapitalize='none'
                                 onChangeText={setPassword}
                             />
                             <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles(theme).eyeIcon}>
-                                <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={theme.text} />
+                                <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={theme && theme && theme.text} />
                             </TouchableOpacity>
                         </View>
                     </View>
                     <View style={styles(theme).passwordContainer}>
                         <View style={styles(theme).inputWrapper}>
-                            <Ionicons name="lock-closed-outline" size={24} color={theme.primary} style={styles(theme).icon} />
+                            <Ionicons name="lock-closed-outline" size={24} color={theme && theme.primary} style={styles(theme).icon} />
                             <TextInput
                                 placeholder='Confirme sua Senha'
                                 style={styles(theme).input}
-                                placeholderTextColor={theme.text}
+                                placeholderTextColor={theme && theme.text}
                                 secureTextEntry={showConfirmPassword}
                                 value={confirmPassword}
                                 autoCapitalize='none'
                                 onChangeText={setConfirmPassword}
                             />
                             <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles(theme).eyeIcon}>
-                                <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} size={24} color={theme.text} />
+                                <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} size={24} color={theme && theme.text} />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -230,7 +231,7 @@ export default function SignUp() {
 
                 {loading ? (
                     <TouchableOpacity style={styles(theme).button} onPress={handleSignUp} disabled={loading}>
-                        <ActivityIndicator size="small" color={theme.white} />
+                        <ActivityIndicator size="small" color={theme && theme.white} />
                     </TouchableOpacity>
                 ) : (
                     <TouchableOpacity style={styles(theme).button} onPress={handleSignUp} disabled={loading}>

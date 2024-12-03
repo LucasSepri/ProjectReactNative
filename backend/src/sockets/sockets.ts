@@ -30,9 +30,27 @@ export const setupSocket = (io: Server) => {
             console.error(`Erro no WebSocket: ${error.message}`);
         });
 
+        // Adicionando o evento para desconectar outro socket
+        socket.on('disconnectOtherSocket', (socketIdToDisconnect) => {
+            console.log(`Tentando desconectar o socket: ${socketIdToDisconnect}`);
+            const socketToDisconnect = io.sockets.sockets.get(socketIdToDisconnect);
+            if (socketToDisconnect) {
+                socketToDisconnect.disconnect();
+                console.log(`Socket ${socketIdToDisconnect} desconectado.`);
+                // Emitir a lista atualizada após desconectar
+                connectedSockets = connectedSockets.filter(id => id !== socketIdToDisconnect);
+                io.emit('updateSocketsList', connectedSockets);
+            } else {
+                console.log(`Socket ${socketIdToDisconnect} não encontrado.`);
+            }
+        });
+
+        setupChatSocket(socket, io);
+
+        
+
         socket.on('AtualizarLoja', () => {
             io.emit('lojaAtualizada', { success: true });
         });
     });
 };
-

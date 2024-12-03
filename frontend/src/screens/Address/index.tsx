@@ -106,9 +106,9 @@ const AddressForm = ({ route }) => {
           state: address.state,
           isVisualize: false,
           addForUser: route.params.addForUser,
+          returnScreen: route.params.returnScreen,
         });
 
-        // alert(JSON.stringify(data));
       } else {
         Alert.alert('Aviso', 'Endereço não encontrado.');
       }

@@ -1,40 +1,28 @@
-import React, { useContext } from "react";
-import { View, ActivityIndicator, Text } from "react-native";
-import { useTheme } from "styled-components";
+import React, { useContext } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 
-import AppRoutes from "./app.routes";
-import AdminRoutes from "./admin.routes"; // Certifique-se de que este componente existe
+import AppRoutes from './app.routes';
+import AdminRoutes from './admin.routes';
+import ReceptionistRoutes from './receptionist.routes';
 
 import { AuthContext } from "../context/AuthContext";
 
-function Routes() {
-    const theme = useTheme();
+const Routes: React.FC = () => {
+  const { isAuthenticated, loading, user } = useContext(AuthContext);
 
-    const { isAuthenticated, loading, user } = useContext(AuthContext);
+  if (!isAuthenticated) {
+    return (
+      <NavigationContainer>
+        <AppRoutes />
+      </NavigationContainer>
+    );
+  }
 
-    if (loading) {
-        return (
-            <View
-                style={{
-                    flex: 1,
-                    backgroundColor: theme.background,
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}
-            >
-                <ActivityIndicator size={60} color={theme.primary} />
-            </View>
-        );
-    }
-
-    if (!isAuthenticated) {
-        return <AppRoutes />;
-    }
-
-    return user.isAdmin ? <AdminRoutes /> : <AppRoutes />;
-
-
-
-}
+  return (
+    <NavigationContainer>
+      {user.isAdmin ? (<AdminRoutes />) : (user.isReceptionist ? (<ReceptionistRoutes />) : (<AppRoutes />))}
+    </NavigationContainer>
+  );
+};
 
 export default Routes;

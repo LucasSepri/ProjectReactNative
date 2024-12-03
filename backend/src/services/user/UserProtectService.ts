@@ -14,6 +14,7 @@ export class UserProtectService {
             phone: true,
             profileImage: true,
             isAdmin: true,
+            isReceptionist: true,
         },
     });
 

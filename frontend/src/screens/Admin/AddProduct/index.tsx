@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Image, Platform, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, Platform, ActivityIndicator, ScrollView } from 'react-native';
 import { api } from '../../../services/api';
 import styles from './style';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { DefaultGalleryAddImage } from '../../../components/Profile';
 import * as FileSystem from 'expo-file-system';
-import { ScrollView } from 'react-native-gesture-handler';
 import { TextInputMask } from 'react-native-masked-text';
 import { ThemeContext } from 'styled-components';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AddProduct = ({ route, navigation }) => {
   const theme = useContext(ThemeContext);
@@ -21,45 +21,57 @@ const AddProduct = ({ route, navigation }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [editingProduct] = useState(route.params?.productId);
   const [productId, setProductId] = useState(route.params?.productId);
+  const [errorImage, setErrorImage] = useState(false);
 
-  useEffect(() => {
-    const loadCategoriesAndProductData = async () => {
-      setLoading(true);  // Ativar o loading
-      try {
-        const categoriesResponse = await api.get('/categories');
-        setCategories(categoriesResponse.data);
-        if (categoriesResponse.data.length > 0) {
-          setSelectedCategory(categoriesResponse.data[0].id);
-        }
-        if (productId) {
-          const response = await api.get('/products/');
-          const product = response.data.find(p => p.id === productId);
-          if (product) {
-            const { name, price, description, banner, category_id } = product;
-            setProductName(name);
-            setProductPrice(String(price));
-            setProductDescription(description);
-            setSelectedImage(`${api.defaults.baseURL}${banner}?t=${new Date().getTime()}`);  // Evitar cache da imagem
-            setSelectedCategory(category_id);
-          } else {
-            console.error('Produto não encontrado');
-          }
-        }
-      } catch (error) {
-        console.error('Erro ao carregar produto', error);
-      } finally {
-        setLoading(false);  // Desativar o loading após a operação
+  const loadCategoriesAndProductData = async () => {
+    setLoading(true);
+    try {
+      const categoriesResponse = await api.get('/categories');
+      setCategories(categoriesResponse.data);
+      if (categoriesResponse.data.length > 0) {
+        setSelectedCategory(categoriesResponse.data[0].id);
       }
-    };
-
+      if (productId) {
+        const response = await api.get('/products/');
+        const product = response.data.find(p => p.id === productId);
+        if (product) {
+          const { name, price, description, category_id, banner } = product;
+          if (banner) {
+            try {
+              await api.head(`${api.defaults.baseURL}${banner}`);
+              setSelectedImage(`${api.defaults.baseURL}${banner}`);
+            } catch {
+              setErrorImage(true); // Marca erro para exibir fallback
+            }
+          }
+          setProductName(name);
+          setProductPrice((price * 100).toString()); // "7000" será interpretado como R$ 70,00
+          setProductDescription(description);
+          setSelectedCategory(category_id);
+          console.log(productPrice);
+        } else {
+          console.error('Produto não encontrado');
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar produto', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     loadCategoriesAndProductData();
   }, [productId]);
+  useFocusEffect(
+    useCallback(() => {
+      loadCategoriesAndProductData();
+    }, [productId]));
 
   const handleSubmit = async () => {
+    console.log("imagem selecionada: " + selectedImage);
     setLoading(true);
 
     try {
-      // Remove "R$" e ajusta o formato numérico
       const formattedPrice = Number(productPrice.replace(/[^0-9,]/g, '').replace(',', '.'));
 
       if (isNaN(formattedPrice)) {
@@ -74,7 +86,27 @@ const AddProduct = ({ route, navigation }) => {
       formData.append('description', productDescription);
       formData.append('category_id', selectedCategory);
 
-      // (Manutenção da lógica de imagem omitida aqui por simplicidade)
+
+
+      if (selectedImage && !selectedImage.startsWith('http')) {
+        // Para imagens locais
+        const fileInfo = await FileSystem.getInfoAsync(selectedImage);
+        if (!fileInfo.exists) {
+          throw new Error('File does not exist');
+        } else {
+          console.log("fileInfo: " + fileInfo.uri);
+          const fileUri = fileInfo.uri;
+          const fileType = 'image/jpeg';
+          const fileName = fileUri.split('/').pop();
+
+          formData.append('banner', {
+            uri: fileUri,
+            name: fileName,
+            type: fileType,
+          } as any);
+        }
+      }
+
 
       const response = editingProduct
         ? await api.put(`/products/${productId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
@@ -83,14 +115,24 @@ const AddProduct = ({ route, navigation }) => {
       Alert.alert('Sucesso', editingProduct ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
       navigation.goBack();
     } catch (error) {
-      console.error('Erro ao criar/editar produto:', error);
-      Alert.alert('Erro', editingProduct ? 'Erro ao editar produto' : 'Erro ao criar produto');
-    } finally {
+      if (error.response) {
+        // A resposta foi recebida, mas o servidor respondeu com um código de status
+        console.error('Erro ao criar/editar produto:', error.response.data);
+        Alert.alert('Erro', 'Erro ao criar/editar produto: ' + error.response.data.message);
+      } else if (error.request) {
+        // A requisição foi feita, mas não houve resposta
+        console.error('Erro de rede:', error.request);
+        Alert.alert('Erro de Rede', 'Não foi possível se comunicar com o servidor. Tente novamente mais tarde.');
+      } else {
+        // Outro erro
+        console.error('Erro desconhecido:', error.message);
+        Alert.alert('Erro desconhecido', 'Ocorreu um erro inesperado. Tente novamente.');
+      }
+    }
+    finally {
       setLoading(false);
     }
   };
-
-
 
   const pickImageAsync = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -102,6 +144,7 @@ const AddProduct = ({ route, navigation }) => {
     const result = await ImagePicker.launchImageLibraryAsync({ allowsEditing: true, quality: 1 });
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
+      setErrorImage(false);
     } else {
       alert('Você não selecionou nenhuma imagem.');
     }
@@ -121,9 +164,11 @@ const AddProduct = ({ route, navigation }) => {
         <Text style={styles(theme).title}>{productId ? 'Editar Produto' : 'Criar Novo Produto'}</Text>
 
         <TouchableOpacity onPress={pickImageAsync} style={styles(theme).imagePicker}>
-          {selectedImage ? (
-            <Image source={{ uri: selectedImage }} style={styles(theme).image}
-              onError={() => setSelectedImage(null)}
+          {!errorImage && selectedImage ? (
+            <Image
+              source={{ uri: selectedImage + `?t=${new Date().getTime()}` }}
+              style={styles(theme).image}
+              onError={(e) => { setErrorImage(true); }}
             />
           ) : (
             <View style={styles(theme).imagePlaceholder}>
@@ -132,7 +177,6 @@ const AddProduct = ({ route, navigation }) => {
             </View>
           )}
         </TouchableOpacity>
-
 
         <TextInput
           placeholder="Nome do Produto"
@@ -153,12 +197,6 @@ const AddProduct = ({ route, navigation }) => {
             ))}
           </Picker>
         </View>
-
-        {/* <TextInput
-          placeholder="Preço"
-          keyboardType="numeric"
-          style={styles(theme).input}
-          /> */}
 
         <TextInputMask
           type={'money'}

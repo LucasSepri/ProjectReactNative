@@ -87,7 +87,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                 ))}
             </View>
 
-            {user.isAdmin && (
+            {(user.isAdmin && !orderDetails.isClosed || user.isReceptionist && !orderDetails.isClosed) && (
                 <View style={styles(theme).section}>
                     <Text style={styles(theme).sectionTitle}>Alterar Status</Text>
                     <Picker
@@ -97,8 +97,7 @@ const OrderDetailsScreen = ({ route, navigation }) => {
                         <Picker.Item label="Pendente" value="Pendente" />
                         <Picker.Item label="Em Preparação" value="Em Preparação" />
                         <Picker.Item label="Em Transito" value="Em Transito" />
-                        <Picker.Item label="Entregar" value="Entregue" />
-                        <Picker.Item label="Cancelar" value="Cancelado" />
+                        <Picker.Item label="Entregue" value="Entregue" />
                     </Picker>
                     <TouchableOpacity style={styles(theme).button} onPress={updateOrderStatus}>
                         <Text style={styles(theme).buttonText}>Alterar Status</Text>

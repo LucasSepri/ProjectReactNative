@@ -12,6 +12,7 @@ import PaymentMethods from "../screens/Admin/PaymentMethods";
 import AddProduct from "../screens/Admin/AddProduct";
 import ChatAtendimento from "../screens/Admin/ChatAtendimento";
 import OrderDetails from "../screens/OrderDetails";
+import EmployeeDetail from "../screens/Admin/AddEmployees";
 
 import { useTheme } from "styled-components";
 
@@ -34,8 +35,12 @@ export type StackParamList = {
         state: string;
         isVisualize: boolean;
         addForUser: boolean;
+        returnScreen: string;
     };
-    Endereco: undefined;
+    Endereco: {
+        addForUser: boolean;
+        returnScreen: string;
+     };
     QrcodeGerneretor: undefined;
     Config: undefined;
     PaymentMethods: undefined;
@@ -47,6 +52,9 @@ export type StackParamList = {
     };
     OrderDetails: {
         orderId: string;
+    };
+    EmployeeDetail: {
+        id: string;
     };
 }
 
@@ -154,6 +162,16 @@ function AppRoutes() {
                     headerTintColor: theme.white
                 }}
             />
+            <Stack.Screen
+                name="EmployeeDetail"
+                component={EmployeeDetail}
+                options={{
+                    title: "Ficha do Funcionário",
+                    headerStyle: {
+                        backgroundColor: theme.primary,
+                    },
+                    headerTintColor: theme.white,
+                }} />
 
         </Stack.Navigator>
     );

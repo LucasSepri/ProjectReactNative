@@ -16,14 +16,13 @@ export default function ChatScreen() {
   const navigation = useNavigation<NavigationProp>();
   const theme = useContext(ThemeContext);
   const [messages, setMessages] = useState([]);
-  const [isTyping, setIsTyping] = useState(false); // Definir o estado para isTyping
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (user.id) {
       socket.emit('getMessages', { userId: user.id });
     }
-
+  
     socket.on('loadMessages', (messages, chatId) => {
       setMessages([]);
       const formattedMessages = messages.map((msg) => ({
@@ -38,7 +37,7 @@ export default function ChatScreen() {
       }));
       setMessages(formattedMessages);
     });
-
+  
     socket.on('receiveMessage', (message) => {
       const formattedMessage = {
         _id: message.id,
@@ -52,21 +51,22 @@ export default function ChatScreen() {
       };
       setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
     });
-
+  
     socket.on('messageDeleted', ({ messageId }) => {
       setMessages((prevMessages) =>
         prevMessages.filter((msg) => msg._id !== messageId)
       );
     });
-
+  
     socket.on('chatDeleted', ({ chatId, chatUserId }) => {
+      console.log('chatId', chatId);  // Verifique se o valor de chatId é o esperado
       console.log('chatUserId', chatUserId);  // Verifique se o valor de chatUserId é o esperado
       if (chatUserId.includes(user.id)) {
         setMessages([]);
-        alert('Chat deletado pelo Administrador');
+        Alert.alert('Aviso', 'O chat foi encerrado pelo administrador.');
       }
     });
-
+  
     return () => {
       socket.off('loadMessages');
       socket.off('receiveMessage');
@@ -74,10 +74,11 @@ export default function ChatScreen() {
       socket.off('chatDeleted');
     };
   }, [user.id, theme]);
+  
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log({messages});
+      // console.log({messages});
       if (user.id) {
         socket.emit('getMessages', { userId: user.id });
       }
@@ -92,7 +93,6 @@ export default function ChatScreen() {
       const newMessage = newMessages[0];
       if (user.id) {
         try {
-          console.log(user.id, newMessage.text);
           socket.emit('sendMessage', {
             content: newMessage.text,
             userId: user.id,
@@ -107,12 +107,6 @@ export default function ChatScreen() {
         ]);
       }
     }
-  };
-
-
-  const handleTyping = () => {
-    setIsTyping(true);
-    setTimeout(() => setIsTyping(false), 1000);
   };
 
   const renderInputToolbar = (props) => (
@@ -183,13 +177,10 @@ export default function ChatScreen() {
         placeholder="Digite sua resposta..."
         bottomOffset={90}
         keyboardShouldPersistTaps="handled"
-        alignTop
         scrollToBottom
         scrollToBottomComponent={() => (
           <MaterialIcons name="keyboard-arrow-down" size={24} color={theme.primary} />
         )}
-        isTyping={isTyping}
-        onInputTextChanged={handleTyping}
       />
     </View>
   );

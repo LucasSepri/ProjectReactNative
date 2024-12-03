@@ -1,16 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { View, Alert, Text, TouchableOpacity } from 'react-native';
-import { WebView } from 'react-native-webview';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { api } from '../../services/api';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { StackParamList } from '../../routes/app.routes';
 import styles from './style';
 import { ThemeContext } from 'styled-components';
 import { useAddress } from '../../context/AddressContext';  // Importa o hook useAddress
 
-type NavigationProp = NativeStackNavigationProp<StackParamList>;
 
 interface MapScreenProps {
   route: {
@@ -28,11 +25,12 @@ interface MapScreenProps {
       complement: string;
       isVisualize: boolean;
       addForUser?: boolean;
+      returnScreen?: string;
     };
   };
 }
 
-const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
+const MapScreen: React.FC = ({ route, navigation }: any) => {
   const theme = useContext(ThemeContext);
   const { address, setAddress } = useAddress(); // Obtém o endereço do contexto
   const [coordinate, setCoordinate] = useState({
@@ -41,13 +39,24 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
   });
   const [tempCoordinate, setTempCoordinate] = useState(coordinate);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const navigation = useNavigation<NavigationProp>();
 
   const handleConfirm = () => {
     setIsRedirecting(false);
     setCoordinate(tempCoordinate);
     Alert.alert('Localização confirmada', 'Agora você pode salvar o endereço.');
   };
+  const handleReturn = () => {
+    if (route.params.returnScreen === 'Carrinho') {
+      navigation.navigate('Inicio', { screen: 'Carrinho' });
+    } else if (route.params.returnScreen) {
+      navigation.navigate(route.params.returnScreen);
+      console.log(route.params.returnScreen);
+    } else {
+      navigation.popToTop();
+    }
+  };
+
+
 
   const handleSaveAddress = async () => {
     const { zip, street, number, neighborhood, city, state, complement, referencePoint } = route.params;
@@ -94,15 +103,13 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
                 });
                 Alert.alert('Sucesso', 'Endereço salvo com sucesso!', [{
                   text: 'OK',
-                  onPress: () => {
-                    navigation.popToTop();
-                  }
+                  onPress: handleReturn,
                 }]);
               } catch (error) {
                 Alert.alert('Erro', 'Não foi possível salvar o endereço.');
                 console.error(error);
               }
-            }else {
+            } else {
               setAddress({
                 zip,
                 street,
@@ -114,9 +121,9 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
                 referencePoint,
                 latitude: coordinate.latitude,
                 longitude: coordinate.longitude,
-                address: address.street+', '+address.number+', '+address.city,
+                address: address.street + ', ' + address.number + ', ' + address.city,
               })
-              navigation.popToTop();
+              handleReturn();
             }
           },
         },
@@ -170,7 +177,7 @@ const MapScreen: React.FC<MapScreenProps> = ({ route }) => {
     </html>
   `;
 
-  const handleWebViewMessage = (event) => {
+  const handleWebViewMessage = (event: WebViewMessageEvent) => {
     const newCoordinate = JSON.parse(event.nativeEvent.data);
     setTempCoordinate(newCoordinate);
   };

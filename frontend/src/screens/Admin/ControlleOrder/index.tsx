@@ -36,7 +36,29 @@ export default function OrdersList({ navigation }) {
             const sortedOrders = response.data.sort(
                 (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             );
-            setOrders(sortedOrders);
+
+            // // Get today's date at midnight
+            // const todayStart = new Date();
+            // todayStart.setHours(0, 0, 0, 0);
+
+            // // Get today's date at 23:59:59
+            // const todayEnd = new Date();
+            // todayEnd.setHours(23, 59, 59, 999);
+
+            // // Filter orders created today
+            // const ordersToday = sortedOrders.filter((order) => {
+            //     const orderDate = new Date(order.created_at);
+            //     return orderDate >= todayStart && orderDate <= todayEnd;
+            // });
+            // setOrders(ordersToday);
+
+
+            // Filtrar ordens que não estão finalizadas
+            const unfinalizedOrders = sortedOrders.filter(
+                (order) => order.status !== "Finalizado" && order.status !== "Cancelado" // Altere "Finalizado" para o valor exato do seu status finalizado
+            );
+
+            setOrders(unfinalizedOrders);
             setAllOrders(sortedOrders);
         } catch (error) {
             console.error("Erro ao carregar as ordens:", error);
@@ -44,6 +66,7 @@ export default function OrdersList({ navigation }) {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         const unsubscribe = navigation.addListener("focus", loadOrders);
@@ -138,7 +161,7 @@ export default function OrdersList({ navigation }) {
                 <Text style={styles(theme).orderText}>
                     Data: {orderDate.toLocaleDateString("pt-BR")}
                 </Text>
-                {item.status === "Criado" && (
+                {(item.status !== "Finalizado") && (
                     <TouchableOpacity
                         style={styles(theme).cancelButton}
                         onPress={() => handleCancelOrder(item.id)}
@@ -156,6 +179,20 @@ export default function OrdersList({ navigation }) {
         setRefreshing(false);
     };
 
+    const closeCashier = async () => {
+        setLoading(true);
+        try {
+            await api.post("/cashier/close");
+            loadOrders();
+        } catch (error) {
+            console.error("Erro ao fechar o caixa:", error);
+            Alert.alert("Erro", "Não foi possível fechar o caixa.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
         <View style={styles(theme).container}>
 
@@ -163,18 +200,6 @@ export default function OrdersList({ navigation }) {
             {/* Filtro de datas */}
             <View style={styles(theme).filterContainer}>
                 <Text style={styles(theme).filterTitle}>Filtrar</Text>
-                {/* Campo de pesquisa */}
-
-                <View style={styles(theme).searchContainer}>
-                    <Ionicons name="search" size={24} color={theme.primary} style={styles(theme).searchIcon} />
-                    <TextInput
-                        style={styles(theme).searchInput}
-                        placeholder="Pesquisar por Pedido ID ou Nome do Cliente"
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        onSubmitEditing={filterOrders} // Dispara a pesquisa ao pressionar Enter
-                    />
-                </View>
                 <View style={styles(theme).datePickerContainer}>
                     <TouchableOpacity style={styles(theme).dateButton} onPress={() => setShowStartPicker(true)}>
                         <Text style={styles(theme).dateButtonText}>Data de Início: {startDate.toLocaleDateString('pt-BR')}</Text>
@@ -186,24 +211,45 @@ export default function OrdersList({ navigation }) {
 
                 {/* Filtro de status */}
                 <View style={styles(theme).statusFilterContainer}>
-                    <Text style={styles(theme).filterTitleS}>Status da Ordem</Text>
-                        <Picker
-                            selectedValue={statusFilter}
-                            style={styles(theme).picker}
-                            onValueChange={(itemValue) => setStatusFilter(itemValue)}
-                        >
-                            <Picker.Item label="Todos" value="" />
-                            <Picker.Item label="Pendente" value="Pendente" />
-                            <Picker.Item label="Em Preparação" value="Em Preparação" />
-                            <Picker.Item label="Em Trânsito" value="Em Transito" />
-                            <Picker.Item label="Entregue" value="Entregue" />
-                            <Picker.Item label="Cancelado" value="Cancelado" />
-                        </Picker>
+                    {/* Campo de pesquisa */}
+
+                    <View style={styles(theme).searchContainer}>
+                        <Ionicons name="search" size={24} color={theme && theme.
+                            primary} style={styles(theme).searchIcon} />
+                        <TextInput
+                            style={styles(theme).searchInput}
+                            placeholder="Pesquisar por Pedido ID ou Nome do Cliente"
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                            onSubmitEditing={filterOrders} // Dispara a pesquisa ao pressionar Enter
+                        />
+                    </View>
+                    <Picker
+                        selectedValue={statusFilter}
+                        style={styles(theme).picker}
+                        onValueChange={(itemValue) => setStatusFilter(itemValue)}
+                    >
+                        <Picker.Item label="Todos" value="Todos" />
+                        <Picker.Item label="Criado" value="Criado" />
+                        <Picker.Item label="Pendente" value="Pendente" />
+                        <Picker.Item label="Em Preparação" value="Em Preparação" />
+                        <Picker.Item label="Em Trânsito" value="Em Transito" />
+                        <Picker.Item label="Entregue" value="Entregue" />
+                    </Picker>
                 </View>
 
-                <TouchableOpacity style={styles(theme).filterButton} onPress={filterOrders}>
-                    <Text style={styles(theme).filterButtonText}>Filtrar Ordens</Text>
-                </TouchableOpacity>
+                <View style={styles(theme).buttonContainer}>
+                    <TouchableOpacity style={styles(theme).filterButton} onPress={filterOrders}>
+                        <Text style={styles(theme).filterButtonText}>Filtrar Ordens</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles(theme).fecharCaixaButton}
+                        onPress={closeCashier}
+                    >
+                        <Text style={styles(theme).filterButtonText}>Fechar Caixa</Text>
+                    </TouchableOpacity>
+
+                </View>
             </View>
 
             {showStartPicker && (
@@ -228,7 +274,8 @@ export default function OrdersList({ navigation }) {
             )}
 
             {loading ? (
-                <ActivityIndicator size="large" color={theme.primary} />
+                <ActivityIndicator size="large" color={theme && theme.
+                    primary} />
             ) : (
                 <FlatList
                     data={orders}

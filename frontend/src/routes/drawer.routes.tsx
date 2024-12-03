@@ -12,9 +12,9 @@ import config from "../screens/Admin/Config";
 import PaymentMethods from "../screens/Admin/PaymentMethods";
 import FilesList from "../screens/Admin/FilesList";
 import AtendimentoOn from "../screens/Admin/AtendimentoOn";
-import Sockets from "../screens/Admin/SocketOnline";
 import ControlleOrder from "../screens/Admin/ControlleOrder";
 import SalesScreen from "../screens/Admin/SalesScreen";
+import Employees from "../screens/Admin/Employees";
 
 import { useTheme } from "styled-components";
 
@@ -28,9 +28,9 @@ export type StackParamListAdmin = {
     PaymentMethods: undefined;
     FilesList: undefined;
     AtendimentoOn: undefined;
-    Sockets: undefined;
     ControlleOrder: undefined;
     SalesScreen: undefined;
+    Employees: undefined;
 }
 
 const Drawer = createDrawerNavigator<StackParamListAdmin>();
@@ -80,14 +80,14 @@ function AdminRoutes() {
                         case 'AtendimentoOn':
                             iconName = focused ? 'chatbox' : 'chatbox-outline';
                             break;
-                        case 'Sockets':
-                            iconName = focused ? 'wifi' : 'wifi-outline';
-                            break;
                         case 'ControlleOrder':
                             iconName = focused ? 'clipboard' : 'clipboard-outline';
                             break;
                         case 'SalesScreen':
                             iconName = focused ? 'analytics' : 'analytics-outline';
+                            break;
+                        case 'Employees':
+                            iconName = focused ? 'people' : 'people-outline';
                             break;
 
                     }
@@ -162,17 +162,17 @@ function AdminRoutes() {
                 }}
             />
             <Drawer.Screen
+                name="Employees"
+                component={Employees}
+                options={{
+                    title: "Funcionários",
+                }}
+            />
+            <Drawer.Screen
                 name="AtendimentoOn"
                 component={AtendimentoOn}
                 options={{
                     title: "Atendimento Online",
-                }}
-            />
-            <Drawer.Screen
-                name="Sockets"
-                component={Sockets}
-                options={{
-                    title: "Sockets Online",
                 }}
             />
             <Drawer.Screen

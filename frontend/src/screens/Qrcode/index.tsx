@@ -83,7 +83,7 @@ export default function Qrcode() {
     <View style={styles(theme).container}>
       {loading ? (
         <View style={styles(theme).centeredView}>
-          <ActivityIndicator size={50} color={theme.primary} />
+          <ActivityIndicator size={50} color={theme && theme.primary} />
         </View>
       ) : (
         <View style={styles(theme).cameraContainer}>

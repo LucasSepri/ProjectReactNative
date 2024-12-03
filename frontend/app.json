@@ -4,26 +4,23 @@
     "slug": "CLICS",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "assetBundlePatterns": [
-      "assets/**/*",
-      "assets/splash.mp4"
-    ],
-    "plugins": [
-      [
-        "expo-video",
-        {
-          "supportsBackgroundPlayback": true,
-          "supportsPictureInPicture": true
-        }
-      ]
-    ],
-    "android": {
-      "package": "com.system.CLICS"
+    "splash": {
+      "image": "./assets/splash-icon.png", 
+      "resizeMode": "cover", 
+      "backgroundColor": "#000000"
     },
     "ios": {
-      "bundleIdentifier": "com.system.CLICS"
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     }
   }
 }

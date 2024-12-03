@@ -1,8 +1,6 @@
 import React, { useState, ReactNode, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from "../services/api";
-import socket, { initializeSocket } from "../services/socket"; // Atualize o caminho conforme necessário
-
 
 type AuthContextData = {
     user: UserProps;
@@ -22,6 +20,7 @@ type UserProps = {
     phone: string;
     token: string;
     isAdmin: boolean;
+    isReceptionist: boolean;
     profileImage: string;
 }
 
@@ -44,6 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         phone: '',
         token: '',
         isAdmin: false,
+        isReceptionist: false,
         profileImage: '',
     });
 
@@ -52,6 +52,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isAuthenticated = !!user.token; // Verifique se o token está presente
 
     useEffect(() => {
+        verificarUser();
         async function checkConnection() {
             const userInfo = await AsyncStorage.getItem('@token');
             const hasUser: UserProps = JSON.parse(userInfo || '{}');
@@ -60,9 +61,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 api.defaults.headers.common['Authorization'] = `Bearer ${hasUser.token}`;
                 setUser(hasUser);
 
-                // Reinicializar o socket ao recarregar os dados do usuário
-                initializeSocket();
             } else {
+
                 setUser({
                     id: '',
                     name: '',
@@ -70,8 +70,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     phone: '',
                     token: '',
                     isAdmin: false,
+                    isReceptionist: false,
                     profileImage: '',
                 });
+                verificarUser();
+
             }
             setLoading(false);
         }
@@ -97,8 +100,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     phone: '',
                     token: '',
                     isAdmin: false,
+                    isReceptionist: false,
                     profileImage: '',
                 });
+                verificarUser();
+
             }
             setLoading(false);
         }
@@ -113,7 +119,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
             const response = await api.post('/login', { email, password });
             const { token, user } = response.data;
-            const { id, name, phone, isAdmin, profileImage } = user;
+            const { id, name, phone, isAdmin, isReceptionist, profileImage } = user;
 
             const data = {
                 id,
@@ -122,6 +128,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 token,
                 phone,
                 isAdmin,
+                isReceptionist,
                 profileImage,
             };
 
@@ -136,7 +143,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
-
     async function verificarUser() {
         const userInfo = await AsyncStorage.getItem('@token');
         const hasUser: UserProps = JSON.parse(userInfo || '{}');
@@ -150,7 +156,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 setUser(userData);
                 await AsyncStorage.setItem('@token', JSON.stringify(userData));
             } catch (error) {
-                console.error('Error getting user data:', error);
                 // Remover dados do AsyncStorage se não houver conexão com a API
                 await AsyncStorage.removeItem('@token');
                 // Resetar o estado do usuário
@@ -161,11 +166,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
                     phone: '',
                     token: '',
                     isAdmin: false,
+                    isReceptionist: false,
                     profileImage: '',
                 });
+                signOut();
             }
         }
     }
+
+    useEffect(() => {
+        verificarUser();
+    }, []);  // Esse useEffect será chamado apenas uma vez, quando o componente for montado
 
 
     async function signOut() {
@@ -177,9 +188,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             phone: '',
             token: '',
             isAdmin: false,
+            isReceptionist: false,
             profileImage: '',
         });
-        socket.emit('disconnect');
     }
 
 

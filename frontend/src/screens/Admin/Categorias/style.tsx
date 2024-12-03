@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-const  styles = (theme) => StyleSheet.create({
+const  styles = (theme: { [key: string]: string }) => StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
